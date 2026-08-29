@@ -91,7 +91,7 @@ BiocManager::install(c("sva", "limma", "edgeR"))
 ## 📜 Citation & Author Information
 
 **Author:**  
-**Darwin Ngoune**  
+**Darwin Brunel Ngoune Domo**  
 *Department of Statistics, TU Dortmund University, Dortmund, Germany*  
 
 When using the code or datasets from this repository, please cite:
