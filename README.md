@@ -1,6 +1,4 @@
-# Liver Fibrosis Multi-Omics Protein Modeling Consortium
-## Quantitative Proteome Prediction and Cross-Cohort Regulatory Dynamics
-### *Nature Communications (2026)*
+# Discrete-coupling-regimes-govern-mRNA-protein-relationships-and-predictability
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![R: >= 4.1.0](https://img.shields.io/badge/R-%3E%3D_4.1.0-blue.svg)](https://www.r-project.org/)
@@ -27,10 +25,10 @@ We establish the **Differentiation Pattern (DiPa)** co-regulation taxonomy and b
 
 ### 🔹 Stratification of Target Proteins to Predict:
 Models predict target protein abundance for specific gene--protein pairs stratified by their **DiPa co-regulation quadrants**:
-* **DiPa 1--2 (Synergistic Co-regulation):** **118** gene--protein pairs (concordant Up-Up / Down-Down regulation).
-* **DiPa 3--4 (Transcriptomic Buffering):** **67** gene--protein pairs (uncoupled mRNA/protein shifts).
-* **DiPa 5--6 (Antagonistic Regulation):** **23** gene--protein pairs (inverted regulatory directions).
-* **DiPa 8 / 0 (Neutral Central Quadrant):** **202** gene--protein pairs (unperturbed baseline pairs).
+* **DiPa 1--2:** **118** gene--protein pairs.
+* **DiPa 3--4:** **67** gene--protein pairs.
+* **DiPa 5--6:** **23** gene--protein pairs.
+* **DiPa 8 / 0:** **202** gene--protein pairs.
 * **Total Conserved Matched Pairs:** $118 + 67 + 23 + 202 = \mathbf{410}$ pairs maintaining identical quadrant assignments across both diseases.
 
 ### 🔹 Candidate Covariate Search Space (Full 943 Proteome):
@@ -97,7 +95,7 @@ BiocManager::install(c("sva", "limma", "edgeR"))
 *Department of Statistics, TU Dortmund University, Dortmund, Germany*  
 
 When using the code or datasets from this repository, please cite:
-> Ngoune, D. et al. *Multi-omics proteome modeling and cross-cohort regulatory dynamics in murine liver fibrosis.* **Nature Communications** (2026).
+> Ngoune, D. et al. *Discrete-coupling-regimes-govern-mRNA-protein-relationships-and-predictability.* **Nature Communications** (2026).
 
 ---
 
