@@ -1,0 +1,145 @@
+# ==============================================================================
+# SCRIPT: Schwerpunkt_Slope_Distribution_CCL4.R
+# OBJECTIVE: Calculate transition slopes between control/disease centroids
+#            and visualize their distribution for Pair 1 and Pair 2.
+# ==============================================================================
+
+library(data.table)
+library(ggplot2)
+library(patchwork)
+
+# -------------------------------------------------------------------------
+# 1. LOAD DATA
+# -------------------------------------------------------------------------
+print("Loading CCL4 data...")
+load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Cross_Data_Analysis/DTccl4_DT_LCPM_Gene_Protein_full.RData")
+setDT(DTccl4_DT_LCPM)
+
+# Load DiPa categorization
+print("Loading DiPa data...")
+load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Dipa/Data_CCL4_filtered_Gene_Protein_full_final_with_dipa.RData")
+dipa_dt <- DT_dipa_count_ccl4
+setDT(dipa_dt)
+
+# -------------------------------------------------------------------------
+# 2. CALCULATE CENTROID SLOPES (SP_SLOPE)
+# -------------------------------------------------------------------------
+# Filter for Month 12 CCl4 vs Month 0 Oil (Control)
+ccl4_subset <- DTccl4_DT_LCPM[!is.na(TreatmentTime) & !is.na(ProteinIntensity) & !is.na(GeneCount)]
+ccl4_subset[, DiseaseGroup := ifelse(as.numeric(as.character(TreatmentTime)) == 0, "Control", 
+                                    ifelse(as.numeric(as.character(TreatmentTime)) == 12 & as.character(Treatment) == "ccl4", "Disease", NA))]
+ccl4_subset <- ccl4_subset[!is.na(DiseaseGroup)]
+
+#length(unique(ccl4_subset$MiceInfo)) #11
+
+
+
+# Calculate Group Centroids per Gene
+sp_metrics <- ccl4_subset[, {
+  rna_c <- mean(GeneCount[DiseaseGroup == "Control"], na.rm=TRUE)
+  prot_c <- mean(ProteinIntensity[DiseaseGroup == "Control"], na.rm=TRUE)
+  
+  rna_d  <- mean(GeneCount[DiseaseGroup == "Disease"], na.rm=TRUE)
+  prot_d <- mean(ProteinIntensity[DiseaseGroup == "Disease"], na.rm=TRUE)
+  
+  dx <- rna_d - rna_c
+  dy <- prot_d - prot_c
+  
+  .(
+    RNA_C = rna_c, Prot_C = prot_c,
+    RNA_D = rna_d, Prot_D = prot_d,
+    dX = dx, dY = dy,
+    SP_Slope = dy / dx
+  )
+}, by = GeneProtein]
+
+# Merge with DiPa groups
+final_dt <- merge(sp_metrics, dipa_dt[, .(GeneProtein, DiPaGroups)], by = "GeneProtein")
+final_dt[, DiPaGroups := as.character(DiPaGroups)]
+
+library(gridExtra)
+library(grid)
+
+# ... (Previous code remains the same until visualization) ...
+
+# -------------------------------------------------------------------------
+# 3. VISUALIZATION (MATCHING GLOBAL SLOPE STYLE)
+# -------------------------------------------------------------------------
+
+# plot_sp_slope_dist <- function(data, group_id, title_suffix, color_fill) {
+#   df <- data[DiPaGroups == as.character(group_id)]
+#   if(nrow(df) == 0) return(ggplot() + theme_void())
+#   
+#   pct <- round(100 * sum(df$SP_Slope >= 0.5 & df$SP_Slope <= 1.5, na.rm=TRUE) / nrow(df), 1)
+#   
+#   ggplot(df, aes(x = SP_Slope)) +
+#     geom_histogram(fill = color_fill, alpha = 0.6, binwidth = 0.1, color = "black", linewidth = 0.2) +
+#     geom_vline(xintercept = c(0.5, 1.5), linetype = "dashed", color = "black", linewidth = 1) +
+#     annotate("rect", xmin = 0.5, xmax = 1.5, ymin = 0, ymax = Inf, alpha = 0.1, fill = "green") +
+#     xlim(-1, 3) +
+#     labs(title = paste("Centroid Slopes:", title_suffix),
+#          subtitle = paste0(pct, "% fall in [0.5, 1.5] range\nN = ", nrow(df)),
+#          x = "Schwerpunkt Slope (m)", y = "Frequency") +
+#     theme_minimal() +
+#     theme(plot.title = element_text(face="bold", size=14),
+#           plot.subtitle = element_text(size=10, color="grey30"))
+# }
+# 
+# p1 <- plot_sp_slope_dist(final_dt, "1", "DiPa Group 1", "blue")
+# p2 <- plot_sp_slope_dist(final_dt, "2", "DiPa Group 2", "red")
+
+# -------------------------------------------------------------------------
+# 4. COMBINED DENSITY PLOT (GROUPS 1 & 2)
+# -------------------------------------------------------------------------
+df_comb <- final_dt[DiPaGroups %in% c("1", "2")]
+df_comb[, DiPaGroups := factor(DiPaGroups, levels = c("1", "2"), labels = c("1", "2"))]
+
+n1 <- nrow(df_comb[DiPaGroups == "1"])
+n2 <- nrow(df_comb[DiPaGroups == "2"])
+pct1 <- 100 * sum(df_comb$SP_Slope[df_comb$DiPaGroups == "1"] >= 0.5 & df_comb$SP_Slope[df_comb$DiPaGroups == "1"] <= 1.5, na.rm=TRUE) / n1
+pct2 <- 100 * sum(df_comb$SP_Slope[df_comb$DiPaGroups == "2"] >= 0.5 & df_comb$SP_Slope[df_comb$DiPaGroups == "2"] <= 1.5, na.rm=TRUE) / n2
+max_y <- max(density(df_comb$SP_Slope[df_comb$DiPaGroups == "1"], na.rm=TRUE)$y,
+             density(df_comb$SP_Slope[df_comb$DiPaGroups == "2"], na.rm=TRUE)$y)
+
+p_comb <- ggplot(df_comb, aes(x = SP_Slope, fill = DiPaGroups)) +
+  geom_density(alpha = 0.4) +
+  geom_vline(xintercept = c(0.5, 1.5), linetype = "dashed", color = "black", linewidth = 0.8) +
+  scale_fill_manual(values = c("1" = "blue", "2" = "red")) +
+  xlim(-1, 3) +
+  labs(title = expression(CCl[4]),
+       subtitle = NULL,
+       x = "Centroid Slope", y = "Density", fill = "DiPa Group") +
+  theme_bw(base_size = 20) +
+  theme(
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),
+    plot.subtitle = element_blank(),
+    axis.title = element_text(size = 22, face = "bold"),
+    axis.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, face = "bold"),
+    legend.text = element_text(size = 18),
+    legend.position = "bottom",
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  annotate("text", x = 2.4, y = max_y * 0.85, label = paste("N[1] ==", n1), parse = TRUE, size = 7, color = "blue", fontface = "bold", hjust = 0) +
+  annotate("text", x = 2.4, y = max_y * 0.72, label = paste("N[2] ==", n2), parse = TRUE, size = 7, color = "red", fontface = "bold", hjust = 0)
+
+# -------------------------------------------------------------------------
+# 5. SAVE RESULTS
+# -------------------------------------------------------------------------
+pdf_path <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Centroid_Slope_Frequency_CCL4.pdf"
+cairo_pdf(pdf_path, width = 10, height = 10)
+print(p_comb)
+dev.off()
+
+# stats <- final_dt[DiPaGroups %in% c("1", "2"), .(
+#   N = .N,
+#   Med_Slope = median(SP_Slope, na.rm=TRUE),
+#   Perc_in_Range = round(100 * sum(SP_Slope >= 0.5 & SP_Slope <= 1.5, na.rm=TRUE) / .N, 1)
+# ), by = DiPaGroups]
+# 
+# csv_path <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Schwerpunkt_Slope_Stats_CCL4.csv"
+# fwrite(stats, csv_path)
+# 
+# print(paste("SUCCESS! PDF saved to:", pdf_path))

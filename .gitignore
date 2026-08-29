@@ -1,0 +1,18 @@
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# Temporary files
+*.tmp
+*.bak
+~$*
+
+# OS generated files
+.DS_Store
+Thumbs.db
