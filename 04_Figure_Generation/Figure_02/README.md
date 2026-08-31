@@ -48,8 +48,8 @@
   * 3 dedicated colorbars centered beneath each column for $\rho_{\text{BP}}$ and $\Delta\rho_{\text{BP}}$.
 * **Generating Scripts:**
   * [`Generate_Panel_C_Combined_Correlation_Heatmaps.R`](Generate_Panel_C_Combined_Correlation_Heatmaps.R) (Unified $2 \times 3$ generator)
-  * [`jan_correlation_heatmaps_mrna_shared_order.R`](jan_correlation_heatmaps_mrna_shared_order.R)
-  * [`jan_correlation_heatmaps_shared_order.R`](jan_correlation_heatmaps_shared_order.R)
+  * [`correlation_heatmaps_mrna_shared_order.R`](correlation_heatmaps_mrna_shared_order.R)
+  * [`correlation_heatmaps_shared_order.R`](correlation_heatmaps_shared_order.R)
 * **Intermediate Vector File:** `Panel_C_Combined_Correlation_Heatmaps.pdf`.
 
 ---
