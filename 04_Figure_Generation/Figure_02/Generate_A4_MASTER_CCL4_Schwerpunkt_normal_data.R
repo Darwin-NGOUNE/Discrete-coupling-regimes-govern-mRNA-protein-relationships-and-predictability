@@ -74,19 +74,23 @@ generate_master_pca <- function(dt, value_col, title, ctrl_label, dis_label) {
   pca_df <- merge(pca_df, meta, by = "MiceInfo")
   
   ggplot(pca_df, aes(x = PC1, y = PC2, color = DiseaseGroup)) +
-    geom_point(size = 2, alpha = 0.85) +
+    geom_point(size = 3.0, alpha = 0.85) +
     scale_color_manual(values = c("Control" = "#2196F3", "Disease" = "#F44336"), labels = c("Control" = ctrl_label, "Disease" = dis_label), name = "") +
     labs(title = title, x = paste0("PC1: ", var_explained[1], "% variance"), y = paste0("PC2: ", var_explained[2], "% variance")) +
     theme_bw(base_size = T_AXIS) +
     theme(
-      plot.title = element_text(size = T_TITLE, hjust = 0.5), axis.title = element_text(size = T_AXIS), axis.text = element_text(size = T_TICKS, color = "black"),
-      axis.ticks = element_line(color = "black", linewidth = 0.8), panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+      plot.title = element_text(size = T_TITLE, face = "bold", hjust = 0.5), 
+      axis.title = element_text(size = T_AXIS + 2, face = "bold", color = "black"), 
+      axis.text = element_text(size = T_TICKS, color = "black"),
+      axis.ticks = element_line(color = "black", linewidth = 0.8), 
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 1.2),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      legend.position = "bottom", legend.title = element_text(size = T_AXIS), legend.text = element_text(size = T_TICKS), legend.key.size = unit(0.4, "cm"),
+      legend.position = "bottom", legend.title = element_text(size = T_AXIS, face = "bold"), 
+      legend.text = element_text(size = T_TICKS), legend.key.size = unit(0.5, "cm"),
       legend.margin=margin(t=-10)
     )
 }
-p1_pca_rna  <- generate_master_pca(DT_CCL4_BatchCorrected, "GeneCount", "RNA", "Control (Oil/Baseline)", "Disease (CCl4)") + labs(tag = "A") + theme(plot.tag = element_text(face = "bold", size = 20)) + theme(legend.position = "none")
+p1_pca_rna  <- generate_master_pca(DT_CCL4_BatchCorrected, "GeneCount", "RNA", "Control (Oil/Baseline)", "Disease (CCl4)") + labs(tag = "A") + theme(plot.tag = element_text(face = "bold", size = 22)) + theme(legend.position = "none")
 p1_pca_prot <- generate_master_pca(DT_CCL4_BatchCorrected, "Protein_Raw", "Protein", "Control (Oil/Baseline)", "Disease (CCl4)") + theme(legend.position = "none")
 
 # -------------------------------------------------------------------------
@@ -139,20 +143,22 @@ plot_master_volcano <- function(stats_dt, title_str, text_size = 4.5) {
              label = paste0("Up: ", format(n_up, big.mark=",")), 
              color = "black", fontface = "bold", size = text_size, hjust = 1) +
              
-    # MODIFIED: Capitalized Log2 and -Log10 (P value)
+    # MODIFIED: Bold mathematical expressions for Nature standard
     labs(
       title = title_str, 
       subtitle = NULL, 
-      x = expression(Log[2]~"(fold change)"), 
-      y = expression(-Log[10]~"(P value)")
+      x = expression(bold(Log[2]~"(fold change)")), 
+      y = expression(bold(-Log[10]~"(P value)"))
     ) +
     coord_cartesian(clip = "off") + # Allows annotations outside the grid
     theme_bw(base_size = T_AXIS) +
     theme(
-      plot.title = element_text(size = T_TITLE, hjust = 0.5, margin = margin(b = 15)), 
-      plot.margin = margin(t = 20, r = 10, b = 10, l = 10), # Extra top margin for labels
-      axis.title = element_text(size = T_AXIS), axis.text = element_text(size = T_TICKS, color = "black"),
-      axis.ticks = element_line(color = "black", linewidth = 0.8), panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+      plot.title = element_text(size = T_TITLE, face = "bold", hjust = 0.5, margin = margin(b = 15)), 
+      plot.margin = margin(t = 20, r = 10, b = 10, l = 10), 
+      axis.title = element_text(size = T_AXIS + 4, face = "bold", color = "black"), 
+      axis.text = element_text(size = T_TICKS + 2, face = "bold", color = "black"),
+      axis.ticks = element_line(color = "black", linewidth = 1.0), 
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 1.2),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.position = "none"
     )
 }
@@ -407,19 +413,19 @@ print("Saving isolated plots for CCL4...")
 # MODIFIED: Removed global titles, set subplot titles to "RNA" and "Protein", and increased text sizes for isolated PCA
 layout_pca <- ((p1_pca_rna + labs(title = "RNA", tag = NULL)) | (p1_pca_prot + labs(title = "Protein"))) & 
   theme(
-    plot.title = element_text(size = 24, face = "bold", hjust = 0.5), # Large title
-    axis.title = element_text(size = 20, face = "bold"), 
-    axis.text = element_text(size = 18, color = "black"),
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5), 
+    axis.title = element_text(size = 20, face = "bold", color = "black"), 
+    axis.text = element_text(size = 18, face = "bold", color = "black"),
     legend.text = element_text(size = 16)
   )
 ggsave("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Isolated_PCA_CCL4.pdf", plot = layout_pca, width = 10, height = 5, device = cairo_pdf)
 
-# MODIFIED: Removed global titles, set subplot titles to "RNA" and "Protein", and increased text sizes for isolated Volcano
+# Plot 2: Volcano Plots only (Very large fonts for isolated PDF)
 layout_volcano <- ((p2_volc_rna + labs(title = "RNA", tag = NULL)) | (p2_volc_prot + labs(title = "Protein"))) & 
   theme(
-    plot.title = element_text(size = 24, face = "bold", hjust = 0.5), # Large title
-    axis.title = element_text(size = 20, face = "bold"), 
-    axis.text = element_text(size = 18, color = "black")
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5), 
+    axis.title = element_text(size = 20, face = "bold", color = "black"), 
+    axis.text = element_text(size = 18, face = "bold", color = "black")
   )
 ggsave("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Isolated_Volcano_CCL4.pdf", plot = layout_volcano, width = 10, height = 5, device = cairo_pdf)
 

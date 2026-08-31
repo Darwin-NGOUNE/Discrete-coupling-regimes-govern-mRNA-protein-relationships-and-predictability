@@ -70,16 +70,20 @@ cairo_pdf(pdf_path, width = 12, height = 8)
 p_dens <- ggplot(combined_results, aes(x = Max_R, fill = factor(Tier, levels = paste0("Top ", tiers)))) +
   geom_density(alpha = 0.4) +
   scale_fill_brewer(palette = "YlOrRd", direction = -1) +
-  labs(title = expression(CCl[4]),
-       x = expression(Absolute~Correlation~Coefficient~(abs(rho[BP]))), 
+  labs(title = NULL,
+       x = expression(bold("|"*rho[BP]*"|")), 
        y = "Density",
        fill = "Correlation Rank") +
-  theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(face="bold", size=18, hjust = 0.5),
-        axis.title = element_text(size = 16, face = "bold"),
-        axis.text = element_text(size = 14, color = "black"),
-        legend.text = element_text(size = 14),
-        legend.title = element_text(size = 14, face = "bold"),
+  theme_bw(base_size = 18) +
+  theme(plot.title = element_blank(),
+        axis.title = element_text(size = 22, face = "bold", color = "black"),
+        axis.text = element_text(size = 18, face = "bold", color = "black"),
+        axis.ticks = element_line(color = "black", linewidth = 1.0),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 1.2),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.text = element_text(size = 16, face = "bold", color = "black"),
+        legend.title = element_text(size = 18, face = "bold", color = "black"),
         legend.position = "bottom")
 
 p_facet <- ggplot(combined_results, aes(x = Max_R, fill = Tier)) +

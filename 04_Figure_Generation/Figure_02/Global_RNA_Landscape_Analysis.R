@@ -246,8 +246,8 @@ res_bdl_rna <- pheatmap(mat_matrix_bdl_rna,
                         show_rownames = FALSE, show_colnames = TRUE,
                         scale = "row", annotation_col = anno_bdl_rna,
                         annotation_colors = ann_colors,
-                        main = "Individual Mice",
-                        fontsize = 12, fontsize_col = 12,
+                        main = "Individual mice",
+                        fontsize = 16, fontsize_col = 15,
                         color = colorRampPalette(c("#2196F3", "white", "#F44336"))(100),
                         silent = TRUE)
 
@@ -259,7 +259,7 @@ gt_bdl_rna$layout[gt_bdl_rna$layout$name == "col_names", c("t", "b")] <- 3
 gt_bdl_rna$layout[gt_bdl_rna$layout$name == "col_names", "z"] <- max(gt_bdl_rna$layout$z) + 1
 
 # Make Row 3 (annotation row) taller to fit vertical text labels
-gt_bdl_rna$heights[3] <- grid::unit(1.2, "cm")
+gt_bdl_rna$heights[3] <- grid::unit(1.5, "cm")
 
 # Modify col_annotation grob to fill the entire height of Row 3
 anno_idx_bdl_rna <- which(gt_bdl_rna$layout$name == "col_annotation")
@@ -273,14 +273,14 @@ if (length(anno_idx_bdl_rna) > 0) {
 gt_bdl_rna$heights[5] <- grid::unit(0, "lines")
 
 # Add a dedicated margin column on the far left for the Y-axis title
-gt_bdl_rna <- gtable_add_cols(gt_bdl_rna, widths = grid::unit(1.2, "cm"), pos = 0)
+gt_bdl_rna <- gtable_add_cols(gt_bdl_rna, widths = grid::unit(1.5, "cm"), pos = 0)
 
-# Subtract the new column's width (1.2 cm) from the matrix column (now Col 4)
+# Subtract the new column's width (1.5 cm) from the matrix column (now Col 4)
 # to keep the total width of the heatmap at exactly 1 npc (100% of page width)
-gt_bdl_rna$widths[[4]] <- gt_bdl_rna$widths[[4]] - grid::unit(1.2, "cm")
+gt_bdl_rna$widths[[4]] <- gt_bdl_rna$widths[[4]] - grid::unit(1.5, "cm")
 
 y_label_bdl_rna <- grid::textGrob(paste0("Individual genes N = ", nrow(mat_matrix_bdl_rna)), 
-                                  rot = 90, gp = grid::gpar(fontsize = 14, fontface = "bold"))
+                                  rot = 90, gp = grid::gpar(fontsize = 18, fontface = "bold"))
 # The new column is Col 1. The matrix row in the updated gtable is Row 4.
 gt_bdl_rna <- gtable_add_grob(gt_bdl_rna, y_label_bdl_rna, t = 4, l = 1, b = 4, r = 1, name = "y_axis_title")
 
@@ -337,8 +337,8 @@ res_ccl4_rna <- pheatmap(mat_matrix_ccl4_rna,
                          show_rownames = FALSE, show_colnames = TRUE,
                          scale = "row", annotation_col = anno_ccl4_rna,
                          annotation_colors = ann_colors_ccl4,
-                         main = "Individual Mice",
-                         fontsize = 12, fontsize_col = 12,
+                         main = "Individual mice",
+                         fontsize = 16, fontsize_col = 15,
                          color = colorRampPalette(c("#2196F3", "white", "#F44336"))(100),
                          silent = TRUE)
 
@@ -350,7 +350,7 @@ gt_ccl4_rna$layout[gt_ccl4_rna$layout$name == "col_names", c("t", "b")] <- 3
 gt_ccl4_rna$layout[gt_ccl4_rna$layout$name == "col_names", "z"] <- max(gt_ccl4_rna$layout$z) + 1
 
 # Make Row 3 (annotation row) taller to fit vertical text labels
-gt_ccl4_rna$heights[3] <- grid::unit(1.2, "cm")
+gt_ccl4_rna$heights[3] <- grid::unit(1.5, "cm")
 
 # Modify col_annotation grob to fill the entire height of Row 3
 anno_idx_ccl4_rna <- which(gt_ccl4_rna$layout$name == "col_annotation")
@@ -364,14 +364,14 @@ if (length(anno_idx_ccl4_rna) > 0) {
 gt_ccl4_rna$heights[5] <- grid::unit(0, "lines")
 
 # Add a dedicated margin column on the far left for the Y-axis title
-gt_ccl4_rna <- gtable_add_cols(gt_ccl4_rna, widths = grid::unit(1.2, "cm"), pos = 0)
+gt_ccl4_rna <- gtable_add_cols(gt_ccl4_rna, widths = grid::unit(1.5, "cm"), pos = 0)
 
-# Subtract the new column's width (1.2 cm) from the matrix column (now Col 4)
+# Subtract the new column's width (1.5 cm) from the matrix column (now Col 4)
 # to keep the total width of the heatmap at exactly 1 npc (100% of page width)
-gt_ccl4_rna$widths[[4]] <- gt_ccl4_rna$widths[[4]] - grid::unit(1.2, "cm")
+gt_ccl4_rna$widths[[4]] <- gt_ccl4_rna$widths[[4]] - grid::unit(1.5, "cm")
 
 y_label_ccl4_rna <- grid::textGrob(paste0("Individual genes N = ", nrow(mat_matrix_ccl4_rna)), 
-                                    rot = 90, gp = grid::gpar(fontsize = 14, fontface = "bold"))
+                                    rot = 90, gp = grid::gpar(fontsize = 18, fontface = "bold"))
 # The new column is Col 1. The matrix row in the updated gtable is Row 4.
 gt_ccl4_rna <- gtable_add_grob(gt_ccl4_rna, y_label_ccl4_rna, t = 4, l = 1, b = 4, r = 1, name = "y_axis_title")
 

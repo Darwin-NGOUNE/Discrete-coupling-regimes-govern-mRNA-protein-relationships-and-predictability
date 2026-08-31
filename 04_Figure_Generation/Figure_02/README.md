@@ -1,69 +1,79 @@
-# Figure 2: Global Omics Landscapes, Trajectory PCAs, Volcano Distributions, and Coordinated Protein Correlation Networks
-## (Nature Communications Manuscript)
+# Figure 2: Global Omics Landscapes, Disease Trajectories, Volcano Distributions, and Coordinated Correlation Networks
+## *(Nature Communications Manuscript)*
 
-[![Vector PDF](https://img.shields.io/badge/Format-Vector_PDF-red.svg)](Figure_2.pdf)
+[![Vector PDF](https://img.shields.io/badge/Format-Vector_PDF_300DPI-red.svg)](Figure_2.pdf)
 [![Nature Communications](https://img.shields.io/badge/Article-Figure_2-teal.svg)](https://www.nature.com/ncomms/)
 
 ---
 
 ## 1. Scientific Overview & Objective
 
-**Figure 2** provides the comprehensive multi-omics baseline characterizing the global transcriptomic and proteomic remodeling across both cholestatic (BDL) and toxic ($\text{CCl}_4$) liver fibrosis. It demonstrates three foundational biological insights:
+**Figure 2** provides the comprehensive multi-omics baseline characterizing the global transcriptomic and proteomic remodeling across both cholestatic (BDL) and toxic ($\text{CCl}_4$) liver fibrosis cohorts. It establishes four foundational biological insights:
 
-1. **Coordinated Block Expression:** Transcriptomic and proteomic abundance shifts follow tightly coordinated modular patterns rather than independent fluctuations.
-2. **Clear Disease Trajectory Separation:** Principal Component Analyses (PCA) and Volcano distributions confirm massive, reproducible molecular divergence between control and fibrotic disease states.
-3. **Universal Correlation Networks ("Best Friends" Principle):** Proteome-wide correlation analyses reveal that essentially every detected protein possesses at least one highly correlated partner ($\rho_{\text{BP}} > 0.95$), demonstrating that proteins operate within densely interconnected co-regulatory networks.
+1. **Clear Disease Trajectory Separation (Panel A):** Principal Component Analyses (PCA) and Volcano distributions confirm massive, highly reproducible molecular divergence between control and fibrotic disease states across both mRNA and protein layers.
+2. **Coordinated Block Expression Landscapes (Panel B):** Transcriptomic and proteomic abundance shifts follow tightly coordinated modular block patterns across individual animals rather than isolated fluctuations.
+3. **Preserved Modular Correlation Networks (Panel C):** Cross-cohort pairwise correlation matrices ($943 \times 943$) reveal shared modular architectures between cholestatic and toxic fibrosis, with conserved co-regulatory gene and protein communities.
+4. **Universal Nearest-Neighbor Density ("Best Friends" Principle, Panel D):** Proteome-wide correlation density distributions demonstrate that essentially every quantified protein possesses at least one highly correlated partner ($|\rho_{\text{BP}}| > 0.90$), establishing dense interconnected co-regulation.
 
 ---
 
 ## 2. Panel Breakdown & Generating Scripts
 
-### 🔹 Panels A & B: Global Expression Landscapes (RNA & Protein Heatmaps)
-* **Biological Meaning:** Hierarchically clustered expression heatmaps of all 943 shared genes and proteins across all mice in both disease cohorts (Controls, BDL, BDL + ASBTi, $\text{CCl}_4$ 2M, 6M, 12M).
+### 🔹 Panel A: PCA Trajectories & Volcano Distributions (BDL & $\text{CCl}_4$)
+* **Biological Content:**
+  * **PCA Projections (Top row):** 2D score plots along PC1 and PC2 for transcriptomic and proteomic landscapes in BDL ($N = 18$) and $\text{CCl}_4$ ($N = 31$).
+  * **Volcano Distributions (Bottom row):** $\log_2(\text{fold change})$ versus $-\log_{10}(P\text{ value})$, quantifying significantly up- and down-regulated genes and proteins ($P < 0.05, |\log_2\text{FC}| > 1$).
 * **Generating Scripts:**
-  * `Global_RNA_Landscape_Analysis.R` (Transcriptomic landscape)
-  * `Global_Protein_Landscape_Analysis.R` (Proteomic landscape)
-* **Input Dataset:** `DTccl4_DT_LCPM_Gene_Protein_full.RData` / `DTccl4_DT_LCPM_BatchCorrected.RData`.
+  * [`Generate_A4_MASTER_BDL_Schwerpunkt_normal_data.R`](Generate_A4_MASTER_BDL_Schwerpunkt_normal_data.R)
+  * [`Generate_A4_MASTER_CCL4_Schwerpunkt_normal_data.R`](Generate_A4_MASTER_CCL4_Schwerpunkt_normal_data.R)
+* **Intermediate Vector Files:** `Isolated_PCA_BDL.pdf`, `Isolated_PCA_CCL4.pdf`, `Isolated_Volcano_BDL.pdf`, `Isolated_Volcano_CCL4.pdf`.
 
 ---
 
-### 🔹 Panels C & D: Isolated PCA Trajectories & Volcano Plots (BDL & $\text{CCl}_4$)
-* **Biological Meaning:**
-  * **PCA Scores (Panels C1, D1):** 2D projection displaying clear separation between healthy controls and disease progression along PC1 and PC2.
-  * **Volcano Plots (Panels C2, D2):** Statistical distribution of $\log_2$ Fold-Change versus $-\log_{10}(p\text{-value})$, highlighting significant differentially expressed genes and proteins.
+### 🔹 Panel B: Global Expression Landscapes (RNA & Protein Heatmaps)
+* **Biological Content:**
+  * Hierarchically clustered expression heatmaps of all 943 shared core transcripts (top row) and proteins (bottom row) across individual mice in BDL (left) and $\text{CCl}_4$ (right).
+  * Clear sample-level annotation bars indicating individual animal IDs (`No. 1` to `No. 12`) and disease conditions.
 * **Generating Scripts:**
-  * `Generate_A4_MASTER_BDL_Schwerpunkt_normal_data.R` (BDL PCA & Volcano generation)
-  * `Generate_A4_MASTER_CCL4_Schwerpunkt_normal_data.R` ($\text{CCl}_4$ PCA & Volcano generation)
-* **Input Datasets:** `Data_count_filtered_asbt_Gene_Protein_full.RData`, `Data_CCL4_filtered_Gene_Protein_full_final_with_DiPa.RData`.
+  * [`Global_RNA_Landscape_Analysis.R`](Global_RNA_Landscape_Analysis.R) (Transcriptomic landscape heatmaps)
+  * [`Global_Protein_Landscape_Analysis.R`](Global_Protein_Landscape_Analysis.R) (Proteomic landscape heatmaps)
+* **Intermediate Vector Files:** `Global_RNA_Landscape_Summary.pdf` (Pages 2 & 3), `Global_Protein_Landscape_Summary.pdf` (Pages 2 & 3).
 
 ---
 
-### 🔹 Panel E: Shared-Order Correlation Heatmaps Triptych (BDL $\leftrightarrow$ $\text{CCl}_4$ $\leftrightarrow$ $\Delta r$)
-* **Biological Meaning:** Pairwise Pearson correlation matrices ($943 \times 943$) computed in BDL and projected onto $\text{CCl}_4$ using identical hierarchical clustering order, alongside the difference matrix $\Delta r = r_{\text{BDL}} - r_{\text{CCl}_4}$. This demonstrates preserved modular correlation structures across distinct fibrosis etiologies.
+### 🔹 Panel C: Shared-Order Correlation Matrices Triptych (RNA & Protein)
+* **Biological Content:**
+  * Unified $2 \times 3$ matrix showing pairwise Pearson correlation matrices ($943 \times 943$) for mRNA (top) and Protein (bottom).
+  * Columns: **BDL data**, **$\text{CCl}_4$ data** (projected onto identical hierarchical clustering order), and **Difference of BDL on $\text{CCl}_4$ data** ($\Delta \rho_{\text{BP}} = \rho_{\text{BDL}} - \rho_{\text{CCl}_4}$).
+  * 3 dedicated colorbars centered beneath each column for $\rho_{\text{BP}}$ and $\Delta\rho_{\text{BP}}$.
 * **Generating Scripts:**
-  * `jan_correlation_heatmaps_shared_order.R` (Proteome correlation triptych)
-  * `jan_correlation_heatmaps_mrna_shared_order.R` (Transcriptome correlation triptych)
-* **Output Component:** `Correlation_Heatmaps_Triptych_BDL_CCl4_DeltaR.pdf`.
+  * [`Generate_Panel_C_Combined_Correlation_Heatmaps.R`](Generate_Panel_C_Combined_Correlation_Heatmaps.R) (Unified $2 \times 3$ generator)
+  * [`jan_correlation_heatmaps_mrna_shared_order.R`](jan_correlation_heatmaps_mrna_shared_order.R)
+  * [`jan_correlation_heatmaps_shared_order.R`](jan_correlation_heatmaps_shared_order.R)
+* **Intermediate Vector File:** `Panel_C_Combined_Correlation_Heatmaps.pdf`.
 
 ---
 
-### 🔹 Panel F: Protein Correlation Density ("Best Friends" vs. Random Background)
-* **Biological Meaning:** Density distribution of the single maximum correlation coefficient ($\text{Top-1 Partner}$, $\rho_{\text{BP}} > 0.95$) for each protein compared to the broad background distribution of random pairwise correlations centered around 0.
+### 🔹 Panel D: Protein Correlation Density Distributions (Top 1 to Top 100 Ranks)
+* **Biological Content:**
+  * Empirical probability density distributions of absolute Pearson correlation coefficients ($|\rho_{\text{BP}}|$) across hierarchical nearest-neighbor ranks ($\text{Top 1}, \text{Top 2}, \dots, \text{Top 100}$) for BDL (left) and $\text{CCl}_4$ (right).
+  * A single, centered shared legend for correlation rank tiers.
 * **Generating Scripts:**
-  * `Protein_Correlation_Density_BDL.R` (BDL cohort density analysis, Page 1)
-  * `Protein_Correlation_Density_CCL4.R` ($\text{CCl}_4$ cohort density analysis, Page 1)
-* **Output Components:** `Protein_Correlation_Density_BDL.pdf`, `Protein_Correlation_Density_CCL4.pdf`.
+  * [`Generate_Panel_D_Combined_Density_Plots.R`](Generate_Panel_D_Combined_Density_Plots.R) (Unified 1x2 generator with shared legend)
+  * [`Protein_Correlation_Density_BDL.R`](Protein_Correlation_Density_BDL.R)
+  * [`Protein_Correlation_Density_CCL4.R`](Protein_Correlation_Density_CCL4.R)
+* **Intermediate Vector File:** `Panel_D_Combined_Density_Plots.pdf`.
 
 ---
 
 ## 3. Master Plate Assembly
 
 * **Master Assembly Script:** [`Generate_Figure_2_Master_Plate.R`](Generate_Figure_2_Master_Plate.R)
-* **Execution:** Combines all individual vector and rasterized grob components using `cowplot` and `pdftools` into the publication-ready multi-panel vector file:
+* **Execution:** Combines all panels at high resolution (300 DPI) using `cowplot` and `magick`:
   ```bash
   Rscript Generate_Figure_2_Master_Plate.R
   ```
-* **Output File:** `Figure_2.pdf` (4.29 MB).
+* **Final Publication Output:** [`Figure_2.pdf`](Figure_2.pdf)
 
 ---
 
@@ -72,27 +82,29 @@
 ```text
 Figure_02/
 │
-├── 📄 Figure_2.pdf                                      # Master Publication Plate (4.29 MB)
-├── 📄 Generate_Figure_2_Master_Plate.R                  # Master assembly script (cowplot)
+├── 📄 Figure_2.pdf                                      # Master Publication Plate (300 DPI)
+├── 📄 Generate_Figure_2_Master_Plate.R                  # Master cowplot assembly script
 │
-├── 📄 Global_RNA_Landscape_Analysis.R                  # Panel A: Global RNA expression heatmap
-├── 📄 Global_Protein_Landscape_Analysis.R              # Panel B: Global Protein expression heatmap
-├── 📄 Generate_A4_MASTER_BDL_Schwerpunkt_normal_data.R # Panel C: BDL PCA and Volcano plots
-├── 📄 Generate_A4_MASTER_CCL4_Schwerpunkt_normal_data.R# Panel D: CCl4 PCA and Volcano plots
-├── 📄 jan_correlation_heatmaps_shared_order.R          # Panel E: Protein correlation triptych
-├── 📄 jan_correlation_heatmaps_mrna_shared_order.R     # Panel E (supp): RNA correlation triptych
-├── 📄 Protein_Correlation_Density_BDL.R                # Panel F: BDL Best Friends density (Page 1)
-├── 📄 Protein_Correlation_Density_CCL4.R               # Panel F: CCl4 Best Friends density (Page 1)
+├── 📄 Generate_A4_MASTER_BDL_Schwerpunkt_normal_data.R  # Panel A: BDL PCA & Volcano
+├── 📄 Generate_A4_MASTER_CCL4_Schwerpunkt_normal_data.R # Panel A: CCl4 PCA & Volcano
+├── 📄 Global_RNA_Landscape_Analysis.R                   # Panel B: Global RNA heatmaps
+├── 📄 Global_Protein_Landscape_Analysis.R               # Panel B: Global Protein heatmaps
+├── 📄 Generate_Panel_C_Combined_Correlation_Heatmaps.R  # Panel C: Unified 2x3 Correlation Triptych
+├── 📄 Generate_Panel_D_Combined_Density_Plots.R         # Panel D: Unified Correlation Density curves
+├── 📄 jan_correlation_heatmaps_mrna_shared_order.R      # Panel C: RNA correlation analysis
+├── 📄 jan_correlation_heatmaps_shared_order.R           # Panel C: Protein correlation analysis
+├── 📄 Protein_Correlation_Density_BDL.R                 # Panel D: BDL Density & Centrality
+├── 📄 Protein_Correlation_Density_CCL4.R                # Panel D: CCl4 Density & Centrality
 │
-└── 📄 README.md                                         # This documentation file
+└── 📄 README.md                                         # Comprehensive documentation
 ```
 
 ---
 
 ## 5. Nature Communications Figure Legend
 
-> **Figure 2: Global multi-omics landscapes, disease trajectories, and coordinated protein correlation networks across cholestatic and toxic liver fibrosis.**  
-> **(A, B)** Hierarchically clustered expression heatmaps of 943 shared transcripts **(A)** and proteins **(B)** across BDL ($n = 18$) and $\text{CCl}_4$ ($n = 36$) murine cohorts.  
-> **(C, D)** Principal component analyses (PCA) and volcano plots ($\log_2\text{FC}$ vs $-\log_{10}p$) illustrating disease separation in BDL **(C)** and $\text{CCl}_4$ **(D)**.  
-> **(E)** Proteome-wide pairwise Pearson correlation matrices for BDL (left) and $\text{CCl}_4$ (middle) displayed in identical hierarchical order, with the pairwise difference matrix ($\Delta r = r_{\text{BDL}} - r_{\text{CCl}_4}$, right).  
-> **(F)** Density distributions of maximum pairwise correlation coefficients (Top-1 "Best Friend" partner, red) versus random pairwise background correlations (gray) across BDL and $\text{CCl}_4$.
+> **Figure 2: Global transcriptomic and proteomic landscapes, disease trajectory segregation, and modular correlation networks in cholestatic and toxic liver injury.**  
+> **(A)** Principal component analyses (top) and volcano distributions (bottom, $\log_2(\text{fold change})$ versus $-\log_{10}(P\text{ value})$) demonstrating robust molecular separation between control and diseased animals across transcriptomes and proteomes in BDL ($N = 18$) and $\text{CCl}_4$ ($N = 31$) cohorts. Red points denote significantly regulated features ($P < 0.05, |\log_2\text{FC}| > 1$).  
+> **(B)** Hierarchically clustered expression heatmaps of all 943 shared core transcripts (top) and proteins (bottom) across individual animals in BDL (left) and $\text{CCl}_4$ (right). Column annotation bars display individual mouse identifiers (`No. 1`–`No. 12`) and disease states.  
+> **(C)** Pairwise Pearson correlation matrices ($943 \times 943$) for mRNA (top) and Protein (bottom) across BDL and $\text{CCl}_4$, sorted according to consensus hierarchical clustering order, alongside differential correlation matrices ($\Delta \rho_{\text{BP}} = \rho_{\text{BDL}} - \rho_{\text{CCl}_4}$). Dedicated colorbars denote correlation coefficient scale ($-1.0$ to $+1.0$) and differential correlation scale ($-1.5$ to $+1.5$).  
+> **(D)** Empirical probability density distributions of absolute pairwise Pearson correlation coefficients ($|\rho_{\text{BP}}|$) across hierarchical nearest-neighbor ranks ($\text{Top 1}$ to $\text{Top 100}$) for BDL (left) and $\text{CCl}_4$ (right), highlighting the universal high-correlation "Best Friends" principle in the proteome.
