@@ -48,8 +48,8 @@
   * 3 dedicated colorbars centered beneath each column for $\rho_{\text{BP}}$ and $\Delta\rho_{\text{BP}}$.
 * **Generating Scripts:**
   * [`Generate_Panel_C_Combined_Correlation_Heatmaps.R`](Generate_Panel_C_Combined_Correlation_Heatmaps.R) (Unified $2 \times 3$ generator)
-  * [`correlation_heatmaps_mrna_shared_order.R`](correlation_heatmaps_mrna_shared_order.R)
-  * [`correlation_heatmaps_shared_order.R`](correlation_heatmaps_shared_order.R)
+  * [`Correlation_heatmaps_mrna_shared_order.R`](Correlation_heatmaps_mrna_shared_order.R)
+  * [`Correlation_heatmaps_shared_order.R`](Correlation_heatmaps_shared_order.R)
 * **Intermediate Vector File:** `Panel_C_Combined_Correlation_Heatmaps.pdf`.
 
 ---
@@ -91,8 +91,8 @@ Figure_02/
 ├── 📄 Global_Protein_Landscape_Analysis.R               # Panel B: Global Protein heatmaps
 ├── 📄 Generate_Panel_C_Combined_Correlation_Heatmaps.R  # Panel C: Unified 2x3 Correlation Triptych
 ├── 📄 Generate_Panel_D_Combined_Density_Plots.R         # Panel D: Unified Correlation Density curves
-├── 📄 jan_correlation_heatmaps_mrna_shared_order.R      # Panel C: RNA correlation analysis
-├── 📄 jan_correlation_heatmaps_shared_order.R           # Panel C: Protein correlation analysis
+├── 📄 Correlation_heatmaps_mrna_shared_order.R          # Panel C: RNA correlation analysis
+├── 📄 Correlation_heatmaps_shared_order.R               # Panel C: Protein correlation analysis
 ├── 📄 Protein_Correlation_Density_BDL.R                 # Panel D: BDL Density & Centrality
 ├── 📄 Protein_Correlation_Density_CCL4.R                # Panel D: CCl4 Density & Centrality
 │
