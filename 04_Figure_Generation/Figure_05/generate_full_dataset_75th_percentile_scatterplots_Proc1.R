@@ -187,7 +187,7 @@ compute_group_medians <- function(obj_list, model_type = "Baseline") {
   ))
 }
 
-create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val, label_size = 4.2, title_size = 14) {
+create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val, label_size = 4.8, title_size = 18) {
   pair_metrics <- calc_full_metrics_dt(dt_xy)
   
   r_val     <- pair_metrics["r"]
@@ -201,7 +201,7 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
   r2_med    <- group_med_metrics["r2_med"]
   
   ann_parse_str <- sprintf(
-    "atop('Group Med:' ~ bold(rho[BP]) == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| NRMSE =' ~ '%.3f' ~ '|' ~ bold(R^2) == '%.3f', 'This Pair:' ~ bold(rho[BP]) == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| NRMSE =' ~ '%.3f' ~ '|' ~ bold(R^2) == '%.3f')",
+    "atop('Group Med:' ~ rho[BP] == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| nRMSE =' ~ '%.3f' ~ '|' ~ R^2 == '%.3f', 'This Pair:' ~ rho[BP] == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| nRMSE =' ~ '%.3f' ~ '|' ~ R^2 == '%.3f')",
     r_med, rmse_med, nrmse_med, r2_med,
     r_val, rmse_val, nrmse_val, r2_val
   )
@@ -213,7 +213,7 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
     geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "#E74C3C", linewidth = 0.9) +
     geom_smooth(method = "lm", se = FALSE, color = "#2C3E50", linetype = "solid", linewidth = 0.9) +
     
-    geom_point(aes(color = Group), alpha = 0.85, size = 2.8) +
+    geom_point(aes(color = Group), alpha = 0.85, size = 3.0) +
     scale_color_manual(
       values = c("Control" = "#1F77B4", "Intermediate" = "#F1948A", "Disease" = "#D62728"),
       drop = FALSE
@@ -222,24 +222,25 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
     annotate("label", x = corner_pos$x, y = corner_pos$y, 
              label = ann_parse_str, parse = TRUE,
              hjust = corner_pos$hjust, vjust = corner_pos$vjust, 
-             family = "sans", size = label_size, fontface = "bold", fill = "white", color = "black") +
+             family = "sans", size = label_size, fill = "white", color = "black") +
     scale_x_continuous(breaks = break_seq, limits = c(min_val, max_val)) +
     scale_y_continuous(breaks = break_seq, limits = c(min_val, max_val)) +
     labs(title = panel_title, x = "Predicted Intensity", y = "Observed Intensity", color = "Mouse Status") +
-    theme_bw(base_size = 13, base_family = "sans") +
+    theme_bw(base_size = 14, base_family = "sans") +
     theme(
       text = element_text(family = "sans"),
       plot.title = element_text(size = title_size, face = "bold", color = "black", hjust = 0.5),
-      axis.title = element_text(size = 13.5, face = "bold", color = "black"),
-      axis.text  = element_text(size = 12, face = "bold", color = "black"),
+      axis.title = element_text(size = 17, face = "bold", color = "black"),
+      axis.text  = element_text(size = 14, face = "bold", color = "black"),
       axis.ticks = element_line(color = "black", linewidth = 0.9),
       panel.grid.major = element_line(color = "grey85", linewidth = 0.4),
       panel.grid.minor = element_line(color = "grey92", linewidth = 0.2),
       panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1),
       legend.position  = "bottom",
-      legend.title     = element_text(face = "bold", size = 13.5, color = "black"),
-      legend.text      = element_text(face = "bold", size = 12, color = "black"),
-      legend.box.margin = margin(t = 0, r = 5, b = 0, l = 5),
+      legend.title     = element_text(face = "bold", size = 12.5, color = "black"),
+      legend.text      = element_text(face = "bold", size = 11, color = "black"),
+      legend.spacing.x = unit(0.08, "cm"),
+      legend.key.size  = unit(0.35, "cm"),
       legend.margin    = margin(t = -2, b = -2)
     )
   return(p)
