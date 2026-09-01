@@ -425,28 +425,60 @@ ggsave("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Isola
 
 
 
-# Plot 3: DiPa + Wolken only (Rebuilt with larger fonts, points, and labels for the isolated PDF)
+# Plot 3: DiPa + Wolken only (Rebuilt with large bold fonts, points, and labels for the isolated PDF)
 p3_dipa_iso <- ggplot(Combined, aes(x = log2G, y = log2P, color = CloudCategory)) +
-  geom_point(alpha = 0.5, size = 1.8) + scale_color_manual(values = cloud_colors) +
-  geom_hline(yintercept = 0.5, color = "black", linewidth = 0.4) + geom_hline(yintercept = -0.5, color = "black", linewidth = 0.4) +
-  geom_vline(xintercept = 0.5, color = "black", linewidth = 0.4) + geom_vline(xintercept = -0.5, color = "black", linewidth = 0.4) +
+  geom_point(alpha = 0.55, size = 2.2) + scale_color_manual(values = cloud_colors) +
+  geom_hline(yintercept = c(0.5, -0.5), color = "black", linewidth = 0.6, linetype = "dashed") +
+  geom_vline(xintercept = c(0.5, -0.5), color = "black", linewidth = 0.6, linetype = "dashed") +
   xlim(-6, 6) + ylim(-5, 5) +
-  labs(title = "", tag = NULL, x = expression(RNA*":"~CCl[4]~(Month~12)~vs.~Oil~(Month~0)~~log[2]~"(fold change)"), y = expression(Protein*":"~CCl[4]~(Month~12)~vs.~Oil~(Month~0)~~log[2]~"(fold change)"), color = "", caption = "DiPa 1&2 → Diagonal | 5&6 → Horizontal | 3&4 → Vertical | 8 → Round | 7 → Discordant") + theme_bw(base_size = 20) +
-  theme(plot.title = element_text(size = 24, hjust=0.5), axis.title = element_text(size = 22, face="bold"), axis.text = element_text(size = 18, color="black"),
-        axis.ticks = element_line(color="black", linewidth=0.8), panel.border = element_rect(color="black", fill=NA, linewidth=1),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), plot.tag = element_text(face = "bold", size = 28),
-        legend.position = "bottom", legend.title = element_blank(), legend.text = element_text(size = 18), legend.key.size = unit(0.5, "cm"), legend.margin=margin(t=-10)) +
-  annotate("text", x =  0,    y =  0,    label = "8", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x =  4.0,  y =  3.5,  label = "1", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x = -4.0,  y = -3.5,  label = "2", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x =  0,    y =  3.5,  label = "3", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x =  0,    y = -3.5,  label = "4", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x =  4.0,  y =  0,    label = "5", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x = -4.0,  y =  0,    label = "6", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x = -4.0,  y =  3.5,  label = "7", size = 10, color = "grey50", fontface = "bold") +
-  annotate("text", x =  4.0,  y = -3.5,  label = "7", size = 10, color = "grey50", fontface = "bold") +
-  geom_point(data = extreme_pts, aes(x = log2G, y = log2P), shape = 18, size = 4.5, color = "black", inherit.aes=FALSE) +
-  geom_text_repel(data = extreme_pts, aes(label = PlotMarker), size = 6.5, color="black", bg.color="white", bg.r=0.15, box.padding=0.1, max.overlaps=30, segment.color="grey40")
+  labs(
+    title = "",
+    tag = NULL,
+    x = expression(bold("RNA: "~CCl[4]~"(Month 12) vs. Oil (Month 0)"~~log[2]~"(fold change)")),
+    y = expression(bold("Protein: "~CCl[4]~"(Month 12) vs. Oil (Month 0)"~~log[2]~"(fold change)")),
+    color = "", caption = "DiPa 1&2 → Diagonal | 5&6 → Horizontal | 3&4 → Vertical | 8 → Round | 7 → Discordant"
+  ) +
+  theme_bw(base_size = 20) +
+  theme(
+    plot.title = element_blank(),
+    axis.title = element_text(size = 24, face = "bold", color = "black"),
+    axis.text = element_text(size = 20, face = "bold", color = "black"),
+    axis.ticks = element_line(color = "black", linewidth = 1.0),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1.4),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.tag = element_text(face = "bold", size = 32),
+    plot.caption = element_text(size = 16, face = "bold", color = "black", hjust = 0.5, margin = margin(t = 8)),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.text = element_text(size = 18, face = "bold", color = "black"),
+    legend.key.size = unit(0.6, "cm"),
+    legend.margin = margin(t = -5)
+  ) +
+  annotate("text", x =  0,    y =  0,    label = "8", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x =  4.0,  y =  3.5,  label = "1", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x = -4.0,  y = -3.5,  label = "2", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x =  0,    y =  3.5,  label = "3", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x =  0,    y = -3.5,  label = "4", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x =  4.0,  y =  0,    label = "5", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x = -4.0,  y =  0,    label = "6", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x = -4.0,  y =  3.5,  label = "7", size = 12, color = "grey40", fontface = "bold") +
+  annotate("text", x =  4.0,  y = -3.5,  label = "7", size = 12, color = "grey40", fontface = "bold") +
+  geom_point(data = extreme_pts, aes(x = log2G, y = log2P),
+             shape = 18, size = 5.0, color = "black", inherit.aes = FALSE) +
+  geom_text_repel(
+    data = extreme_pts,
+    aes(label = PlotMarker),
+    size = 7.5,
+    fontface = "bold",
+    color = "black",
+    bg.color = "white",
+    bg.r = 0.18,
+    box.padding = 0.15,
+    max.overlaps = 30,
+    segment.color = "black",
+    segment.size = 0.8
+  )
 
 clouds_list_iso <- list()
 for(g in 1:8) {
@@ -478,18 +510,18 @@ for(g in 1:8) {
   dx <- x2 - x1; dy <- y2 - y1
   
   cp <- ggplot(p_dat, aes(x=GeneCount, y=Protein_Raw, color=DiseaseGroup)) +
-    geom_point(size=2.2, alpha=0.8) +
+    geom_point(size=2.6, alpha=0.85) +
     scale_color_manual(values=c("Control"="#2196F3", "Disease"="#F44336")) +
     coord_cartesian(xlim=c(cx-ps/2, cx+ps/2), ylim=c(cy-ps/2, cy+ps/2)) +
-    theme_bw(base_size=14) +
+    theme_bw(base_size=15) +
     theme(
       legend.position="none",
-      plot.title=element_text(color=col, size=18, hjust=0.5, face="bold"),
-      plot.subtitle=element_text(size=14, color="black", hjust=0.5),
-      axis.title=element_text(size=14, face="bold"),
-      axis.text=element_text(size=12, color="black"),
-      axis.ticks=element_line(color="black", linewidth=0.8),
-      panel.border=element_rect(color=col, fill=NA, linewidth=1.5),
+      plot.title=element_text(color=col, size=20, hjust=0.5, face="bold"),
+      plot.subtitle=element_text(size=15, face="bold", color="black", hjust=0.5),
+      axis.title=element_text(size=18, face="bold", color="black"),
+      axis.text=element_text(size=15, face="bold", color="black"),
+      axis.ticks=element_line(color="black", linewidth=0.9),
+      panel.border=element_rect(color=col, fill=NA, linewidth=1.8),
       panel.grid.major=element_blank(), panel.grid.minor=element_blank()
     )
   
@@ -503,13 +535,13 @@ for(g in 1:8) {
   
   cp <- cp +
     geom_point(data = df_sp, aes(x = RNA, y = Prot), 
-               shape = 3, size = 4.0, stroke = 1.5, 
+               shape = 3, size = 4.5, stroke = 1.8, 
                color = c("Control" = "#0D47A1", "Disease" = "#B71C1C")[df_sp$Group], 
                inherit.aes = FALSE) +
     labs(
       title = paste0("Pair ", g, ": ", gp),
       subtitle = substitute(
-        paste(rho[BP] == r_all, " | ", rho[C] == r_ctrl, " | ", rho[D] == r_dise),
+        paste(bold(rho[BP] == r_all), " | ", bold(rho[C] == r_ctrl), " | ", bold(rho[D] == r_dise)),
         list(
           r_all  = sprintf("%.2f", met$Pearson_R[1]),
           r_ctrl = sprintf("%.2f", met$Cor_Control[1]),
@@ -528,8 +560,8 @@ design_isolated_dipa <- "
   EEEEEEJJJKKK
   EEEEEEMMMNNN
 "
-layout_dipa_isolated <- (p3_dipa_iso + labs(tag="C") + theme(plot.tag = element_text(face = "bold", size = 32))) + 
-  (clouds_list_iso[["1"]] + labs(tag="D") + theme(plot.tag = element_text(face = "bold", size = 32))) + clouds_list_iso[["2"]] + clouds_list_iso[["3"]] + 
+layout_dipa_isolated <- (p3_dipa_iso + labs(tag="C") + theme(plot.tag = element_text(face = "bold", size = 34))) + 
+  (clouds_list_iso[["1"]] + labs(tag="D") + theme(plot.tag = element_text(face = "bold", size = 34))) + clouds_list_iso[["2"]] + clouds_list_iso[["3"]] + 
   clouds_list_iso[["4"]] + clouds_list_iso[["5"]] + clouds_list_iso[["6"]] + 
   clouds_list_iso[["7"]] + clouds_list_iso[["8"]] +
   plot_layout(design = design_isolated_dipa)

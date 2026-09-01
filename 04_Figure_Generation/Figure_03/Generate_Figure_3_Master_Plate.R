@@ -42,10 +42,13 @@ grob_dipa_ccl4 <- pdf_to_grob(file.path(grafiken_dir, "Isolated_DiPa_Wolken_CCL4
 
 # Exact 1:1 PowerPoint slide 3 layout canvas (Widescreen 16:9)
 master_canvas <- ggdraw() +
+  # Top Headers
+  draw_label("BDL", x = 0.25, y = 0.985, size = 24, fontface = "bold") +
+  draw_label(expression(bold(CCl[4])), x = 0.75, y = 0.985, size = 24) +
   # Left: Isolated BDL DiPa Wolke + 8 Exemplary Scatterplots
-  draw_grob(grob_dipa_bdl,  x = 0.01, y = 0.01, width = 0.485, height = 0.98) +
+  draw_grob(grob_dipa_bdl,  x = 0.01, y = 0.01, width = 0.485, height = 0.96) +
   # Right: Isolated CCl4 DiPa Wolke + 8 Exemplary Scatterplots
-  draw_grob(grob_dipa_ccl4, x = 0.505, y = 0.01, width = 0.485, height = 0.98)
+  draw_grob(grob_dipa_ccl4, x = 0.505, y = 0.01, width = 0.485, height = 0.96)
 
 cat(sprintf("Saving Exact Figure 3 PDF to: %s\n", out_pdf))
 ggsave(out_pdf, plot = master_canvas, width = 20, height = 10, units = "in", dpi = 300)
