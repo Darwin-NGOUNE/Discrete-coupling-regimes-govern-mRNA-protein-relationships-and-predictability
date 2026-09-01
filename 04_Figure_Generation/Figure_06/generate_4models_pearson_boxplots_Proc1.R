@@ -191,7 +191,7 @@ out1 <- run_proc1_4models(
   dir_tag           = "Richtung1",
   file_prefix_prime = "Models_rf_lasso_full_testing_new_Batch_prime",
   file_prefix_m50   = "Models_mastery50_BDL_CCL4",
-  file_prefix_rfrf  = "Models_rf_rf_full_testing_new_Batch_prime",
+  file_prefix_rfrf  = "Models_rf_rf_rf_full_testing_new_Batch_prime",
   out_filename      = "Procedure_1_4Models_Pearson_Richtung1_Train_BDL_Test_CCl4.pdf"
 )
 cat("Procedure 1 4-Models PDF 1 successfully generated:", out1, "\n")
