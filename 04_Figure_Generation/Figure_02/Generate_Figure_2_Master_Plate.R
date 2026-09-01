@@ -22,8 +22,8 @@ source_dir   <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_D
 grafiken_dir <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Grafiken_Paper_1"
 out_pdf      <- file.path(grafiken_dir, "Figure_2.pdf")
 
-# Helper function to convert a PDF page to a raster grob at high resolution (300 DPI)
-pdf_to_grob <- function(pdf_path, page_num = 1, density = 300) {
+# Helper function to convert a PDF page to a raster grob at high resolution (150 DPI for optimal file size < 8 MB)
+pdf_to_grob <- function(pdf_path, page_num = 1, density = 150) {
   if (!file.exists(pdf_path)) {
     stop(sprintf("File not found: %s", pdf_path))
   }
@@ -134,6 +134,8 @@ master_canvas <- ggdraw() +
   draw_grob(grob_panel_d, x = 0.54, y = 0.01, width = 0.45, height = 0.43)
 
 cat(sprintf("Saving Master Figure 2 PDF to: %s\n", out_pdf))
-ggsave(out_pdf, plot = master_canvas, width = 18, height = 12, units = "in", dpi = 300)
+cairo_pdf(out_pdf, width = 18, height = 12)
+print(master_canvas)
+dev.off()
 
-cat("\nSUCCESS! Master Figure 2 PDF assembled in R and saved to Grafiken_Paper_1!\n")
+cat(sprintf("SUCCESS! Master Figure 2 PDF saved (Size: %.2f MB)!\n", file.info(out_pdf)$size / (1024 * 1024)))
