@@ -42,19 +42,19 @@ file.copy(f_ccl4, file.path(grafiken_dir, basename(f_ccl4)), overwrite = TRUE)
 grob_a <- pdf_to_grob(f_bdl,  page_num = 4)
 grob_b <- pdf_to_grob(f_ccl4, page_num = 4)
 
-cat("Assembling Exact 16:9 Canvas matching PowerPoint Slide 2...\n")
+cat("Assembling 2-Tier Vertical Canvas (Panel A Top, Panel B Bottom)...\n")
 
-# Canvas: Width = 18 inches, Height = 9 inches
+# Canvas: Width = 14 inches, Height = 18 inches
 master_canvas <- ggdraw() +
-  # Panel A: BDL Master Proteins Identification (Left)
-  draw_label("A", x = 0.02, y = 0.96, size = 22, fontface = "bold") +
-  draw_grob(grob_a, x = 0.02, y = 0.02, width = 0.47, height = 0.92) +
+  # Panel A: BDL (Top)
+  draw_label("A", x = 0.02, y = 0.985, size = 24, fontface = "bold") +
+  draw_grob(grob_a, x = 0.03, y = 0.51, width = 0.95, height = 0.47) +
   
-  # Panel B: CCl4 Master Proteins Identification (Right)
-  draw_label("B", x = 0.51, y = 0.96, size = 22, fontface = "bold") +
-  draw_grob(grob_b, x = 0.51, y = 0.02, width = 0.47, height = 0.92)
+  # Panel B: CCl4 (Bottom)
+  draw_label("B", x = 0.02, y = 0.495, size = 24, fontface = "bold") +
+  draw_grob(grob_b, x = 0.03, y = 0.02, width = 0.95, height = 0.47)
 
 cat(sprintf("Saving Supplementary Figure 2 PDF to: %s\n", out_pdf))
-ggsave(out_pdf, plot = master_canvas, width = 18, height = 9, units = "in", dpi = 300)
+ggsave(out_pdf, plot = master_canvas, width = 14, height = 18, units = "in", dpi = 300)
 
 cat("\nSUCCESS! Supplementary Figure 2 generated and saved to Grafiken_Paper_1!\n")

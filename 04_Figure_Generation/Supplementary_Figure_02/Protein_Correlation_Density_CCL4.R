@@ -151,15 +151,23 @@ print(p_top_mean)
 top_50_80pct <- centrality_stats[order(-Thresh_80pct)][1:50]
 
 p_top_80 <- ggplot(top_50_80pct, aes(x = reorder(Protein, Thresh_80pct), y = Thresh_80pct)) +
-  geom_bar(stat = "identity", fill = "orange") +
+  geom_bar(stat = "identity", fill = "#E67E22", width = 0.75) +
   coord_flip() +
-  labs(title = expression(CCl[4]),
-       x = "Protein", y = expression(Threshold~abs(rho[BP])~(80*'% Coverage'))) +
-  theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(face="bold", size=18, hjust = 0.5),
-        axis.title = element_text(size = 16, face = "bold"),
-        axis.text.y = element_text(size = 8.5, color = "black"),
-        axis.text.x = element_text(size = 12, color = "black"))
+  labs(title = expression(bold(CCl[4])),
+       x = expression(bold("Protein")), 
+       y = expression(bold("Threshold |"*rho[BP]*"| (80% coverage)"))) +
+  theme_bw(base_size = 14, base_family = "sans") +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(family = "sans", face = "bold", size = 18, hjust = 0.5, color = "black", margin = margin(b = 10)),
+    axis.title.x = element_text(family = "sans", face = "bold", size = 14, color = "black"),
+    axis.title.y = element_text(family = "sans", face = "bold", size = 14, color = "black"),
+    axis.text.x  = element_text(family = "sans", face = "bold", size = 12, color = "black"),
+    axis.text.y  = element_text(family = "sans", face = "bold", size = 9, color = "black"),
+    panel.grid.major = element_line(color = "grey90", linewidth = 0.3),
+    panel.grid.minor = element_blank(),
+    panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1)
+  )
 
 # Page 5: Top 50 Mastery (90% Coverage)
 top_50_90pct <- centrality_stats[order(-Thresh_90pct)][1:50]
