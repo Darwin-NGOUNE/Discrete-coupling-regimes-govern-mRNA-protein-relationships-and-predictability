@@ -45,11 +45,11 @@ assignInNamespace("draw_colnames", draw_colnames_inside_annotation, ns = "pheatm
 # Custom draw_annotation_legend: support plotmath expressions (subscripts) in legend labels
 draw_annotation_legend_parsed <- function(annotation, annotation_colors, border_color, ...) {
     y = unit(1, "npc")
-    text_height = unit(1, "grobheight", textGrob("FGH", gp = gpar(...)))
+    text_height = unit(1.2, "grobheight", textGrob("FGH", gp = gpar(fontsize = 13, fontface = "bold", ...)))
     res = gList()
     for (i in names(annotation)) {
         res[[i]] = textGrob(i, x = 0, y = y, vjust = 1, hjust = 0, 
-            gp = gpar(fontface = "bold", ...))
+            gp = gpar(fontface = "bold", fontsize = 14, ...))
         y = y - 1.5 * text_height
         if (is.character(annotation[[i]]) | is.factor(annotation[[i]])) {
             n = length(annotation_colors[[i]])
@@ -67,7 +67,7 @@ draw_annotation_legend_parsed <- function(annotation, annotation_colors, border_
             for(j in 1:length(labels_parsed)) {
                 res[[paste(i, "t", j)]] = textGrob(labels_parsed[[j]], 
                     x = text_height * 2.4, y = yy[j] - text_height, 
-                    hjust = 0, vjust = 0.5, gp = gpar(...))
+                    hjust = 0, vjust = 0.5, gp = gpar(fontface = "bold", fontsize = 12, ...))
             }
             y = y - n * 2 * text_height
         }
@@ -77,7 +77,7 @@ draw_annotation_legend_parsed <- function(annotation, annotation_colors, border_
             h = 8 * text_height * 0.25
             res[[paste(i, "r")]] = rectGrob(x = unit(0, "npc"), 
                 y = yy, hjust = 0, vjust = 1, height = h, width = 2 * 
-                  text_height, gp = gpar(col = NA, fill = colorRampPalette(annotation_colors[[i]])(4)))
+                text_height, gp = gpar(col = NA, fill = colorRampPalette(annotation_colors[[i]])(4)))
             res[[paste(i, "r2")]] = rectGrob(x = unit(0, "npc"), 
                 y = y, hjust = 0, vjust = 1, height = 8 * text_height, 
                 width = 2 * text_height, gp = gpar(col = border_color, 
@@ -86,7 +86,7 @@ draw_annotation_legend_parsed <- function(annotation, annotation_colors, border_
                 na.rm = TRUE))))
             yy = y - c(1, 7) * text_height
             res[[paste(i, "t")]] = textGrob(txt, x = text_height * 
-                2.4, y = yy, hjust = 0, vjust = 0.5, gp = gpar(...))
+                2.4, y = yy, hjust = 0, vjust = 0.5, gp = gpar(fontface = "bold", fontsize = 11, ...))
             y = y - 8 * text_height
         }
         y = y - 1.5 * text_height
@@ -160,7 +160,7 @@ res_bdl <- pheatmap(mat_matrix_bdl,
                     show_rownames = FALSE, show_colnames = TRUE,
                     scale = "row", annotation_col = anno_bdl,
                     annotation_colors = ann_colors_bdl,
-                    main = "Individual Mice",
+                    main = "Individual mice",
                     fontsize = 12, fontsize_col = 11,
                     color = colorRampPalette(c("#2196F3", "white", "#F44336"))(100),
                     silent = TRUE)
@@ -254,7 +254,7 @@ res_ccl4 <- pheatmap(mat_matrix_ccl4,
                      show_rownames = FALSE, show_colnames = TRUE,
                      scale = "row", annotation_col = anno_ccl4,
                      annotation_colors = ann_colors_ccl4,
-                     main = "Individual Mice",
+                     main = "Individual mice",
                      fontsize = 12, fontsize_col = 10,
                      color = colorRampPalette(c("#2196F3", "white", "#F44336"))(100),
                      silent = TRUE)

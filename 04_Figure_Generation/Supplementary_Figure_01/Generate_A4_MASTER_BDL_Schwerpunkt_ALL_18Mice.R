@@ -84,7 +84,7 @@ generate_master_pca <- function(dt, value_col, title, ctrl_label, asbti_label, d
   pca_df <- merge(pca_df, meta, by = "MiceInfo")
   
   ggplot(pca_df, aes(x = PC1, y = PC2, color = DiseaseGroup)) +
-    geom_point(size = 2, alpha = 0.85) +
+    geom_point(size = 3.5, alpha = 0.9) +
     scale_color_manual(
       values = group_colors, 
       labels = c("Control" = ctrl_label, "BDL_ASBTi" = asbti_label, "Disease" = dis_label), 
@@ -93,11 +93,13 @@ generate_master_pca <- function(dt, value_col, title, ctrl_label, asbti_label, d
     labs(title = title, x = paste0("PC1: ", var_explained[1], "% variance"), y = paste0("PC2: ", var_explained[2], "% variance")) +
     theme_bw(base_size = T_AXIS) +
     theme(
-      plot.title = element_text(size = T_TITLE, hjust = 0.5), axis.title = element_text(size = T_AXIS), axis.text = element_text(size = T_TICKS, color = "black"),
+      plot.title = element_text(size = T_TITLE, hjust = 0.5, face = "bold"),
+      axis.title = element_text(size = T_AXIS, face = "bold"),
+      axis.text  = element_text(size = T_TICKS, color = "black", face = "bold"),
       axis.ticks = element_line(color = "black", linewidth = 0.8), panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      legend.position = "bottom", legend.title = element_text(size = T_AXIS), legend.text = element_text(size = T_TICKS), legend.key.size = unit(0.4, "cm"),
-      legend.margin=margin(t=-10)
+      legend.position = "bottom", legend.title = element_text(size = T_AXIS, face = "bold"), legend.text = element_text(size = T_TICKS, face = "bold"), legend.key.size = unit(0.4, "cm"),
+      legend.margin = margin(t = -10)
     )
 }
 
