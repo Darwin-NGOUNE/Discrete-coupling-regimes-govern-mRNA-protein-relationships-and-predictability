@@ -301,7 +301,7 @@ generate_proc1_75th_pdfs <- function(dir_short, prime_files, m50_files) {
     valid_r <- r_vals[!is.na(r_vals)]
     if (length(valid_r) == 0) next
     
-    target_75 <- as.numeric(quantile(valid_r, 0.75, type = 7))
+    target_75 <- as.numeric(quantile(valid_r, 0.75, type = 7)) #0.75
     prot_75   <- names(valid_r)[which.min(abs(valid_r - target_75))]
     
     dt_base <- safe_extract_pred_y(rna_obj[[prot_75]],  "Baseline")
