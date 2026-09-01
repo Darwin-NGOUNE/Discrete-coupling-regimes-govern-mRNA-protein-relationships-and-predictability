@@ -122,42 +122,50 @@ create_baseline_boxplots <- function(data_dt, plot_title_expr) {
   
   p <- ggplot(data_dt, aes(x = DiPa_Group, y = Pearson)) +
     # 1. Errorbars and Boxplots
-    stat_boxplot(geom = "errorbar", width = 0.25, color = "#2C3E50", linewidth = 0.7) +
-    geom_boxplot(fill = "#E5E7E9", color = "#2C3E50", alpha = 0.75, outlier.shape = NA, width = 0.45) +
+    stat_boxplot(geom = "errorbar", width = 0.25, color = "black", linewidth = 0.8) +
+    geom_boxplot(fill = "#E5E7E9", color = "black", alpha = 0.75, outlier.shape = NA, width = 0.45, linewidth = 0.8) +
     
     # 2. Transparent Jittered Dots
-    geom_jitter(color = "#2980B9", alpha = 0.35, size = 2.0, width = 0.18) +
+    geom_jitter(color = "#2980B9", alpha = 0.40, size = 2.2, width = 0.18) +
     
     # 3. Reference Dashed Lines at 0.5 (Red) and 0.8 (Green)
-    geom_hline(yintercept = 0.5, linetype = "dashed", color = "#E74C3C", linewidth = 0.85) +
-    geom_hline(yintercept = 0.8, linetype = "dashed", color = "#27AE60", linewidth = 0.85) +
+    geom_hline(yintercept = 0.5, linetype = "dashed", color = "#E74C3C", linewidth = 0.9) +
+    geom_hline(yintercept = 0.8, linetype = "dashed", color = "#27AE60", linewidth = 0.9) +
     
-    # 4. PERCENTAGE LABELS AT THE BOTTOM OF EACH BOX (y = -1.18)
-    geom_text(data = summary_dt, aes(x = DiPa_Group, y = -1.18, label = label),
-              size = 3.7, color = "#1A5276", fontface = "bold", lineheight = 0.88, inherit.aes = FALSE) +
+    # 4. Vertical separator lines between DiPa groups stopping STRICTLY at y = -1.0
+    geom_segment(data = data.frame(x = c(1.5, 2.5, 3.5), xend = c(1.5, 2.5, 3.5), y = -1.0, yend = 1.0),
+                 aes(x = x, xend = xend, y = y, yend = yend),
+                 linetype = "solid", color = "grey80", linewidth = 0.6, inherit.aes = FALSE) +
     
-    # 5. Y-Axis Label with expression(rho[BP])
+    # 5. PERCENTAGE LABELS AT THE BOTTOM OF EACH BOX (sitting cleanly below the y = -1.0 line)
+    geom_text(data = summary_dt, aes(x = DiPa_Group, y = -1.22, label = label),
+              size = 5.2, color = "black", fontface = "bold", lineheight = 0.92, inherit.aes = FALSE) +
+    
+    # 6. Y-Axis Label with bold Pearson correlation, rho_BP and limits
     scale_y_continuous(
-      name = expression(paste("Bravais-Pearson Correlation (", rho[BP], ")")),
+      name = expression(bold("Pearson correlation, "*rho[BP])),
       breaks = seq(-1.0, 1.0, by = 0.25),
-      limits = c(-1.35, 1.05)
+      limits = c(-1.38, 1.05)
     ) +
-    coord_cartesian(ylim = c(-1.30, 1.05), clip = "off") +
+    coord_cartesian(ylim = c(-1.38, 1.05), clip = "off") +
     
-    # 6. Theme with VISIBLE GRID / GITTER
-    theme_bw(base_size = 15) +
+    # 7. Theme with horizontal grid lines, no vertical grid lines cutting into bottom text
+    theme_bw(base_size = 18) +
     theme(
-      plot.title = element_text(face = "bold", hjust = 0.5, size = 17, margin = margin(b = 15)),
-      plot.margin = margin(t = 20, r = 20, b = 45, l = 20),
+      plot.title = element_text(face = "bold", hjust = 0.5, size = 22, color = "black", margin = margin(b = 15)),
+      plot.margin = margin(t = 20, r = 20, b = 25, l = 20),
       axis.title.x = element_blank(),
-      axis.text.x  = element_text(face = "bold", size = 14, color = "#2C3E50"),
-      axis.title.y = element_text(face = "bold", size = 15, color = "#2C3E50"),
-      axis.text.y  = element_text(size = 13, color = "#2C3E50"),
+      axis.text.x  = element_text(face = "bold", size = 16, color = "black"),
+      axis.title.y = element_text(face = "bold", size = 18, color = "black"),
+      axis.text.y  = element_text(face = "bold", size = 15, color = "black"),
+      axis.ticks   = element_line(color = "black", linewidth = 0.9),
       
-      # Clear Grid / Gitter styling
-      panel.grid.major = element_line(color = "grey80", linewidth = 0.5, linetype = "solid"),
-      panel.grid.minor = element_line(color = "grey90", linewidth = 0.25, linetype = "dashed"),
-      panel.border     = element_rect(color = "#2C3E50", fill = NA, linewidth = 1.0)
+      # Clear horizontal grid, clean vertical
+      panel.grid.major.y = element_line(color = "grey80", linewidth = 0.5, linetype = "solid"),
+      panel.grid.minor.y = element_line(color = "grey90", linewidth = 0.25, linetype = "dashed"),
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.border       = element_rect(color = "black", fill = NA, linewidth = 1.3)
     ) +
     labs(title = plot_title_expr)
   
@@ -168,20 +176,20 @@ create_baseline_boxplots <- function(data_dt, plot_title_expr) {
 # STEP 5: SAVE THE TWO SEPARATE PDF FILES WITH FORMATTED CCL4 TITLES
 # ------------------------------------------------------------------------------
 
-# PDF 1: Richtung 1 (Train BDL / Test CCl4)
-title_r1 <- expression(paste("Train BDL / Test CCl"[4], ": (Subset) "))
+# PDF 1: Richtung 1 (Train BDL, test CCl4)
+title_r1 <- expression(bold("Train BDL, test "*CCl[4]))
 pdf_r1   <- paste0(output_dir, "Procedure_1_Baseline_Pearson_Richtung1_Train_BDL_Test_CCl4.pdf")
 
-pdf(pdf_r1, width = 10, height = 8)
+cairo_pdf(pdf_r1, width = 10, height = 8)
 print(create_baseline_boxplots(dt_r1, title_r1))
 dev.off()
 cat("PDF 1 successfully generated:", pdf_r1, "\n")
 
-# PDF 2: Richtung 2 (Train CCl4 / Test BDL)
-title_r2 <- expression(paste("Train CCl"[4], " / Test BDL: (Subset)"))
+# PDF 2: Richtung 2 (Train CCl4, test BDL)
+title_r2 <- expression(bold("Train "*CCl[4]*", test BDL"))
 pdf_r2   <- paste0(output_dir, "Procedure_1_Baseline_Pearson_Richtung2_Train_CCl4_Test_BDL.pdf")
 
-pdf(pdf_r2, width = 10, height = 8)
+cairo_pdf(pdf_r2, width = 10, height = 8)
 print(create_baseline_boxplots(dt_r2, title_r2))
 dev.off()
 cat("PDF 2 successfully generated:", pdf_r2, "\n")

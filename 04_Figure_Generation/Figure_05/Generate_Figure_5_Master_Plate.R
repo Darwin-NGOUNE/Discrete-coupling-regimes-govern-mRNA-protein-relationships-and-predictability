@@ -59,22 +59,22 @@ master_canvas <- ggdraw() +
   # ---------------------------------------------------------------------------
   # TIER 1: Panel A (Top Left) & Panel B (Top Right)
   # ---------------------------------------------------------------------------
-  draw_label("A", x = 0.02, y = 0.985, size = 22, fontface = "bold") +
+  draw_label("A", x = 0.02, y = 0.985, size = 28, fontface = "bold") +
   draw_grob(grob_a, x = 0.02, y = 0.68, width = 0.47, height = 0.30) +
   
-  draw_label("B", x = 0.51, y = 0.985, size = 22, fontface = "bold") +
+  draw_label("B", x = 0.51, y = 0.985, size = 28, fontface = "bold") +
   draw_grob(grob_b, x = 0.51, y = 0.68, width = 0.47, height = 0.30) +
 
   # ---------------------------------------------------------------------------
   # TIER 2: Panel C (Middle Full Width)
   # ---------------------------------------------------------------------------
-  draw_label("C", x = 0.02, y = 0.66, size = 22, fontface = "bold") +
+  draw_label("C", x = 0.02, y = 0.66, size = 28, fontface = "bold") +
   draw_grob(grob_c, x = 0.02, y = 0.35, width = 0.96, height = 0.30) +
 
   # ---------------------------------------------------------------------------
   # TIER 3: Panel D (Bottom Full Width)
   # ---------------------------------------------------------------------------
-  draw_label("D", x = 0.02, y = 0.33, size = 22, fontface = "bold") +
+  draw_label("D", x = 0.02, y = 0.33, size = 28, fontface = "bold") +
   draw_grob(grob_d, x = 0.02, y = 0.02, width = 0.96, height = 0.30)
 
 cat(sprintf("Saving Master Figure 5 PDF to: %s\n", out_pdf))
