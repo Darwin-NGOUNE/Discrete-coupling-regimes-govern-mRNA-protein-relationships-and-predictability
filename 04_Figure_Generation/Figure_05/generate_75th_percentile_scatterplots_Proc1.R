@@ -100,7 +100,7 @@ safe_extract_pred_y <- function(raw_item, model_type = "Baseline") {
   res_dt <- data.table(
     y_true = y_t_sub,
     y_pred = p_sub,
-    Group  = factor(group_aligned, levels = c("Control", "Intermediate", "Disease"))
+    Group  = factor(group_aligned, levels = c("Control", "Disease"))
   )
   attr(res_dt, "y_train") <- as.numeric(y_train_full)
   return(res_dt)
@@ -187,7 +187,7 @@ compute_group_medians <- function(obj_list, model_type = "Baseline") {
   ))
 }
 
-create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val, label_size = 3.3, title_size = 12) {
+create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val, label_size = 4.2, title_size = 14) {
   pair_metrics <- calc_full_metrics_dt(dt_xy)
   
   r_val     <- pair_metrics["r"]
@@ -213,10 +213,10 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
     geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "#E74C3C", linewidth = 0.9) +
     geom_smooth(method = "lm", se = FALSE, color = "#2C3E50", linetype = "solid", linewidth = 0.9) +
     
-    geom_point(aes(color = Group), alpha = 0.85, size = 2.6) +
+    geom_point(aes(color = Group), alpha = 0.85, size = 2.8) +
     scale_color_manual(
-      values = c("Control" = "#1F77B4", "Intermediate" = "#F1948A", "Disease" = "#D62728"),
-      drop = FALSE
+      values = c("Control" = "#1F77B4", "Disease" = "#D62728"),
+      drop = TRUE
     ) +
     
     annotate("label", x = corner_pos$x, y = corner_pos$y, 
@@ -226,19 +226,19 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
     scale_x_continuous(breaks = break_seq, limits = c(min_val, max_val)) +
     scale_y_continuous(breaks = break_seq, limits = c(min_val, max_val)) +
     labs(title = panel_title, x = "Predicted Intensity", y = "Observed Intensity", color = "Mouse Status") +
-    theme_bw(base_size = 11, base_family = "sans") +
+    theme_bw(base_size = 13, base_family = "sans") +
     theme(
       text = element_text(family = "sans"),
       plot.title = element_text(size = title_size, face = "bold", color = "black", hjust = 0.5),
-      axis.title = element_text(size = 11.5, face = "bold", color = "black"),
-      axis.text  = element_text(size = 10.5, face = "bold", color = "black"),
-      axis.ticks = element_line(color = "black", linewidth = 0.8),
+      axis.title = element_text(size = 14, face = "bold", color = "black"),
+      axis.text  = element_text(size = 12, face = "bold", color = "black"),
+      axis.ticks = element_line(color = "black", linewidth = 0.9),
       panel.grid.major = element_line(color = "grey85", linewidth = 0.4),
       panel.grid.minor = element_line(color = "grey92", linewidth = 0.2),
-      panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.0),
+      panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1),
       legend.position  = "bottom",
-      legend.title     = element_text(face = "bold", size = 11, color = "black"),
-      legend.text      = element_text(face = "bold", size = 10.5, color = "black"),
+      legend.title     = element_text(face = "bold", size = 14, color = "black"),
+      legend.text      = element_text(face = "bold", size = 13, color = "black"),
       legend.margin    = margin(t = -2, b = -2)
     )
   return(p)
@@ -355,19 +355,19 @@ generate_proc1_75th_pdfs <- function(dir_short, prime_files, m50_files) {
     cairo_pdf(pdf_3p, width = 21, height = 5.8)
     
     # Page 1: Baseline
-    top_grob1 <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
+    top_grob1 <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 24, fontface = "bold", col = "black", fontfamily = "sans"))
     g_base    <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = top_grob1)
     grid::grid.draw(g_base)
     
     # Page 2: Mastery 50
     grid::grid.newpage()
-    top_grob2 <- grid::textGrob(top_expr_pg2, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
+    top_grob2 <- grid::textGrob(top_expr_pg2, gp = grid::gpar(fontsize = 24, fontface = "bold", col = "black", fontfamily = "sans"))
     g_m50     <- gridExtra::arrangeGrob(grobs = panels_m50, ncol = 4, nrow = 1, top = top_grob2)
     grid::grid.draw(g_m50)
     
     # Page 3: Protein
     grid::grid.newpage()
-    top_grob3 <- grid::textGrob(top_expr_pg3, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
+    top_grob3 <- grid::textGrob(top_expr_pg3, gp = grid::gpar(fontsize = 24, fontface = "bold", col = "black", fontfamily = "sans"))
     g_prot    <- gridExtra::arrangeGrob(grobs = panels_prot, ncol = 4, nrow = 1, top = top_grob3)
     grid::grid.draw(g_prot)
     
