@@ -52,11 +52,11 @@ extract_model_data <- function(filepath, model_type, dipa_label) {
     v_low <- tolower(v)
     if (model_type == "Baseline" && grepl("rna", v_low) && !grepl("plus_rna|combined|mastery", v_low)) {
       obj_target <- env[[v]]
-    } else if (model_type == "RF + LASSO" && (grepl("protein", v_low) || grepl("pre.full", v_low)) && !grepl("plus_rna|combined|mastery", v_low)) {
+    } else if (model_type == "RF + LASSO" && grepl("protein", v_low) && !grepl("plus_rna|combined|mastery|rf_rf|rf\\.rf", v_low)) {
       obj_target <- env[[v]]
-    } else if (model_type == "Mastery 50" && (grepl("mastery", v_low) || grepl("protein", v_low)) && !grepl("plus_rna|combined", v_low)) {
+    } else if (model_type == "Mastery 50" && grepl("mastery", v_low) && !grepl("plus_rna|combined", v_low)) {
       obj_target <- env[[v]]
-    } else if (model_type == "RF + RF" && (grepl("rf_rf", v_low) || grepl("rf", v_low) || grepl("protein", v_low)) && !grepl("plus_rna|combined|mastery", v_low)) {
+    } else if (model_type == "RF + RF" && grepl("protein", v_low) && (grepl("rf_rf", v_low) || grepl("rf\\.rf", v_low) || grepl("rf", v_low)) && !grepl("plus_rna|combined|mastery|lasso", v_low)) {
       obj_target <- env[[v]]
     }
   }
