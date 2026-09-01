@@ -1,14 +1,7 @@
 # ==============================================================================
 # SCRIPT: generate_75th_percentile_scatterplots_Proc3.R
 # PURPOSE: Generate 75th Percentile Scatterplot PDFs for Procedure 3 (Overlap-Subset Dataset)
-#          strictly using 2 MOUSE STATUS GROUPS (Control vs Disease):
-#            - Control: Blue (#1F77B4)
-#            - Disease: Dark Red (#D62728)
-#
-# OUTPUT PDFS (in New_Boxplot/Scatterplots_75th_Percentile/):
-#   - Proc3_Baseline_Scatterplot_75thPercentile_Merged_Batch.pdf (1 page, 4 panels)
-#   - Proc3_3Models_Scatterplot_75thPercentile_Merged_Batch.pdf (1 page, 12 panels)
-#   - Proc3_3Pages_1x4_Scatterplot_75thPercentile_Merged_Batch.pdf (3 pages, 1x4 horizontal)
+#          strictly using 2 MOUSE STATUS GROUPS (Control vs Disease) - Figure 6 Panel B
 # ==============================================================================
 
 library(data.table)
@@ -119,7 +112,7 @@ calc_full_metrics_dt <- function(dt_xy) {
 
 find_best_corner <- function(dt_xy, min_val, max_val) {
   df <- data.frame(x = dt_xy$y_pred, y = dt_xy$y_true)
-  margin_offset <- 0.08 * (max_val - min_val)
+  margin_offset <- 0.04 * (max_val - min_val)
   corners <- list(
     top_left     = list(x = min_val + margin_offset, y = max_val - margin_offset, hjust = 0, vjust = 1),
     top_right    = list(x = max_val - margin_offset, y = max_val - margin_offset, hjust = 1, vjust = 1),
@@ -176,7 +169,7 @@ compute_group_medians <- function(obj_list, model_type = "Baseline") {
   ))
 }
 
-create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val, label_size = 2.7, title_size = 9.5) {
+create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val, label_size = 3.3, title_size = 14) {
   pair_metrics <- calc_full_metrics_dt(dt_xy)
   
   r_val     <- pair_metrics["r"]
@@ -190,7 +183,7 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
   r2_med    <- group_med_metrics["r2_med"]
   
   ann_parse_str <- sprintf(
-    "atop(bold('Group Med: ') ~ rho[BP] == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| NRMSE =' ~ '%.3f' ~ '| Test ' ~ R^2 == '%.3f', bold('This Pair:  ') ~ rho[BP] == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| NRMSE =' ~ '%.3f' ~ '| Test ' ~ R^2 == '%.3f')",
+    "atop('Group Med:' ~ rho[BP] == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| nRMSE =' ~ '%.3f' ~ '|' ~ R^2 == '%.3f', 'This Pair:' ~ rho[BP] == '%.3f' ~ '| RMSE =' ~ '%.3f' ~ '| nRMSE =' ~ '%.3f' ~ '|' ~ R^2 == '%.3f')",
     r_med, rmse_med, nrmse_med, r2_med,
     r_val, rmse_val, nrmse_val, r2_val
   )
@@ -199,34 +192,39 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
   break_seq  <- seq(floor(min_val), ceiling(max_val), by = 1)
   
   p <- ggplot(dt_xy, aes(x = y_pred, y = y_true)) +
-    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "#E74C3C", linewidth = 0.85) +
-    geom_smooth(method = "lm", se = FALSE, color = "#2C3E50", linetype = "solid", linewidth = 0.8) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "#E74C3C", linewidth = 0.9) +
+    geom_smooth(method = "lm", se = FALSE, color = "#2C3E50", linetype = "solid", linewidth = 0.9) +
     
-    geom_point(aes(color = Group), alpha = 0.85, size = 2.4) +
+    geom_point(aes(color = Group), alpha = 0.85, size = 3.0) +
     scale_color_manual(
       values = c("Control" = "#1F77B4", "Disease" = "#D62728"),
-      drop = FALSE
+      drop = TRUE
     ) +
     
     annotate("label", x = corner_pos$x, y = corner_pos$y, 
              label = ann_parse_str, parse = TRUE, 
              hjust = corner_pos$hjust, vjust = corner_pos$vjust, 
-             family = "sans", size = label_size, fill = "white", color = "#1B4F72") +
+             family = "sans", size = label_size, label.padding = unit(0.2, "lines"),
+             fill = "white", color = "black") +
     scale_x_continuous(breaks = break_seq, limits = c(min_val, max_val)) +
     scale_y_continuous(breaks = break_seq, limits = c(min_val, max_val)) +
     labs(title = panel_title, x = "Predicted Intensity", y = "Observed Intensity", color = "Mouse Status") +
-    theme_bw(base_size = 9.5, base_family = "sans") +
+    theme_bw(base_size = 13, base_family = "sans") +
     theme(
       text = element_text(family = "sans"),
-      plot.title = element_text(size = title_size, face = "bold", color = "#1B4F72", hjust = 0.5),
-      axis.title = element_text(size = 9.5, face = "bold", color = "#2C3E50"),
-      axis.text  = element_text(size = 8.5, color = "#2C3E50"),
+      plot.title = element_text(size = title_size, face = "bold", color = "black", hjust = 0.5),
+      axis.title = element_text(size = 14, face = "bold", color = "black"),
+      axis.text  = element_text(size = 12, face = "bold", color = "black"),
+      axis.ticks = element_line(color = "black", linewidth = 0.9),
       panel.grid.major = element_line(color = "grey85", linewidth = 0.4),
       panel.grid.minor = element_line(color = "grey92", linewidth = 0.2),
+      panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1),
       legend.position  = "bottom",
-      legend.title     = element_text(face = "bold", size = 9),
-      legend.text      = element_text(size = 8.5),
-      legend.margin    = margin(t = -3, b = -3)
+      legend.title     = element_text(face = "bold", size = 13, color = "black"),
+      legend.text      = element_text(face = "bold", size = 11.5, color = "black"),
+      legend.spacing.x = unit(0.12, "cm"),
+      legend.key.size  = unit(0.4, "cm"),
+      legend.margin    = margin(t = -2, b = -2)
     )
   return(p)
 }
@@ -281,9 +279,9 @@ for (i in seq_along(dipa_groups)) {
   min_val <- min(c(all_p, all_t), na.rm = TRUE) - 0.3
   max_val <- max(c(all_p, all_t), na.rm = TRUE) + 0.3
   
-  p1 <- create_panel(sprintf("%s | Baseline (%s)", dl, prot_75), dt_base, base_meds, min_val, max_val, label_size = 2.7, title_size = 9.5)
-  p2 <- create_panel(sprintf("%s | Mastery 50 (%s)", dl, prot_75), dt_m50, m50_meds, min_val, max_val, label_size = 2.7, title_size = 9.5)
-  p3 <- create_panel(sprintf("%s | Protein (%s)", dl, prot_75), dt_prot, prot_meds, min_val, max_val, label_size = 2.7, title_size = 9.5)
+  p1 <- create_panel(sprintf("%s | Baseline (%s)", dl, prot_75), dt_base, base_meds, min_val, max_val, label_size = 3.3, title_size = 14)
+  p2 <- create_panel(sprintf("%s | Mastery 50 (%s)", dl, prot_75), dt_m50, m50_meds, min_val, max_val, label_size = 3.3, title_size = 14)
+  p3 <- create_panel(sprintf("%s | Protein (%s)", dl, prot_75), dt_prot, prot_meds, min_val, max_val, label_size = 3.3, title_size = 14)
   
   base_panels[[dl]] <- p1
   panels_m50[[dl]]  <- p2
@@ -294,54 +292,28 @@ for (i in seq_along(dipa_groups)) {
   panels_12[[paste0(dl, "_3")]] <- p3
 }
 
-# --- 1. EXISTING SINGLE-PAGE BASELINE PDF (2x2 Grid) ---
-if (length(base_panels) > 0) {
-  top_expr_base <- bquote(bold("Scatterplots 75th Percentile Protein per DiPa: Baseline Model - BDL + CCl"[4]))
-  top_grob_base <- grid::textGrob(top_expr_base, gp = grid::gpar(fontsize = 15, col = "#1B4F72", fontfamily = "sans"))
-  grid_base     <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 2, nrow = 2, top = top_grob_base)
-  
-  pdf_base <- file.path(out_dir, "Proc3_Baseline_Scatterplot_75thPercentile_Merged_Batch.pdf")
-  pdf(pdf_base, width = 12, height = 11)
-  grid::grid.draw(grid_base)
-  dev.off()
-  cat("  -> Saved Proc 3 Baseline 75th PDF (1 Page):", pdf_base, "\n")
-}
-
-# --- 2. EXISTING SINGLE-PAGE 3-MODEL PDF (12 Panels) ---
-if (length(panels_12) == 12) {
-  top_expr_3m <- bquote(bold("Scatterplots 75th Percentile Protein per DiPa - BDL + CCl"[4]))
-  top_grob_3m <- grid::textGrob(top_expr_3m, gp = grid::gpar(fontsize = 16, col = "#1B4F72", fontfamily = "sans"))
-  g_all_12    <- gridExtra::arrangeGrob(grobs = panels_12, ncol = 3, nrow = 4, top = top_grob_3m)
-  
-  pdf_3m <- file.path(out_dir, "Proc3_3Models_Scatterplot_75thPercentile_Merged_Batch.pdf")
-  pdf(pdf_3m, width = 17, height = 18)
-  grid::grid.draw(g_all_12)
-  dev.off()
-  cat("  -> Saved Proc 3 3-Model 75th SINGLE PAGE PDF (12 Panels):", pdf_3m, "\n")
-}
-
-# --- 3. NEW STRICT 3-PAGE LANDSCAPE 1x4 PDF (EXACTLY 3 PAGES, NO BLANK FIRST PAGE) ---
+# --- 1. STRICT 3-PAGE LANDSCAPE 1x4 PDF ---
 if (length(base_panels) == 4) {
   pdf_3p <- file.path(out_dir, "Proc3_3Pages_1x4_Scatterplot_75thPercentile_Merged_Batch.pdf")
-  pdf(pdf_3p, width = 21, height = 5.8)
+  cairo_pdf(pdf_3p, width = 21, height = 5.8)
   
   # Page 1: Baseline
-  top_expr_pg1 <- bquote(bold("Baseline Model - BDL + CCl"[4] * " (Subset)"))
-  top_grob1    <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 15, col = "#1B4F72", fontfamily = "sans"))
+  top_expr_pg1 <- bquote(bold("Baseline model: BDL + CCl"[4]))
+  top_grob1    <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
   g_base       <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = top_grob1)
   grid::grid.draw(g_base)
   
   # Page 2: Mastery 50
   grid::grid.newpage()
-  top_expr_pg2 <- bquote(bold("Mastery 50 Model - BDL + CCl"[4] * " (Subset)"))
-  top_grob2    <- grid::textGrob(top_expr_pg2, gp = grid::gpar(fontsize = 15, col = "#1B4F72", fontfamily = "sans"))
+  top_expr_pg2 <- bquote(bold("Mastery 50 model: BDL + CCl"[4]))
+  top_grob2    <- grid::textGrob(top_expr_pg2, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
   g_m50        <- gridExtra::arrangeGrob(grobs = panels_m50, ncol = 4, nrow = 1, top = top_grob2)
   grid::grid.draw(g_m50)
   
   # Page 3: Protein
   grid::grid.newpage()
-  top_expr_pg3 <- bquote(bold("Protein Model - BDL + CCl"[4] * " (Subset)"))
-  top_grob3    <- grid::textGrob(top_expr_pg3, gp = grid::gpar(fontsize = 15, col = "#1B4F72", fontfamily = "sans"))
+  top_expr_pg3 <- bquote(bold("Protein model: BDL + CCl"[4]))
+  top_grob3    <- grid::textGrob(top_expr_pg3, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
   g_prot       <- gridExtra::arrangeGrob(grobs = panels_prot, ncol = 4, nrow = 1, top = top_grob3)
   grid::grid.draw(g_prot)
   
@@ -349,4 +321,4 @@ if (length(base_panels) == 4) {
   cat("  -> Saved NEW Proc 3 STRICT 3-PAGE 1x4 PDF (3 Pages Exactly):", pdf_3p, "\n")
 }
 
-cat("\nPROCEDURE 3 SUBSET BINARY COLOR PDFS SUCCESSFULLY GENERATED!\n")
+cat("\nPROCEDURE 3 SUBSET SCATTERPLOTS COMPLETED!\n")

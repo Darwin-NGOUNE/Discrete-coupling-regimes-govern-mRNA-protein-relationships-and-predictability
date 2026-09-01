@@ -1,7 +1,7 @@
 # ==============================================================================
-# SCRIPT: generate_4models_pearson_boxplots_Proc5.R
+# SCRIPT: generate_4models_pearson_boxplots_Proc1.R
 # PURPOSE: 4 Models Comparison (Baseline, Mastery 50, RF + LASSO, RF + RF)
-#          Pearson Boxplots for Procedure 5 (Intra BDL and Intra CCl4) - Supp Fig 3
+#          Pearson Boxplots for Procedure 1 (Train BDL / Test CCl4) - Figure 6 Panel D
 # ==============================================================================
 
 library(data.table)
@@ -14,12 +14,11 @@ library(dplyr)
 output_dir <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Cluster_Modelierung_Hengstler/New_Boxplot/"
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
-intra_dir      <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Cluster_Modelierung/Intra_new/"
-m50_dir        <- paste0(intra_dir, "Mastery50/")
-intra_rfrf_dir <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Cluster_Modelierung/Intra_RF_RF/"
+prime_dir      <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Cross_Data_Analysis/Funktionen_CD_Testing/Batch_corrected_prime_analysis/"
+m50_dir        <- paste0(prime_dir, "Mastery50/")
+prime_rfrf_dir <- paste0(prime_dir, "RF_RF/")
 
 dipa_groups <- c("DiPa 1 & 2", "DiPa 3 & 4", "DiPa 5 & 6", "DiPa 8")
-group_codes <- c("1_2", "3_4", "5_6", "0")
 model_names <- c("Baseline", "Mastery 50", "RF + LASSO", "RF + RF")
 
 # ------------------------------------------------------------------------------
@@ -47,7 +46,7 @@ extract_model_data <- function(filepath, raw_model_type, target_model_name, dipa
       obj_target <- env[[v]]
     } else if (raw_model_type == "Protein" && grepl("protein", v_low) && !grepl("plus_rna|combined|mastery", v_low)) {
       obj_target <- env[[v]]
-    } else if (raw_model_type == "Mastery 50" && grepl("mastery", v_low) && !grepl("plus_rna|combined", v_low)) {
+    } else if (raw_model_type == "Mastery 50" && grepl("protein", v_low) && !grepl("plus_rna|combined", v_low)) {
       obj_target <- env[[v]]
     } else if (raw_model_type == "RF_RF" && grepl("protein", v_low) && !grepl("plus_rna|combined", v_low)) {
       obj_target <- env[[v]]
@@ -89,17 +88,30 @@ extract_model_data <- function(filepath, raw_model_type, target_model_name, dipa
 }
 
 # ------------------------------------------------------------------------------
-# STEP 3: LOAD DATA FOR INTRA BDL AND INTRA CCL4
+# STEP 3: LOAD DATA FOR RICHTUNG 1 (Train BDL / Test CCl4)
 # ------------------------------------------------------------------------------
-bdl_prime_files <- sprintf(file.path(intra_dir, "Models_rf_preselection_full_objects_CD_new_LCPM_prime_cluster_%s_sub.RData"), group_codes)
-bdl_m50_files   <- sprintf(file.path(m50_dir, "Models_mastery50_LCPM_cluster_%s_sub.RData"), group_codes)
-bdl_rfrf_files  <- sprintf(file.path(intra_rfrf_dir, "Models_rf_rf_preselection_full_objects_CD_new_LCPM_prime_cluster_%s_sub.RData"), group_codes)
+r1_prime_files <- c(
+  paste0(prime_dir, "Models_rf_lasso_full_testing_new_Batch_prime_1_2_sub.RData"),
+  paste0(prime_dir, "Models_rf_lasso_full_testing_new_Batch_prime_3_4_sub.RData"),
+  paste0(prime_dir, "Models_rf_lasso_full_testing_new_Batch_prime_5_6_sub.RData"),
+  paste0(prime_dir, "Models_rf_lasso_full_testing_new_Batch_prime_0_sub.RData")
+)
 
-ccl4_prime_files <- sprintf(file.path(intra_dir, "Models_rf_preselection_full_objects_CD_new_DTccl4_prime_cluster_%s_sub.RData"), group_codes)
-ccl4_m50_files   <- sprintf(file.path(m50_dir, "Models_mastery50_DTccl4_cluster_%s_sub.RData"), group_codes)
-ccl4_rfrf_files  <- sprintf(file.path(intra_rfrf_dir, "Models_rf_rf_preselection_full_objects_CD_new_DTccl4_prime_cluster_%s_sub.RData"), group_codes)
+r1_m50_files <- c(
+  paste0(m50_dir, "Models_mastery50_BDL_CCL4_1_2_prime_sub.RData"),
+  paste0(m50_dir, "Models_mastery50_BDL_CCL4_3_4_prime_sub.RData"),
+  paste0(m50_dir, "Models_mastery50_BDL_CCL4_5_6_prime_sub.RData"),
+  paste0(m50_dir, "Models_mastery50_BDL_CCL4_0_prime_sub.RData")
+)
 
-load_intra_data <- function(prime_files, m50_files, rfrf_files) {
+r1_rfrf_files <- c(
+  paste0(prime_rfrf_dir, "Models_rf_rf_rf_full_testing_Batch_prime_1_2_sub.RData"),
+  paste0(prime_rfrf_dir, "Models_rf_rf_rf_full_testing_Batch_prime_3_4_sub.RData"),
+  paste0(prime_rfrf_dir, "Models_rf_rf_rf_full_testing_Batch_prime_5_6_sub.RData"),
+  paste0(prime_rfrf_dir, "Models_rf_rf_rf_full_testing_Batch_prime_0_sub.RData")
+)
+
+load_richtung_data <- function(prime_files, m50_files, rfrf_files) {
   dt_list <- list()
   for (i in 1:4) {
     # Baseline
@@ -124,8 +136,7 @@ load_intra_data <- function(prime_files, m50_files, rfrf_files) {
   return(res)
 }
 
-dt_intra_bdl  <- load_intra_data(bdl_prime_files, bdl_m50_files, bdl_rfrf_files)
-dt_intra_ccl4 <- load_intra_data(ccl4_prime_files, ccl4_m50_files, ccl4_rfrf_files)
+dt_r1 <- load_richtung_data(r1_prime_files, r1_m50_files, r1_rfrf_files)
 
 # ------------------------------------------------------------------------------
 # STEP 4: PLOTTING FUNCTION WITH EXACT STYLING & BOUNDED VERTICAL LINES
@@ -201,20 +212,12 @@ create_4models_boxplots <- function(data_dt, plot_title_expr) {
 }
 
 # ------------------------------------------------------------------------------
-# STEP 5: SAVE PDFS WITH CAIRO_PDF
+# STEP 5: SAVE PDF WITH CAIRO_PDF
 # ------------------------------------------------------------------------------
-title_bdl <- expression(bold("Intra BDL"))
-pdf_bdl   <- paste0(output_dir, "Procedure_5_4Models_Pearson_Intra_BDL.pdf")
+title_r1 <- expression(bold("Train BDL, test "*CCl[4]))
+pdf_r1   <- paste0(output_dir, "Procedure_1_4Models_Pearson_Richtung1_Train_BDL_Test_CCl4.pdf")
 
-cairo_pdf(pdf_bdl, width = 16.5, height = 8.5)
-print(create_4models_boxplots(dt_intra_bdl, title_bdl))
+cairo_pdf(pdf_r1, width = 16.5, height = 8.5)
+print(create_4models_boxplots(dt_r1, title_r1))
 dev.off()
-cat("Procedure 5 Intra BDL PDF successfully generated:", pdf_bdl, "\n")
-
-title_ccl4 <- expression(bold("Intra "*CCl[4]))
-pdf_ccl4   <- paste0(output_dir, "Procedure_5_4Models_Pearson_Intra_CCl4.pdf")
-
-cairo_pdf(pdf_ccl4, width = 16.5, height = 8.5)
-print(create_4models_boxplots(dt_intra_ccl4, title_ccl4))
-dev.off()
-cat("Procedure 5 Intra CCl4 PDF successfully generated:", pdf_ccl4, "\n")
+cat("Procedure 1 4-Models PDF 1 successfully generated:", pdf_r1, "\n")

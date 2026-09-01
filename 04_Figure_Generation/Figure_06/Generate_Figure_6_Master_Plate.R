@@ -1,11 +1,10 @@
 # ==============================================================================
 # SCRIPT: Generate_Figure_6_Master_Plate.R
 # PROJECT: Liver Fibrosis Protein Modeling Consortium (Paper 1 Figures)
-# LOCATION: C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Grafiken_Paper_1/
-# PURPOSE: Assemble Figure 6 (Procedure 3 Merged Batch-Corrected Cross-Validation & Scatters):
-#          - Tier 1: Panel A (Procedure 3 3-Models Pearson Boxplot, Merged Batch)
-#          - Tier 2: Panel B (Proc3 1x4 Scatterplots 75th Percentile, Page 3)
-#          - Tier 3: Panel C (Proc3 Full 1x4 Scatterplots 75th Percentile, Page 3)
+# PURPOSE: Assemble Figure 6 (Procedure 3 4-Models, Proc3 Scatters, Proc1 4-Models):
+#          - Tier 1: Panel A (Procedure 3 4-Models Pearson Boxplot, BDL + CCl4)
+#          - Tier 2: Panel B (Proc3 1x4 Scatterplots Page 3: Protein model: BDL + CCl4)
+#          - Tier 3: Panel C (Proc3 Full 1x4 Scatterplots Page 3: Protein model: BDL + CCl4 (all animals))
 #          - Tier 4: Panel D (Procedure 1 4-Models Pearson Boxplot, Train BDL / Test CCl4)
 # ==============================================================================
 
@@ -30,14 +29,13 @@ pdf_to_grob <- function(pdf_path, page_num = 1, density = 300) {
     stop(sprintf("File not found: %s", pdf_path))
   }
   img <- image_read_pdf(pdf_path, pages = page_num, density = density)
-  img <- image_trim(img)
   grob <- rasterGrob(as.raster(img), interpolate = TRUE)
   return(grob)
 }
 
 cat("Locating and rendering Figure 6 components at 300 DPI...\n")
 
-f_panel_a <- file.path(boxplot_dir, "Procedure_3_3Models_Pearson_Merged_Batch.pdf")
+f_panel_a <- file.path(boxplot_dir, "Procedure_3_4Models_Pearson_Merged_Batch.pdf")
 f_panel_b <- file.path(scatter_dir, "Proc3_3Pages_1x4_Scatterplot_75thPercentile_Merged_Batch.pdf")
 f_panel_c <- file.path(scatter_dir, "Proc3_Full_3Pages_1x4_Scatterplot_75thPercentile_Merged_Batch.pdf")
 f_panel_d <- file.path(boxplot_dir, "Procedure_1_4Models_Pearson_Richtung1_Train_BDL_Test_CCl4.pdf")
@@ -58,27 +56,27 @@ cat("Building 4-tier master layout canvas (Panels A, B, C, D)...\n")
 # Canvas: Width = 18 inches, Height = 24 inches
 master_canvas <- ggdraw() +
   # ---------------------------------------------------------------------------
-  # TIER 1: Panel A (Procedure 3 3-Models Boxplot)
+  # TIER 1: Panel A (Procedure 3 4-Models Boxplot BDL + CCl4)
   # ---------------------------------------------------------------------------
-  draw_label("A", x = 0.02, y = 0.985, size = 22, fontface = "bold") +
+  draw_label("A", x = 0.02, y = 0.985, size = 28, fontface = "bold") +
   draw_grob(grob_a, x = 0.02, y = 0.755, width = 0.96, height = 0.225) +
   
   # ---------------------------------------------------------------------------
-  # TIER 2: Panel B (Proc3 1x4 Scatterplots Page 3)
+  # TIER 2: Panel B (Proc3 1x4 Scatterplots Page 3: Protein model: BDL + CCl4)
   # ---------------------------------------------------------------------------
-  draw_label("B", x = 0.02, y = 0.735, size = 22, fontface = "bold") +
+  draw_label("B", x = 0.02, y = 0.735, size = 28, fontface = "bold") +
   draw_grob(grob_b, x = 0.02, y = 0.505, width = 0.96, height = 0.225) +
 
   # ---------------------------------------------------------------------------
-  # TIER 3: Panel C (Proc3 Full 1x4 Scatterplots Page 3)
+  # TIER 3: Panel C (Proc3 Full 1x4 Scatterplots Page 3: Protein model: BDL + CCl4 (all animals))
   # ---------------------------------------------------------------------------
-  draw_label("C", x = 0.02, y = 0.485, size = 22, fontface = "bold") +
+  draw_label("C", x = 0.02, y = 0.485, size = 28, fontface = "bold") +
   draw_grob(grob_c, x = 0.02, y = 0.255, width = 0.96, height = 0.225) +
 
   # ---------------------------------------------------------------------------
   # TIER 4: Panel D (Procedure 1 4-Models Boxplot Train BDL / Test CCl4)
   # ---------------------------------------------------------------------------
-  draw_label("D", x = 0.02, y = 0.235, size = 22, fontface = "bold") +
+  draw_label("D", x = 0.02, y = 0.235, size = 28, fontface = "bold") +
   draw_grob(grob_d, x = 0.02, y = 0.005, width = 0.96, height = 0.225)
 
 cat(sprintf("Saving Master Figure 6 PDF to: %s\n", out_pdf))

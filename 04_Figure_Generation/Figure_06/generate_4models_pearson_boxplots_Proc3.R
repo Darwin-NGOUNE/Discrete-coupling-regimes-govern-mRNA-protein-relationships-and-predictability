@@ -1,27 +1,7 @@
 # ==============================================================================
 # SCRIPT: generate_4models_pearson_boxplots_Proc3.R
-# PURPOSE: 4 Models Comparison (Baseline, Mastery 50, Protein, K9 (RF + RF))
-#          Pearson Boxplots for Procedure 3 with EXACT Proc 1 Layout & Styling
-#
-# SPECIFICATIONS (IDENTICAL TO PROC 1):
-# 1. Procedure 3 (Merged Batch-Corrected Overlap)
-# 2. 4 Models: Baseline, Mastery 50, Protein, K9 (RF + RF)
-# 3. Palette:
-#    - Baseline:      #E5E7E9 (Light Grey)
-#    - Mastery 50:    #85929E (Medium Grey)
-#    - Protein:       #2C3E50 (Dark Grey)
-#    - K9 (RF + RF):  #E67E22 (Orange)
-# 4. Error bars on boxplots (stat_boxplot errorbar)
-# 5. Jitter points in #154360 with alpha = 0.35, size = 1.3
-# 6. Dashed threshold lines:
-#    - Green line at y = 0.8 (#27AE60)
-#    - Red line at y = 0.5 (#E74C3C)
-# 7. Y-axis:
-#    - Bravais-Pearson Correlation (rho_BP)
-#    - breaks: seq(-1.0, 1.0, by = 0.25)
-#    - coord_cartesian(ylim = c(-1.36, 1.05), clip = "off")
-# 8. Clean text annotations at y = -1.24 in bold #1B4F72
-# 9. PDF Dimensions: width = 16.5, height = 8.5
+# PURPOSE: 4 Models Comparison (Baseline, Mastery 50, RF + LASSO, RF + RF)
+#          Pearson Boxplots for Procedure 3 (BDL + CCl4) - Figure 6 Panel A
 # ==============================================================================
 
 library(data.table)
@@ -40,7 +20,7 @@ prime_rfrf_dir <- paste0(prime_dir, "RF_RF/")
 
 dipa_groups <- c("DiPa 1 & 2", "DiPa 3 & 4", "DiPa 5 & 6", "DiPa 8")
 group_codes <- c("1_2", "3_4", "5_6", "0")
-model_names <- c("Baseline", "Mastery 50", "Protein", "Protein (RF + RF)")
+model_names <- c("Baseline", "Mastery 50", "RF + LASSO", "RF + RF")
 
 # ------------------------------------------------------------------------------
 # STEP 2: HELPER TO EXTRACT PEARSON CORRELATION
@@ -54,7 +34,7 @@ extract_pearson <- function(model_obj) {
   return(NA_real_)
 }
 
-extract_model_data <- function(filepath, model_type, dipa_label) {
+extract_model_data <- function(filepath, raw_model_type, target_model_name, dipa_label) {
   if (!file.exists(filepath)) return(data.table())
   env <- new.env()
   load(filepath, envir = env)
@@ -63,13 +43,13 @@ extract_model_data <- function(filepath, model_type, dipa_label) {
   obj_target <- NULL
   for (v in vars) {
     v_low <- tolower(v)
-    if (model_type == "Baseline" && grepl("rna", v_low) && !grepl("plus_rna|combined|mastery", v_low)) {
+    if (raw_model_type == "Baseline" && grepl("rna", v_low) && !grepl("plus_rna|combined|mastery", v_low)) {
       obj_target <- env[[v]]
-    } else if (model_type == "Protein" && grepl("protein", v_low) && !grepl("plus_rna|combined|mastery", v_low)) {
+    } else if (raw_model_type == "Protein" && grepl("protein", v_low) && !grepl("plus_rna|combined|mastery", v_low)) {
       obj_target <- env[[v]]
-    } else if (model_type == "Mastery 50" && grepl("protein", v_low) && !grepl("plus_rna|combined", v_low)) {
+    } else if (raw_model_type == "Mastery 50" && grepl("protein", v_low) && !grepl("plus_rna|combined", v_low)) {
       obj_target <- env[[v]]
-    } else if (model_type == "Protein (RF + RF)" && grepl("protein", v_low) && !grepl("plus_rna|combined", v_low)) {
+    } else if (raw_model_type == "RF_RF" && grepl("protein", v_low) && !grepl("plus_rna|combined", v_low)) {
       obj_target <- env[[v]]
     }
   }
@@ -83,13 +63,13 @@ extract_model_data <- function(filepath, model_type, dipa_label) {
     x <- obj_target[[i]]
     node <- if (!is.null(x$prediction.obj)) x$prediction.obj else x
     
-    if (model_type == "Baseline") {
+    if (raw_model_type == "Baseline") {
       base_m <- node$baseline.model
       if (!is.null(base_m)) {
         val_p <- extract_pearson(base_m)
         if (!is.na(val_p)) {
           rows[[length(rows) + 1]] <- data.table(
-            Protein = proteins[i], Pearson = val_p, Model = "Baseline", DiPa_Group = dipa_label
+            Protein = proteins[i], Pearson = val_p, Model = target_model_name, DiPa_Group = dipa_label
           )
         }
       }
@@ -99,7 +79,7 @@ extract_model_data <- function(filepath, model_type, dipa_label) {
         val_p <- extract_pearson(lasso_m)
         if (!is.na(val_p)) {
           rows[[length(rows) + 1]] <- data.table(
-            Protein = proteins[i], Pearson = val_p, Model = model_type, DiPa_Group = dipa_label
+            Protein = proteins[i], Pearson = val_p, Model = target_model_name, DiPa_Group = dipa_label
           )
         }
       }
@@ -118,19 +98,19 @@ rfrf_files  <- sprintf(file.path(prime_rfrf_dir, "Models_rf_rf_preselection_full
 dt_list <- list()
 for (i in 1:4) {
   # Baseline
-  dt_base <- extract_model_data(prime_files[i], "Baseline", dipa_groups[i])
+  dt_base <- extract_model_data(prime_files[i], "Baseline", "Baseline", dipa_groups[i])
   if (nrow(dt_base) > 0) dt_list[[length(dt_list) + 1]] <- dt_base
   
   # Mastery 50
-  dt_m50  <- extract_model_data(m50_files[i], "Mastery 50", dipa_groups[i])
+  dt_m50  <- extract_model_data(m50_files[i], "Mastery 50", "Mastery 50", dipa_groups[i])
   if (nrow(dt_m50) > 0) dt_list[[length(dt_list) + 1]] <- dt_m50
   
-  # Protein
-  dt_prot <- extract_model_data(prime_files[i], "Protein", dipa_groups[i])
+  # RF + LASSO (formerly Protein)
+  dt_prot <- extract_model_data(prime_files[i], "Protein", "RF + LASSO", dipa_groups[i])
   if (nrow(dt_prot) > 0) dt_list[[length(dt_list) + 1]] <- dt_prot
   
-  # Protein (RF + RF)
-  dt_rfrf <- extract_model_data(rfrf_files[i], "Protein (RF + RF)", dipa_groups[i])
+  # RF + RF
+  dt_rfrf <- extract_model_data(rfrf_files[i], "RF_RF", "RF + RF", dipa_groups[i])
   if (nrow(dt_rfrf) > 0) dt_list[[length(dt_list) + 1]] <- dt_rfrf
 }
 
@@ -139,7 +119,7 @@ dt_proc3_4m$DiPa_Group <- factor(dt_proc3_4m$DiPa_Group, levels = dipa_groups)
 dt_proc3_4m$Model      <- factor(dt_proc3_4m$Model, levels = model_names)
 
 # ------------------------------------------------------------------------------
-# STEP 4: PLOTTING FUNCTION WITH EXACT PROC 1 STYLING & OPERATORS
+# STEP 4: PLOTTING FUNCTION WITH EXACT STYLING & BOUNDED VERTICAL LINES
 # ------------------------------------------------------------------------------
 create_4models_boxplots <- function(data_dt, plot_title_expr) {
   
@@ -151,10 +131,10 @@ create_4models_boxplots <- function(data_dt, plot_title_expr) {
   ), by = .(DiPa_Group, Model)]
   
   palette_fill <- c(
-    "Baseline"          = "#E5E7E9", # Light Grey
-    "Mastery 50"        = "#85929E", # Medium Grey
-    "Protein"           = "#2C3E50", # Dark Grey
-    "Protein (RF + RF)" = "#1B2631"  # Very Dark Grey
+    "Baseline"   = "#E5E7E9", # Light Grey
+    "Mastery 50" = "#85929E", # Medium Grey
+    "RF + LASSO" = "#2C3E50", # Dark Grey
+    "RF + RF"    = "#1B2631"  # Very Dark Grey
   )
   
   p <- ggplot(data_dt, aes(x = DiPa_Group, y = Pearson, fill = Model)) +
@@ -164,40 +144,47 @@ create_4models_boxplots <- function(data_dt, plot_title_expr) {
     geom_point(position = position_jitterdodge(jitter.width = 0.15, dodge.width = 0.8),
                color = "#154360", alpha = 0.35, size = 1.3) +
     
+    # Vertical group separators stopping strictly at -1.00
+    geom_segment(data = data.frame(x = c(1.5, 2.5, 3.5), xend = c(1.5, 2.5, 3.5), y = -1.0, yend = 1.0),
+                 aes(x = x, xend = xend, y = y, yend = yend),
+                 linetype = "solid", color = "grey80", linewidth = 0.6, inherit.aes = FALSE) +
+    
+    # Horizontal grid lines stopping at -1.00
+    geom_hline(yintercept = seq(-1.0, 1.0, by = 0.25), color = "grey90", linewidth = 0.3) +
     geom_hline(yintercept = 0.5, linetype = "dashed", color = "#E74C3C", linewidth = 0.85) +
     geom_hline(yintercept = 0.8, linetype = "dashed", color = "#27AE60", linewidth = 0.85) +
     
     geom_text(data = summary_dt, 
-              aes(x = DiPa_Group, y = -1.24, label = label, group = Model),
+              aes(x = DiPa_Group, y = -1.22, label = label, group = Model),
               position = position_dodge(width = 0.8),
-              family = "sans", size = 3.2, color = "#1B4F72", fontface = "bold", lineheight = 0.88) +
+              family = "sans", size = 2.8, color = "black", fontface = "bold", lineheight = 0.88, inherit.aes = FALSE) +
     
     scale_fill_manual(values = palette_fill) +
     
     scale_y_continuous(
-      name = expression(paste("Bravais-Pearson Correlation (", rho[BP], ")")),
+      name = expression(bold("Pearson correlation, "*rho[BP])),
       breaks = seq(-1.0, 1.0, by = 0.25),
-      limits = c(-1.42, 1.05)
+      limits = c(-1.38, 1.05)
     ) +
-    coord_cartesian(ylim = c(-1.36, 1.05), clip = "off") +
+    coord_cartesian(ylim = c(-1.38, 1.05), clip = "off") +
     
     theme_bw(base_size = 14, base_family = "sans") +
     theme(
       text = element_text(family = "sans"),
-      plot.title = element_text(family = "sans", face = "bold", hjust = 0.5, size = 17, margin = margin(b = 15)),
-      plot.margin = margin(t = 20, r = 20, b = 50, l = 20),
+      plot.title = element_text(family = "sans", face = "bold", hjust = 0.5, size = 19, color = "black", margin = margin(b = 12)),
+      plot.margin = margin(t = 15, r = 20, b = 25, l = 20),
       axis.title.x = element_blank(),
-      axis.text.x  = element_text(family = "sans", face = "bold", size = 13.5, color = "#2C3E50", margin = margin(t = 5)),
-      axis.title.y = element_text(family = "sans", face = "bold", size = 14, color = "#2C3E50"),
-      axis.text.y  = element_text(family = "sans", size = 12, color = "#2C3E50"),
+      axis.text.x  = element_text(family = "sans", face = "bold", size = 14, color = "black", margin = margin(t = 5)),
+      axis.title.y = element_text(family = "sans", face = "bold", size = 15, color = "black"),
+      axis.text.y  = element_text(family = "sans", face = "bold", size = 12, color = "black"),
       
       legend.position = "top",
-      legend.title    = element_text(family = "sans", face = "bold", size = 13),
-      legend.text     = element_text(family = "sans", size = 12),
+      legend.title    = element_text(family = "sans", face = "bold", size = 14, color = "black"),
+      legend.text     = element_text(family = "sans", face = "bold", size = 13, color = "black"),
       
-      panel.grid.major = element_line(color = "grey80", linewidth = 0.5, linetype = "solid"),
-      panel.grid.minor = element_line(color = "grey90", linewidth = 0.25, linetype = "dashed"),
-      panel.border     = element_rect(color = "#2C3E50", fill = NA, linewidth = 1.0)
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1)
     ) +
     labs(title = plot_title_expr, fill = "Model:")
   
@@ -205,19 +192,12 @@ create_4models_boxplots <- function(data_dt, plot_title_expr) {
 }
 
 # ------------------------------------------------------------------------------
-# STEP 5: SAVE PDF & PNG PREVIEWS
+# STEP 5: SAVE PDF WITH CAIRO_PDF
 # ------------------------------------------------------------------------------
-title_proc3 <- expression(paste("BDL + CCl"[4], ": (Subset)"))
+title_proc3 <- expression(bold("BDL + "*CCl[4]))
 pdf_proc3   <- paste0(output_dir, "Procedure_3_4Models_Pearson_Merged_Batch.pdf")
 
-pdf(pdf_proc3, width = 16.5, height = 8.5)
+cairo_pdf(pdf_proc3, width = 16.5, height = 8.5)
 print(create_4models_boxplots(dt_proc3_4m, title_proc3))
 dev.off()
 cat("Procedure 3 4-Models PDF successfully generated:", pdf_proc3, "\n")
-
-# png_proc3 <- paste0(output_dir, "Procedure_3_4Models_Pearson_Merged_Batch.png")
-# png(png_proc3, width = 3300, height = 1700, res = 200)
-# print(create_4models_boxplots(dt_proc3_4m, title_proc3))
-# dev.off()
-
-cat("\nALL 4-MODEL PROCEDURE 3 BOXPLOTS COMPLETED WITH EXACT PROC 1 STYLING!\n")
