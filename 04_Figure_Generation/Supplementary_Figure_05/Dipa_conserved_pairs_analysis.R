@@ -1,6 +1,6 @@
 # ==============================================================================
-# SCRIPT: Dipa_conserved_pairs_analysis.R
-# LOCATION: C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Dipa_conserved_pairs_analysis.R
+# SCRIPT: jan_dipa_conserved_pairs_analysis.R
+# LOCATION: C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/jan_dipa_conserved_pairs_analysis.R
 # PURPOSE: Focused Publication-Quality Stacked Barplots (PEARSON ONLY):
 #          "Proportion of Conserved Best-Partner Pairs Across DiPa Groups (rho_BP)"
 #          EXACT STRUCTURE & COLORS:

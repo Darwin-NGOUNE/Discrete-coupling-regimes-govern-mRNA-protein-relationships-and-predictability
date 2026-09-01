@@ -1,4 +1,4 @@
-# Supplementary Figure 5: Proportions of Conserved DiPa Pairs Achieving High Predictive Accuracy
+# Supplementary Figure 5: Conservation of protein best-partner pairs ($\rho_{\text{BP}}$)
 ## (Nature Communications Supplementary Information)
 
 [![Vector PDF](https://img.shields.io/badge/Format-Vector_PDF-red.svg)](Supplementary_Figure_5.pdf)
@@ -8,31 +8,30 @@
 
 ## 1. Scientific Overview & Objective
 
-**Supplementary Figure 5** provides a granular quantitative evaluation of the **Conserved DiPa Pairs** across both cross-cohort prediction directions:
-* **Direction 1:** $\text{Train on BDL } (n = 18) \longrightarrow \text{Test on }\text{CCl}_4 (n = 36)$.
-* **Direction 2:** $\text{Train on }\text{CCl}_4 (n = 36) \longrightarrow \text{Test on BDL } (n = 18)$.
+**Supplementary Figure 5** evaluates the cross-cohort conservation of mRNA--protein best-partner abundance relationships ($\rho_{\text{BP}}$) across DiPa categories:
+* **Panel A (Direction 1):** Best-partner pairs identified in BDL ($n = 12$) and evaluated for conservation in $\text{CCl}_4$ ($n = 12$).
+* **Panel B (Direction 2):** Best-partner pairs identified in $\text{CCl}_4$ ($n = 12$) and evaluated for conservation in BDL ($n = 12$).
 
-It quantifies the exact proportion and absolute count of conserved mRNA--protein pairs that achieve:
-1. **High Prediction Accuracy:** $\rho_{\text{BP}} \ge 0.8$ (strong predictive transferability).
-2. **Moderate Prediction Accuracy:** $0.5 \le \rho_{\text{BP}} < 0.8$.
-3. **Poor / Uncoupled Prediction:** $\rho_{\text{BP}} < 0.5$.
-
-This breakdown demonstrates that conserved pairs belonging to synergistic quadrants (DiPa 1 & 2) overwhelmingly retain superior cross-disease predictability compared to buffered or discordant pairs.
+Conserved partner relationships are stratified into four rigorous conservation tiers:
+1. **High:** $\rho_{\text{BP}} \ge 0.8$ (strong cross-disease conservation).
+2. **Moderate:** $0.5 \le \rho_{\text{BP}} < 0.8$ (retained correlation).
+3. **Low:** $0.2 \le \rho_{\text{BP}} < 0.5$ (weak correlation).
+4. **Lost:** $\rho_{\text{BP}} < 0.2$ (decoupled / noise).
 
 ---
 
 ## 2. Component Panels & Generating Scripts
 
-### 🔹 Panel A (Tier 1, Top): Conserved Pairs Accuracy in Direction 1 ($\text{BDL} \rightarrow \text{CCl}_4$)
-* **Content:** Stratified bar plots showing the proportion and count of conserved pairs reaching $\rho_{\text{BP}} \ge 0.8$ vs. $\rho_{\text{BP}} \ge 0.5$ across DiPa quadrants under Direction 1.
-* **Component File:** `Proportion_Conserved_Pairs_per_DiPa_Group_Direction1_BDL_to_CCl4_Pearson_Subset.pdf` (46 KB)
+### 🔹 Panel A (Tier 1, Top): Best-partner BDL and conservation in $\text{CCl}_4$
+* **Content:** Stacked bar plots depicting the proportion of conserved pairs across DiPa groups when trained on BDL and evaluated on $\text{CCl}_4$.
+* **Component File:** `Proportion_Conserved_Pairs_per_DiPa_Group_Direction1_BDL_to_CCl4_Pearson_Subset.pdf`
 * **Generating Script:** [`jan_dipa_conserved_pairs_analysis.R`](jan_dipa_conserved_pairs_analysis.R)
 
 ---
 
-### 🔹 Panel B (Tier 2, Bottom): Conserved Pairs Accuracy in Direction 2 ($\text{CCl}_4$ $\rightarrow$ BDL)
-* **Content:** Stratified bar plots showing the proportion and count of conserved pairs reaching $\rho_{\text{BP}} \ge 0.8$ vs. $\rho_{\text{BP}} \ge 0.5$ across DiPa quadrants under Direction 2.
-* **Component File:** `Proportion_Conserved_Pairs_per_DiPa_Group_Direction2_CCl4_to_BDL_Pearson_Subset.pdf` (46 KB)
+### 🔹 Panel B (Tier 2, Bottom): Best-partner $\text{CCl}_4$ and conservation in BDL
+* **Content:** Stacked bar plots depicting the proportion of conserved pairs across DiPa groups when trained on $\text{CCl}_4$ and evaluated on BDL.
+* **Component File:** `Proportion_Conserved_Pairs_per_DiPa_Group_Direction2_CCl4_to_BDL_Pearson_Subset.pdf`
 * **Generating Script:** [`jan_dipa_conserved_pairs_analysis.R`](jan_dipa_conserved_pairs_analysis.R)
 
 ---
@@ -44,7 +43,7 @@ This breakdown demonstrates that conserved pairs belonging to synergistic quadra
   ```bash
   Rscript Generate_Supplementary_Figure_5_Master_Plate.R
   ```
-* **Output File:** `Supplementary_Figure_5.pdf` (643 KB).
+* **Output File:** `Supplementary_Figure_5.pdf`
 
 ---
 
@@ -53,7 +52,7 @@ This breakdown demonstrates that conserved pairs belonging to synergistic quadra
 ```text
 Supplementary_Figure_05/
 │
-├── 📄 Supplementary_Figure_5.pdf                        # Master Publication Plate (643 KB)
+├── 📄 Supplementary_Figure_5.pdf                        # Master Publication Plate
 ├── 📄 Generate_Supplementary_Figure_5_Master_Plate.R    # Master assembly script (cowplot)
 │
 ├── 📄 Proportion_Conserved_Pairs_per_DiPa_Group_Direction1_BDL_to_CCl4_Pearson_Subset.pdf # Panel A
@@ -68,5 +67,5 @@ Supplementary_Figure_05/
 
 ## 5. Nature Communications Supplementary Figure Legend
 
-> **Supplementary Figure 5: Proportions of conserved DiPa pairs achieving high cross-cohort prediction accuracy.**  
-> **(A, B)** Bar graphs displaying the proportion and number of conserved transcript--protein pairs achieving high ($\rho_{\text{BP}} \ge 0.8$, dark blue) and moderate ($\rho_{\text{BP}} \ge 0.5$, light blue) cross-cohort prediction accuracy across DiPa quadrants for Direction 1 ($\text{BDL} \rightarrow \text{CCl}_4$, **A**) and Direction 2 ($\text{CCl}_4 \rightarrow \text{BDL}$, **B**).
+> **Supplementary Figure 5: Conservation of protein best-partner pairs ($\rho_{\text{BP}}$).**  
+> **(A, B)** Stacked bar charts depicting the proportion of conserved best-partner pairs across DiPa groups for **(A)** Best-partner BDL and conservation in $\text{CCl}_4$ and **(B)** Best-partner $\text{CCl}_4$ and conservation in BDL. Slices denote High ($\rho_{\text{BP}} \ge 0.8$), Moderate ($0.5 \le \rho_{\text{BP}} < 0.8$), Low ($0.2 \le \rho_{\text{BP}} < 0.5$), and Lost ($\rho_{\text{BP}} < 0.2$) conservation tiers.
