@@ -53,17 +53,17 @@ master_canvas <- ggdraw() +
   # ---------------------------------------------------------------------------
   # TOP ROW: Panel A (DiPa Overlap Analysis)
   # ---------------------------------------------------------------------------
-  draw_label("A", x = 0.02, y = 0.98, size = 22, fontface = "bold") +
-  draw_grob(grob_overlap,    x = 0.03, y = 0.50, width = 0.94, height = 0.47) +
+  draw_label("A", x = 0.02, y = 0.985, size = 28, fontface = "bold") +
+  draw_grob(grob_overlap,    x = 0.02, y = 0.49, width = 0.96, height = 0.48) +
   
   # ---------------------------------------------------------------------------
   # BOTTOM ROW: Panels B (BDL) & C (CCl4) Centroid Slopes
   # ---------------------------------------------------------------------------
-  draw_label("B", x = 0.02, y = 0.47, size = 22, fontface = "bold") +
-  draw_grob(grob_slope_bdl,  x = 0.03, y = 0.02, width = 0.46, height = 0.44) +
+  draw_label("B", x = 0.02, y = 0.475, size = 28, fontface = "bold") +
+  draw_grob(grob_slope_bdl,  x = 0.03, y = 0.01, width = 0.46, height = 0.45) +
   
-  draw_label("C", x = 0.51, y = 0.47, size = 22, fontface = "bold") +
-  draw_grob(grob_slope_ccl4, x = 0.52, y = 0.02, width = 0.46, height = 0.44)
+  draw_label("C", x = 0.51, y = 0.475, size = 28, fontface = "bold") +
+  draw_grob(grob_slope_ccl4, x = 0.52, y = 0.01, width = 0.46, height = 0.45)
 
 cat(sprintf("Saving Master Figure 4 PDF to: %s\n", out_pdf))
 ggsave(out_pdf, plot = master_canvas, width = 16, height = 14, units = "in", dpi = 300)

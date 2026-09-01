@@ -104,40 +104,39 @@ draw_mini_venn_grob <- function(group_name, n_bdl, n_ccl4, n_common, pct_stable,
   formatted_pval_expr <- clean_pval(pval, stars)
   
   grob_out <- gTree(children = gList(
-    # 1. Background Universe Box (height increased to 0.78 and center shifted down to y=0.54 for safe margins)
-    rectGrob(x = 0.5, y = 0.54, width = 0.95, height = 0.78, 
+    # 1. Background Universe Box (height = 0.68, center shifted to y=0.56 to provide ample top/bottom margin)
+    rectGrob(x = 0.5, y = 0.56, width = 0.94, height = 0.68, 
              gp = gpar(fill = "grey95", col = "grey60", lwd = 2.0)),
     
-    # 2. Venn Circles (radius increased to 0.30 and shifted up to y=0.58 to prevent overlap with A at the bottom)
-    circleGrob(x = 0.35, y = 0.58, r = 0.30, gp = gpar(fill = "yellow", alpha = 0.5, col = "red", lwd = 1.5)),
-    circleGrob(x = 0.65, y = 0.58, r = 0.30, gp = gpar(fill = "skyblue", alpha = 0.5, col = "blue", lwd = 1.5)),
+    # 2. Venn Circles (radius = 0.25, centered at y=0.60)
+    circleGrob(x = 0.35, y = 0.60, r = 0.25, gp = gpar(fill = "yellow", alpha = 0.5, col = "red", lwd = 1.5)),
+    circleGrob(x = 0.65, y = 0.60, r = 0.25, gp = gpar(fill = "skyblue", alpha = 0.5, col = "blue", lwd = 1.5)),
     
-    # 3. Internal Region Labels (D, O, T) - tightly grouped vertically
-    textGrob("D", x = 0.22, y = 0.61, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
-    textGrob("T", x = 0.78, y = 0.61, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
-    textGrob("O", x = 0.50, y = 0.61, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
+    # 3. Internal Region Labels (D, O, T)
+    textGrob("D", x = 0.22, y = 0.63, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
+    textGrob("T", x = 0.78, y = 0.63, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
+    textGrob("O", x = 0.50, y = 0.63, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
     
-    # 4. Internal Counts (Below Labels) - directly centered below labels
-    textGrob(n_bdl,    x = 0.22, y = 0.53, gp = gpar(fontsize = 18, fontface = "bold")),
-    textGrob(n_ccl4,   x = 0.78, y = 0.53, gp = gpar(fontsize = 18, fontface = "bold")),
-    textGrob(n_common, x = 0.50, y = 0.53, gp = gpar(fontsize = 18, fontface = "bold")),
+    # 4. Internal Counts (Below Labels)
+    textGrob(n_bdl,    x = 0.22, y = 0.55, gp = gpar(fontsize = 18, fontface = "bold")),
+    textGrob(n_ccl4,   x = 0.78, y = 0.55, gp = gpar(fontsize = 18, fontface = "bold")),
+    textGrob(n_common, x = 0.50, y = 0.55, gp = gpar(fontsize = 18, fontface = "bold")),
     
     # 5. Outer Labels (BDL, CCl4 with subscript 4)
-    textGrob("BDL",  x = 0.20, y = 0.87, gp = gpar(fontsize = 22, fontface = "bold", col = "red")),
-    textGrob(expression(CCl[4]), x = 0.80, y = 0.87, gp = gpar(fontsize = 22, fontface = "bold", col = "blue")),
+    textGrob("BDL",  x = 0.20, y = 0.85, gp = gpar(fontsize = 20, fontface = "bold", col = "red")),
+    textGrob(expression(bold(CCl[4])), x = 0.80, y = 0.85, gp = gpar(fontsize = 20, fontface = "bold", col = "blue")),
     
-    # 6. Universe Count (A and 943 stacked at the bottom of the box, safe from circle overlap and bottom border)
-    textGrob("A", x = 0.50, y = 0.23, gp = gpar(fontsize = 20, fontface = "bold", col = "grey20")),
-    textGrob("943", x = 0.50, y = 0.18, gp = gpar(fontsize = 18, fontface = "bold")),
+    # 6. Universe Count (A: 943 cleanly centered at the bottom of the box)
+    textGrob("A = 943", x = 0.50, y = 0.25, gp = gpar(fontsize = 18, fontface = "bold", col = "grey30")),
     
-    # 7. Title (DiPa Group X)
-    textGrob(paste("DiPa Group", group_name), y = 0.96, gp = gpar(fontsize = 22, fontface = "bold")),
+    # 7. Title (DiPa group X with lowercase 'g')
+    textGrob(paste("DiPa group", group_name), y = 0.94, gp = gpar(fontsize = 22, fontface = "bold")),
     
-    # 8. Stats at the bottom (D_i and P-value expressions)
-    textGrob(substitute(D[i] == val, list(val = sprintf("%.2f", di))), 
-             x = 0.5, y = 0.11, gp = gpar(fontsize = 22, fontface = "bold", col="darkgreen")),
+    # 8. Stats at the bottom (D_i and P-value expressions with comfortable margin from bottom)
+    textGrob(substitute(bold(D[i] == val), list(val = sprintf("%.2f", di))), 
+             x = 0.5, y = 0.15, gp = gpar(fontsize = 20, fontface = "bold", col = "darkgreen")),
     textGrob(formatted_pval_expr, 
-             x = 0.5, y = 0.03, gp = gpar(fontsize = 18, fontface = "bold"))
+             x = 0.5, y = 0.08, gp = gpar(fontsize = 17, fontface = "bold"))
   ))
   return(grob_out)
 }
@@ -145,7 +144,7 @@ draw_mini_venn_grob <- function(group_name, n_bdl, n_ccl4, n_common, pct_stable,
 # 5. GENERATE PDF
 # -------------------------------------------------------------------------
 print("Generating PDF results...")
-pdf("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/DiPa_Overlap_Analysis_Results.pdf", width = 12, height = 10)
+cairo_pdf("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/DiPa_Overlap_Analysis_Results.pdf", width = 14, height = 8.5)
 
 # # --- Page 1: Continuity Matrix (Heatmap) ---
 # Matrix_DT <- Merged_DT[, .N, by = .(DiPaGroups_BDL, DiPaGroups_CCL4)]

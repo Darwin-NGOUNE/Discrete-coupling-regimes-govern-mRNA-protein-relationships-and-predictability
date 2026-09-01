@@ -99,28 +99,36 @@ max_y <- max(density(df_comb$SP_Slope[df_comb$DiPaGroups == "1"], na.rm=TRUE)$y,
              density(df_comb$SP_Slope[df_comb$DiPaGroups == "2"], na.rm=TRUE)$y)
 
 p_comb <- ggplot(df_comb, aes(x = SP_Slope, fill = DiPaGroups)) +
-  geom_density(alpha = 0.4) +
-  geom_vline(xintercept = c(0.5, 1.5), linetype = "dashed", color = "black", linewidth = 0.8) +
-  scale_fill_manual(values = c("1" = "blue", "2" = "red")) +
+  geom_density(alpha = 0.40) +
+  geom_vline(xintercept = c(0.5, 1.5), linetype = "dashed", color = "black", linewidth = 1.0) +
+  scale_fill_manual(
+    values = c("1" = "blue", "2" = "red"),
+    labels = c("1" = "DiPa group 1", "2" = "DiPa group 2")
+  ) +
   xlim(-1, 3) +
-  labs(title = "BDL",
-       subtitle = NULL,
-       x = "Centroid Slope", y = "Density", fill = "DiPa Group") +
+  labs(
+    title = "BDL",
+    subtitle = NULL,
+    x = "Centroid slope",
+    y = "Density",
+    fill = NULL
+  ) +
   theme_bw(base_size = 20) +
   theme(
-    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),
+    plot.title = element_text(size = 26, face = "bold", hjust = 0.5, color = "black"),
     plot.subtitle = element_blank(),
-    axis.title = element_text(size = 22, face = "bold"),
-    axis.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, face = "bold"),
-    legend.text = element_text(size = 18),
+    axis.title = element_text(size = 22, face = "bold", color = "black"),
+    axis.text = element_text(size = 18, face = "bold", color = "black"),
+    axis.ticks = element_line(color = "black", linewidth = 1.0),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 18, face = "bold", color = "black"),
     legend.position = "bottom",
-    panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1.4),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
   ) +
-  annotate("text", x = 2.4, y = max_y * 0.85, label = paste("N[1] ==", n1), parse = TRUE, size = 7, color = "blue", fontface = "bold", hjust = 0) +
-  annotate("text", x = 2.4, y = max_y * 0.72, label = paste("N[2] ==", n2), parse = TRUE, size = 7, color = "red", fontface = "bold", hjust = 0)
+  annotate("text", x = 2.3, y = max_y * 0.85, label = paste0("bold(N[1] == ", n1, ")"), parse = TRUE, size = 8, color = "blue", hjust = 0) +
+  annotate("text", x = 2.3, y = max_y * 0.72, label = paste0("bold(N[2] == ", n2, ")"), parse = TRUE, size = 8, color = "red", hjust = 0)
 
 # -------------------------------------------------------------------------
 # 5. SAVE RESULTS
