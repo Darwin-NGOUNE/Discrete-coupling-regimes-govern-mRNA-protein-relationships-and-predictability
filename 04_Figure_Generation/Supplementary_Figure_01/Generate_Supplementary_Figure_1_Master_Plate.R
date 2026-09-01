@@ -2,7 +2,7 @@
 # SCRIPT: Generate_Supplementary_Figure_1_Master_Plate.R
 # PROJECT: Liver Fibrosis Protein Modeling Consortium (Supplemental Figures)
 # PURPOSE: Assembles Supplementary Figure 1 with standardized bold styling,
-#          short elegant underlines, and explicit RNA / Protein heatmap headers.
+#          full-width graph-aligned underlines, and closely positioned RNA / Protein headers.
 # ==============================================================================
 
 suppressPackageStartupMessages({
@@ -58,36 +58,38 @@ master_canvas <- ggdraw() +
   # ---------------------------------------------------------------------------
   # BDL ROW (TOP)
   # ---------------------------------------------------------------------------
-  # Panel A Label & BDL Header for PCA
-  draw_label("A", x = 0.015, y = 0.980, size = 24, fontface = "bold") +
-  draw_label("BDL", x = 0.255, y = 0.975, size = 20, fontface = "bold") +
-  draw_line(x = c(0.23, 0.28), y = c(0.957, 0.957), color = "black", linewidth = 1.3) +
+  # Panel A Label & BDL Header for PCA (x = 0.04 to 0.47)
+  draw_label("A", x = 0.015, y = 0.982, size = 24, fontface = "bold") +
+  draw_label("BDL", x = 0.255, y = 0.982, size = 20, fontface = "bold") +
+  draw_line(x = c(0.04, 0.47), y = c(0.965, 0.965), color = "black", linewidth = 1.2) +
   draw_grob(grob_pca_bdl, x = 0.04, y = 0.51, width = 0.43, height = 0.43) +
   
-  # Panel B Label & BDL Header with RNA / Protein sub-headers for Heatmaps
-  draw_label("B", x = 0.485, y = 0.980, size = 24, fontface = "bold") +
-  draw_label("BDL", x = 0.74, y = 0.975, size = 20, fontface = "bold") +
-  draw_line(x = c(0.715, 0.765), y = c(0.957, 0.957), color = "black", linewidth = 1.3) +
+  # Panel B Label & BDL Header for Heatmaps (x = 0.495 to 0.985)
+  draw_label("B", x = 0.485, y = 0.982, size = 24, fontface = "bold") +
+  draw_label("BDL", x = 0.74, y = 0.982, size = 20, fontface = "bold") +
+  draw_line(x = c(0.495, 0.985), y = c(0.965, 0.965), color = "black", linewidth = 1.2) +
   
-  draw_label("RNA", x = 0.605, y = 0.942, size = 16, fontface = "bold") +
-  draw_label("Protein", x = 0.855, y = 0.942, size = 16, fontface = "bold") +
+  # Sub-headers placed right above the individual heatmaps
+  draw_label("RNA", x = 0.62, y = 0.938, size = 16, fontface = "bold") +
+  draw_label("Protein", x = 0.87, y = 0.938, size = 16, fontface = "bold") +
   draw_grob(grob_hm_rna_bdl,  x = 0.495, y = 0.505, width = 0.245, height = 0.43) +
   draw_grob(grob_hm_prot_bdl, x = 0.745, y = 0.505, width = 0.245, height = 0.43) +
   
   # ---------------------------------------------------------------------------
   # CCL4 ROW (BOTTOM)
   # ---------------------------------------------------------------------------
-  # CCl4 Header for PCA
-  draw_label(expression(bold(CCl[4])), x = 0.255, y = 0.480, size = 20) +
-  draw_line(x = c(0.23, 0.28), y = c(0.462, 0.462), color = "black", linewidth = 1.3) +
+  # CCl4 Header for PCA (x = 0.04 to 0.47)
+  draw_label(expression(bold(CCl[4])), x = 0.255, y = 0.485, size = 20) +
+  draw_line(x = c(0.04, 0.47), y = c(0.468, 0.468), color = "black", linewidth = 1.2) +
   draw_grob(grob_pca_ccl4, x = 0.04, y = 0.02, width = 0.43, height = 0.43) +
   
-  # CCl4 Header with RNA / Protein sub-headers for Heatmaps
-  draw_label(expression(bold(CCl[4])), x = 0.74, y = 0.480, size = 20) +
-  draw_line(x = c(0.715, 0.765), y = c(0.462, 0.462), color = "black", linewidth = 1.3) +
+  # CCl4 Header for Heatmaps (x = 0.495 to 0.985)
+  draw_label(expression(bold(CCl[4])), x = 0.74, y = 0.485, size = 20) +
+  draw_line(x = c(0.495, 0.985), y = c(0.468, 0.468), color = "black", linewidth = 1.2) +
   
-  draw_label("RNA", x = 0.605, y = 0.447, size = 16, fontface = "bold") +
-  draw_label("Protein", x = 0.855, y = 0.447, size = 16, fontface = "bold") +
+  # Sub-headers placed right above the individual heatmaps
+  draw_label("RNA", x = 0.62, y = 0.442, size = 16, fontface = "bold") +
+  draw_label("Protein", x = 0.87, y = 0.442, size = 16, fontface = "bold") +
   draw_grob(grob_hm_rna_ccl4,  x = 0.495, y = 0.015, width = 0.245, height = 0.43) +
   draw_grob(grob_hm_prot_ccl4, x = 0.745, y = 0.015, width = 0.245, height = 0.43)
 
