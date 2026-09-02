@@ -219,12 +219,7 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
       panel.grid.major = element_line(color = "grey85", linewidth = 0.4),
       panel.grid.minor = element_line(color = "grey92", linewidth = 0.2),
       panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1),
-      legend.position  = "bottom",
-      legend.title     = element_text(face = "bold", size = 13, color = "black"),
-      legend.text      = element_text(face = "bold", size = 11.5, color = "black"),
-      legend.spacing.x = unit(0.12, "cm"),
-      legend.key.size  = unit(0.4, "cm"),
-      legend.margin    = margin(t = -2, b = -2)
+      legend.position  = "none"
     )
   return(p)
 }
@@ -295,26 +290,45 @@ for (i in seq_along(dipa_groups)) {
 # --- 1. STRICT 3-PAGE LANDSCAPE 1x4 PDF ---
 if (length(base_panels) == 4) {
   pdf_3p <- file.path(out_dir, "Proc3_3Pages_1x4_Scatterplot_75thPercentile_Merged_Batch.pdf")
-  cairo_pdf(pdf_3p, width = 21, height = 5.8)
+  cairo_pdf(pdf_3p, width = 21, height = 6.0)
+  
+  make_proc3_header <- function(title_expr) {
+    draw_point_custom <- function(x, y, color) {
+      cowplot::draw_grob(grid::pointsGrob(x = unit(x, "npc"), y = unit(y, "npc"), pch = 16, gp = grid::gpar(col = color, fill = color, fontsize = 18)))
+    }
+    header_grob <- cowplot::as_grob(
+      cowplot::ggdraw() +
+        cowplot::draw_label(title_expr, x = 0.470, y = 0.5, hjust = 1, size = 22, fontface = "bold") +
+        cowplot::draw_label("|", x = 0.482, y = 0.5, hjust = 0.5, size = 22, fontface = "bold", color = "black") +
+        cowplot::draw_label("Mouse status:", x = 0.493, y = 0.5, hjust = 0, size = 20, fontface = "bold", color = "black") +
+        draw_point_custom(x = 0.588, y = 0.5, color = "#1F77B4") +
+        cowplot::draw_label("Control", x = 0.598, y = 0.5, hjust = 0, size = 18, fontface = "bold", color = "black") +
+        draw_point_custom(x = 0.658, y = 0.5, color = "#D62728") +
+        cowplot::draw_label("Disease", x = 0.668, y = 0.5, hjust = 0, size = 18, fontface = "bold", color = "black")
+    )
+    gridExtra::arrangeGrob(
+      grid::nullGrob(),
+      header_grob,
+      nrow = 2,
+      heights = grid::unit.c(grid::unit(0.4, "line"), grid::unit(2.4, "line"))
+    )
+  }
   
   # Page 1: Baseline
   top_expr_pg1 <- bquote(bold("Baseline model: BDL + CCl"[4]))
-  top_grob1    <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
-  g_base       <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = top_grob1)
+  g_base       <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = make_proc3_header(top_expr_pg1))
   grid::grid.draw(g_base)
   
   # Page 2: Mastery 50
   grid::grid.newpage()
   top_expr_pg2 <- bquote(bold("Mastery 50 model: BDL + CCl"[4]))
-  top_grob2    <- grid::textGrob(top_expr_pg2, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
-  g_m50        <- gridExtra::arrangeGrob(grobs = panels_m50, ncol = 4, nrow = 1, top = top_grob2)
+  g_m50        <- gridExtra::arrangeGrob(grobs = panels_m50, ncol = 4, nrow = 1, top = make_proc3_header(top_expr_pg2))
   grid::grid.draw(g_m50)
   
   # Page 3: Protein
   grid::grid.newpage()
   top_expr_pg3 <- bquote(bold("Protein model: BDL + CCl"[4]))
-  top_grob3    <- grid::textGrob(top_expr_pg3, gp = grid::gpar(fontsize = 20, fontface = "bold", col = "black", fontfamily = "sans"))
-  g_prot       <- gridExtra::arrangeGrob(grobs = panels_prot, ncol = 4, nrow = 1, top = top_grob3)
+  g_prot       <- gridExtra::arrangeGrob(grobs = panels_prot, ncol = 4, nrow = 1, top = make_proc3_header(top_expr_pg3))
   grid::grid.draw(g_prot)
   
   dev.off()

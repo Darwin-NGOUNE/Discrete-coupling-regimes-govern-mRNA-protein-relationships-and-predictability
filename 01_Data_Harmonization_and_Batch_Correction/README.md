@@ -54,3 +54,12 @@ This stage establishes the foundational dataset harmonization and batch effect c
 * **Script:** `02_combat_batch_correction.R` (`Batch_Effect_Correction_3.R`)
 * **Operation:** Constructs full expression matrices and applies Empirical Bayes ComBat adjustment from the `sva` package using `mod <- model.matrix(~ DiseaseGroup)` to protect the true biological disease trajectory (`Control`, `BDL`, `BDL_ASBTi`, `CCl4`, `Oil`) while eliminating inter-batch platform shifts.
 * **Output:** `processed_data/DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData`.
+
+
+## Final Combined Dataset
+
+The final combined dataset is provided as an Excel file:
+
+`DTccl4_DT_LCPM_Raw_BatchCorrected.xlsx`
+
+This file contains the combined datasets from `BDL` and `CCL4`, including both the raw and batch-corrected data.
