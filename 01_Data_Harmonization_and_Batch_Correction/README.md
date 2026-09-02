@@ -11,7 +11,7 @@
 This stage establishes the foundational dataset harmonization and batch effect correction pipeline for the **Consortium Liver Fibrosis Project**. It bridges the two independent disease cohorts into the **two master datasets** used across all subsequent downstream analyses (Procedures 1, 3, 5, and Figures 1--6):
 
 1. **Master Dataset 1 (Uncorrected / Raw Merged):** `DTccl4_DT_LCPM_Gene_Protein_full.RData`
-2. **Master Dataset 2 (ComBat Batch-Corrected Merged):** `DTccl4_DT_LCPM_BatchCorrected.RData`
+2. **Master Dataset 2 (ComBat Batch-Corrected Merged):** `DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData`
 
 ---
 
@@ -36,7 +36,7 @@ This stage establishes the foundational dataset harmonization and batch effect c
 │   ├── DTccl4_DT_LCPM_Gene_Protein_full.RData               (MASTER 1: Merged Raw)
 │   ├── DT_LCPM_filtered_final_Gene_Protein_full_Batch.RData (BDL 943 features, ComBat)
 │   ├── DTccl4_filtered_final_Gene_Protein_full_Batch.RData  (CCl4 943 features, ComBat)
-│   └── DTccl4_DT_LCPM_BatchCorrected.RData                  (MASTER 2: Merged ComBat Corrected)
+│   └── DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData                  (MASTER 2: Merged ComBat Corrected)
 │
 └── 📄 README.md                               # This documentation file
 ```
@@ -53,4 +53,4 @@ This stage establishes the foundational dataset harmonization and batch effect c
 ### Step 2: Biological-Preserving ComBat Batch Correction
 * **Script:** `02_combat_batch_correction.R` (`Batch_Effect_Correction_3.R`)
 * **Operation:** Constructs full expression matrices and applies Empirical Bayes ComBat adjustment from the `sva` package using `mod <- model.matrix(~ DiseaseGroup)` to protect the true biological disease trajectory (`Control`, `BDL`, `BDL_ASBTi`, `CCl4`, `Oil`) while eliminating inter-batch platform shifts.
-* **Output:** `processed_data/DTccl4_DT_LCPM_BatchCorrected.RData`.
+* **Output:** `processed_data/DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData`.

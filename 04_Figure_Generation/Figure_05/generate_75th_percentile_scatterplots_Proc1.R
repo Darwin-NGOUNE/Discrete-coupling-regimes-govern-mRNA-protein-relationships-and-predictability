@@ -236,12 +236,7 @@ create_panel <- function(panel_title, dt_xy, group_med_metrics, min_val, max_val
       panel.grid.major = element_line(color = "grey85", linewidth = 0.4),
       panel.grid.minor = element_line(color = "grey92", linewidth = 0.2),
       panel.border     = element_rect(color = "black", fill = NA, linewidth = 1.1),
-      legend.position  = "bottom",
-      legend.title     = element_text(face = "bold", size = 15, color = "black"),
-      legend.text      = element_text(face = "bold", size = 13, color = "black"),
-      legend.spacing.x = unit(0.12, "cm"),
-      legend.key.size  = unit(0.4, "cm"),
-      legend.margin    = margin(t = -2, b = -2)
+      legend.position  = "none"
     )
   return(p)
 }
@@ -354,11 +349,32 @@ generate_proc1_75th_pdfs <- function(dir_short, prime_files, m50_files) {
   # --- 3. NEW STRICT 3-PAGE LANDSCAPE 1x4 PDF (EXACTLY 3 PAGES, NO BLANK FIRST PAGE) ---
   if (length(base_panels) == 4) {
     pdf_3p <- file.path(out_dir, sprintf("Proc1_3Pages_1x4_Scatterplot_75thPercentile_%s.pdf", dir_short))
-    cairo_pdf(pdf_3p, width = 21, height = 5.8)
+    cairo_pdf(pdf_3p, width = 21, height = 6.0)
     
-    # Page 1: Baseline
-    top_grob1 <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 24, fontface = "bold", col = "black", fontfamily = "sans"))
-    g_base    <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = top_grob1)
+    # Page 1: Baseline with unified header (Title + Mouse status legend horizontal)
+    df_leg_c <- data.frame(x = 1:2, y = 1:2, Group = factor(c("Control", "Disease"), levels = c("Control", "Disease")))
+    p_dummy_c <- ggplot(df_leg_c, aes(x, y, color = Group)) +
+      geom_point(size = 4.5) +
+      scale_color_manual(values = c("Control" = "#1F77B4", "Disease" = "#D62728")) +
+      labs(color = "|   Mouse status:") +
+      theme_void() +
+      theme(
+        legend.position = "right",
+        legend.direction = "horizontal",
+        legend.title = element_text(face = "bold", size = 20, color = "black", margin = margin(r = 8)),
+        legend.text = element_text(face = "bold", size = 18, color = "black"),
+        legend.spacing.x = unit(0.2, "cm")
+      )
+    leg_c <- cowplot::get_legend(p_dummy_c)
+    title_c_grob <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 22, fontface = "bold", col = "black", fontfamily = "sans"), vjust = 0.8)
+    top_header_pg1 <- gridExtra::arrangeGrob(
+      grid::nullGrob(),
+      gridExtra::arrangeGrob(title_c_grob, leg_c, ncol = 2, widths = grid::unit.c(grid::unit(0.48, "npc"), grid::unit(0.52, "npc"))),
+      nrow = 2,
+      heights = grid::unit.c(grid::unit(0.6, "line"), grid::unit(2.2, "line"))
+    )
+
+    g_base    <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = top_header_pg1)
     grid::grid.draw(g_base)
     
     # Page 2: Mastery 50
