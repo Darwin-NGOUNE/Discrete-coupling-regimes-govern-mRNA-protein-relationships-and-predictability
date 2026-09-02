@@ -51,8 +51,8 @@ theme_dens <- function() {
   theme_bw(base_size = 18) +
     theme(
       plot.title = element_blank(),
-      axis.title = element_text(size = 20, face = "bold", color = "black"),
-      axis.text = element_text(size = 16, face = "bold", color = "black"),
+      axis.title = element_text(size = 23, face = "bold", color = "black"),
+      axis.text = element_text(size = 19, face = "bold", color = "black"),
       axis.ticks = element_line(color = "black", linewidth = 1.0),
       panel.border = element_rect(color = "black", fill = NA, linewidth = 1.2),
       panel.grid.major = element_blank(),
@@ -65,13 +65,13 @@ theme_dens <- function() {
 p_dens_bdl <- ggplot(res_bdl, aes(x = Max_R, fill = factor(Tier, levels = paste0("Top ", tiers)))) +
   geom_density(alpha = 0.4) +
   scale_fill_brewer(palette = "YlOrRd", direction = -1) +
-  labs(title = NULL, x = expression(bold("|"*rho[BP]*"|")), y = "Density") +
+  labs(title = NULL, x = expression(bold("|"*rho[BP]*"|")), y = expression(bold("Density"))) +
   theme_dens()
 
 p_dens_ccl4 <- ggplot(res_ccl4, aes(x = Max_R, fill = factor(Tier, levels = paste0("Top ", tiers)))) +
   geom_density(alpha = 0.4) +
   scale_fill_brewer(palette = "YlOrRd", direction = -1) +
-  labs(title = NULL, x = expression(bold("|"*rho[BP]*"|")), y = "Density") +
+  labs(title = NULL, x = expression(bold("|"*rho[BP]*"|")), y = expression(bold("Density"))) +
   theme_dens()
 
 # --- DUMMY PLOT FOR SINGLE CENTERED SHARED LEGEND ---
@@ -82,15 +82,15 @@ p_leg_dummy <- ggplot(dummy_df, aes(x, y, fill = Tier)) +
   theme_void() +
   theme(
     legend.position = "bottom",
-    legend.title = element_text(face = "bold", size = 16, color = "black", margin = margin(r = 10)),
-    legend.text = element_text(face = "bold", size = 14, color = "black"),
-    legend.key.size = unit(0.55, "cm")
+    legend.title = element_text(face = "bold", size = 20, color = "black", margin = margin(r = 15)),
+    legend.text = element_text(face = "bold", size = 18, color = "black"),
+    legend.key.size = unit(0.7, "cm")
   )
 shared_legend <- get_legend(p_leg_dummy)
 
 # Assemble 1x2 row + shared legend beneath
 top_plots <- plot_grid(p_dens_bdl, p_dens_ccl4, nrow = 1, rel_widths = c(1, 1))
-panel_d_combined <- plot_grid(top_plots, shared_legend, ncol = 1, rel_heights = c(1, 0.15))
+panel_d_combined <- plot_grid(top_plots, shared_legend, ncol = 1, rel_heights = c(1, 0.18))
 
 out_dir <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Grafiken_Paper_1"
 out_file <- file.path(out_dir, "Panel_D_Combined_Density_Plots.pdf")

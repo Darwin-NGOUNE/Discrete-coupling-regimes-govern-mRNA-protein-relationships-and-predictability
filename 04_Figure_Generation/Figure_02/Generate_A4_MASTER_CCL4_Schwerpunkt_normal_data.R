@@ -147,16 +147,16 @@ plot_master_volcano <- function(stats_dt, title_str, text_size = 4.5) {
     labs(
       title = title_str, 
       subtitle = NULL, 
-      x = expression(bold(Log[2]~"(fold change)")), 
-      y = expression(bold(-Log[10]~"(P value)"))
+      x = expression(bold(Log[2]*" (fold change)")), 
+      y = expression(bold(-Log[10]*" (P value)"))
     ) +
     coord_cartesian(clip = "off") + # Allows annotations outside the grid
     theme_bw(base_size = T_AXIS) +
     theme(
       plot.title = element_text(size = T_TITLE, face = "bold", hjust = 0.5, margin = margin(b = 15)), 
       plot.margin = margin(t = 20, r = 10, b = 10, l = 10), 
-      axis.title = element_text(size = T_AXIS + 4, face = "bold", color = "black"), 
-      axis.text = element_text(size = T_TICKS + 2, face = "bold", color = "black"),
+      axis.title = element_text(size = T_AXIS + 6, face = "bold", color = "black"), 
+      axis.text = element_text(size = T_TICKS + 4, face = "bold", color = "black"),
       axis.ticks = element_line(color = "black", linewidth = 1.0), 
       panel.border = element_rect(color = "black", fill = NA, linewidth = 1.2),
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.position = "none"
@@ -413,19 +413,19 @@ print("Saving isolated plots for CCL4...")
 # MODIFIED: Removed global titles, set subplot titles to "RNA" and "Protein", and increased text sizes for isolated PCA
 layout_pca <- ((p1_pca_rna + labs(title = "RNA", tag = NULL)) | (p1_pca_prot + labs(title = "Protein"))) & 
   theme(
-    plot.title = element_text(size = 24, face = "bold", hjust = 0.5), 
-    axis.title = element_text(size = 20, face = "bold", color = "black"), 
-    axis.text = element_text(size = 18, face = "bold", color = "black"),
-    legend.text = element_text(size = 16)
+    plot.title = element_text(size = 26, face = "bold", hjust = 0.5), 
+    axis.title = element_text(size = 23, face = "bold", color = "black"), 
+    axis.text = element_text(size = 20, face = "bold", color = "black"),
+    legend.text = element_text(size = 18)
   )
 ggsave("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Isolated_PCA_CCL4.pdf", plot = layout_pca, width = 10, height = 5, device = cairo_pdf)
 
 # Plot 2: Volcano Plots only (Very large fonts for isolated PDF)
 layout_volcano <- ((p2_volc_rna + labs(title = "RNA", tag = NULL)) | (p2_volc_prot + labs(title = "Protein"))) & 
   theme(
-    plot.title = element_text(size = 24, face = "bold", hjust = 0.5), 
-    axis.title = element_text(size = 20, face = "bold", color = "black"), 
-    axis.text = element_text(size = 18, face = "bold", color = "black")
+    plot.title = element_text(size = 26, face = "bold", hjust = 0.5), 
+    axis.title = element_text(size = 23, face = "bold", color = "black"), 
+    axis.text = element_text(size = 20, face = "bold", color = "black")
   )
 ggsave("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Isolated_Volcano_CCL4.pdf", plot = layout_volcano, width = 10, height = 5, device = cairo_pdf)
 
