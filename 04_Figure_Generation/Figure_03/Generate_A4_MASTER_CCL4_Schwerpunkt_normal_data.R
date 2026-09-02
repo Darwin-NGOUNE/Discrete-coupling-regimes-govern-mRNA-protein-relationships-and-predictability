@@ -434,8 +434,8 @@ p3_dipa_iso <- ggplot(Combined, aes(x = log2G, y = log2P, color = CloudCategory)
   labs(
     title = "",
     tag = NULL,
-    x = expression(bold("RNA: "~CCl[4]~"(Month 12) vs. Oil (Month 0)"~~log[2]~"(fold change)")),
-    y = expression(bold("Protein: "~CCl[4]~"(Month 12) vs. Oil (Month 0)"~~log[2]~"(fold change)")),
+    x = expression(bold("RNA: "~CCl[4]~"(Month 12) vs. oil (Month 0)"~~log[2]~"(fold change)")),
+    y = expression(bold("Protein: "~CCl[4]~"(Month 12) vs. oil (Month 0)"~~log[2]~"(fold change)")),
     color = "", caption = "DiPa 1&2 → Diagonal | 5&6 → Horizontal | 3&4 → Vertical | 8 → Round | 7 → Discordant"
   ) +
   theme_bw(base_size = 20) +

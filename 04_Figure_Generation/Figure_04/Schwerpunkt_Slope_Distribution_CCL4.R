@@ -130,8 +130,9 @@ p_comb <- ggplot(df_comb, aes(x = SP_Slope, fill = DiPaGroups)) +
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
   ) +
-  annotate("text", x = 2.3, y = max_y * 0.85, label = paste0("bold(N[1] == ", n1, ")"), parse = TRUE, size = 8, color = "blue", hjust = 0) +
-  annotate("text", x = 2.3, y = max_y * 0.72, label = paste0("bold(N[2] == ", n2, ")"), parse = TRUE, size = 8, color = "red", hjust = 0)
+  scale_y_continuous(limits = c(0, 0.72), breaks = c(0, 0.2, 0.4, 0.6)) +
+  annotate("text", x = 2.2, y = 0.72 * 0.76, label = paste0("bold(N[1] == ", n1, ")"), parse = TRUE, size = 8, color = "blue", hjust = 0) +
+  annotate("text", x = 2.2, y = 0.72 * 0.67, label = paste0("bold(N[2] == ", n2, ")"), parse = TRUE, size = 8, color = "red", hjust = 0)
 
 # -------------------------------------------------------------------------
 # 5. SAVE RESULTS
