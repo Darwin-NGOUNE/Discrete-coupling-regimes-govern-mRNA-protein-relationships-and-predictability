@@ -110,7 +110,7 @@ build_stacked_plot <- function(dt_master, dir_col, train_name, test_name, cohort
     Total = .N
   ), by = DiPa_Group]
   top_annot[, Cons_Pct := Cons_Count / Total * 100]
-  top_annot[, TopLabel := sprintf("Conserved (>= 0.5):\n%.1f%% (%d/%d)", Cons_Pct, Cons_Count, Total)]
+  top_annot[, TopLabel := sprintf("Conserved (\u2265 0.5):\n%.1f%% (%d/%d)", Cons_Pct, Cons_Count, Total)]
   
   legend_labels <- c(
     "Lost"     = expression(bold(paste("Lost (", rho[BP] < 0.2, ")"))),
