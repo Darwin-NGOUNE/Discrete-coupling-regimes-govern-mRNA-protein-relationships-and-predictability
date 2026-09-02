@@ -123,7 +123,7 @@ run_proc5_4models <- function(dataset_name, plot_title, out_filename) {
   summary_dt <- dt_all[!is.na(Pearson), .(
     pct_high = round(sum(Pearson >= 0.8, na.rm = TRUE) / .N * 100),
     pct_suff = round(sum(Pearson >= 0.5, na.rm = TRUE) / .N * 100),
-    label    = paste0(">= 0.8: ", round(sum(Pearson >= 0.8, na.rm = TRUE) / .N * 100), "%\n>= 0.5: ", round(sum(Pearson >= 0.5, na.rm = TRUE) / .N * 100), "%")
+    label    = paste0("\u2265 0.8: ", round(sum(Pearson >= 0.8, na.rm = TRUE) / .N * 100), "%\n\u2265 0.5: ", round(sum(Pearson >= 0.5, na.rm = TRUE) / .N * 100), "%")
   ), by = .(DiPa_Group, Model)]
   
   palette_fill <- c(
@@ -150,7 +150,7 @@ run_proc5_4models <- function(dataset_name, plot_title, out_filename) {
     geom_text(data = summary_dt, 
               aes(x = DiPa_Group, y = -1.22, label = label, group = Model),
               position = position_dodge(width = 0.8),
-              family = "sans", size = 3.1, color = "black", fontface = "bold", lineheight = 0.88, inherit.aes = FALSE) +
+              family = "sans", size = 3.35, color = "black", fontface = "bold", lineheight = 0.90, inherit.aes = FALSE) +
     
     scale_fill_manual(values = palette_fill) +
     
