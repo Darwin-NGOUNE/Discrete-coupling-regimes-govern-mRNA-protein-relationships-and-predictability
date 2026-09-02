@@ -112,12 +112,12 @@ dt_r2$DiPa_Group <- factor(dt_r2$DiPa_Group, levels = dipa_groups)
 # ------------------------------------------------------------------------------
 create_baseline_boxplots <- function(data_dt, plot_title_expr) {
   
-  # Calculate summary percentages per DiPa group
+  # Calculate summary percentages per DiPa group with true mathematical \u2265 symbol
   summary_dt <- data_dt[!is.na(Pearson), .(
     n_total  = .N,
     pct_high = round(sum(Pearson >= 0.8, na.rm = TRUE) / .N * 100),
     pct_suff = round(sum(Pearson >= 0.5, na.rm = TRUE) / .N * 100),
-    label    = paste0(">= 0.8: ", round(sum(Pearson >= 0.8, na.rm = TRUE) / .N * 100), "%\n>= 0.5: ", round(sum(Pearson >= 0.5, na.rm = TRUE) / .N * 100), "%")
+    label    = paste0("\u2265 0.8: ", round(sum(Pearson >= 0.8, na.rm = TRUE) / .N * 100), "%\n\u2265 0.5: ", round(sum(Pearson >= 0.5, na.rm = TRUE) / .N * 100), "%")
   ), by = DiPa_Group]
   
   p <- ggplot(data_dt, aes(x = DiPa_Group, y = Pearson)) +
