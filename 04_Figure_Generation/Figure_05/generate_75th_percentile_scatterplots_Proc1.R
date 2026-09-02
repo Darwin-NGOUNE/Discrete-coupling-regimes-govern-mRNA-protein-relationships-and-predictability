@@ -347,31 +347,30 @@ generate_proc1_75th_pdfs <- function(dir_short, prime_files, m50_files) {
   }
   
   # --- 3. NEW STRICT 3-PAGE LANDSCAPE 1x4 PDF (EXACTLY 3 PAGES, NO BLANK FIRST PAGE) ---
+  # --- 3. NEW STRICT 3-PAGE LANDSCAPE 1x4 PDF (EXACTLY 3 PAGES, NO BLANK FIRST PAGE) ---
   if (length(base_panels) == 4) {
     pdf_3p <- file.path(out_dir, sprintf("Proc1_3Pages_1x4_Scatterplot_75thPercentile_%s.pdf", dir_short))
     cairo_pdf(pdf_3p, width = 21, height = 6.0)
     
-    # Page 1: Baseline with unified header (Title + Mouse status legend horizontal)
-    df_leg_c <- data.frame(x = 1:2, y = 1:2, Group = factor(c("Control", "Disease"), levels = c("Control", "Disease")))
-    p_dummy_c <- ggplot(df_leg_c, aes(x, y, color = Group)) +
-      geom_point(size = 4.5) +
-      scale_color_manual(values = c("Control" = "#1F77B4", "Disease" = "#D62728")) +
-      labs(color = "|   Mouse status:") +
-      theme_void() +
-      theme(
-        legend.position = "right",
-        legend.direction = "horizontal",
-        legend.title = element_text(face = "bold", size = 20, color = "black", margin = margin(r = 8)),
-        legend.text = element_text(face = "bold", size = 18, color = "black"),
-        legend.spacing.x = unit(0.2, "cm")
-      )
-    leg_c <- cowplot::get_legend(p_dummy_c)
-    title_c_grob <- grid::textGrob(top_expr_pg1, gp = grid::gpar(fontsize = 22, fontface = "bold", col = "black", fontfamily = "sans"), vjust = 0.8)
+    # Page 1: Baseline with unified centered tight header (Title + | + Mouse status legend)
+    draw_point_custom <- function(x, y, color) {
+      cowplot::draw_grob(grid::pointsGrob(x = unit(x, "npc"), y = unit(y, "npc"), pch = 16, gp = grid::gpar(col = color, fill = color, fontsize = 18)))
+    }
+    header_grob1 <- cowplot::as_grob(
+      cowplot::ggdraw() +
+        cowplot::draw_label(top_expr_pg1, x = 0.470, y = 0.5, hjust = 1, size = 22, fontface = "bold") +
+        cowplot::draw_label("|", x = 0.482, y = 0.5, hjust = 0.5, size = 22, fontface = "bold", color = "black") +
+        cowplot::draw_label("Mouse status:", x = 0.493, y = 0.5, hjust = 0, size = 20, fontface = "bold", color = "black") +
+        draw_point_custom(x = 0.588, y = 0.5, color = "#1F77B4") +
+        cowplot::draw_label("Control", x = 0.598, y = 0.5, hjust = 0, size = 18, fontface = "bold", color = "black") +
+        draw_point_custom(x = 0.658, y = 0.5, color = "#D62728") +
+        cowplot::draw_label("Disease", x = 0.668, y = 0.5, hjust = 0, size = 18, fontface = "bold", color = "black")
+    )
     top_header_pg1 <- gridExtra::arrangeGrob(
       grid::nullGrob(),
-      gridExtra::arrangeGrob(title_c_grob, leg_c, ncol = 2, widths = grid::unit.c(grid::unit(0.48, "npc"), grid::unit(0.52, "npc"))),
+      header_grob1,
       nrow = 2,
-      heights = grid::unit.c(grid::unit(0.6, "line"), grid::unit(2.2, "line"))
+      heights = grid::unit.c(grid::unit(0.4, "line"), grid::unit(2.4, "line"))
     )
 
     g_base    <- gridExtra::arrangeGrob(grobs = base_panels, ncol = 4, nrow = 1, top = top_header_pg1)
