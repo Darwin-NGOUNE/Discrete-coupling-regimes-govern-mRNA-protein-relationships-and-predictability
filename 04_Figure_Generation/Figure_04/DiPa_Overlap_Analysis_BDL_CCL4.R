@@ -130,7 +130,7 @@ draw_mini_venn_grob <- function(group_name, n_bdl, n_ccl4, n_common, pct_stable,
     textGrob("A = 943", x = 0.50, y = 0.26, gp = gpar(fontsize = 18, fontface = "bold", col = "grey30")),
     
     # 7. Title (DiPa group X elevated well above the box with clear whitespace)
-    textGrob(paste("DiPa group", group_name), y = 0.93, gp = gpar(fontsize = 22, fontface = "bold")),
+    textGrob(paste("DiPa Group", group_name), y = 0.93, gp = gpar(fontsize = 22, fontface = "bold")),
     
     # 8. Stats at the bottom (D_i and P-value expressions with clean spacing)
     textGrob(substitute(bold(D[i] == val), list(val = sprintf("%.2f", di))), 

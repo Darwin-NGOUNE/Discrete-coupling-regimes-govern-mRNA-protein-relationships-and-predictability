@@ -147,8 +147,8 @@ plot_master_volcano <- function(stats_dt, title_str, text_size = 4.5) {
     labs(
       title = title_str, 
       subtitle = NULL, 
-      x = expression(bold(Log[2]*" (fold change)")), 
-      y = expression(bold(-Log[10]*" (P value)"))
+      x = expression(bold(log[2]*" (fold change)")), 
+      y = expression(bold(-log[10]*" (p value)"))
     ) +
     coord_cartesian(clip = "off") + # Allows annotations outside the grid
     theme_bw(base_size = T_AXIS) +
