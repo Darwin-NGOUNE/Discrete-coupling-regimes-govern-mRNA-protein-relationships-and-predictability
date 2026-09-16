@@ -54,14 +54,14 @@ Rather than adhering to a continuous uniform distribution, transcript–protein 
 
 ---
 
-## 3. Master Plate Assembly
+## 3. Master Plate Assembly & Standalone Partitions
 
-* **Master Assembly Script:** [`Generate_Figure_3_Master_Plate.R`](Generate_Figure_3_Master_Plate.R)
-* **Execution:** Combines the left (BDL, Panels A & B) and right ($\text{CCl}_4$, Panels C & D) components at high resolution (300 DPI) using `cowplot` and `magick`:
-  ```bash
-  Rscript Generate_Figure_3_Master_Plate.R
-  ```
-* **Output File:** [`Figure_3.pdf`](Figure_3.pdf) (High-resolution vector graphic).
+* **Partition Script (Standalone 3A & 3B):** [`Generate_Figure_3a_and_3b.R`](Generate_Figure_3a_and_3b.R)
+* **Master Assembly Script (Combined Plate):** [`Generate_Figure_3_Master_Plate.R`](Generate_Figure_3_Master_Plate.R)
+* **Outputs:**
+  * [`Figure_3a.pdf`](Figure_3a.pdf): Standalone BDL DiPa Cloud + 8 Prototypical Pair Scatters (Panels A & B, 100% Vector PDF).
+  * [`Figure_3b.pdf`](Figure_3b.pdf): Standalone $\text{CCl}_4$ DiPa Cloud + 8 Prototypical Pair Scatters (Panels C & D, 100% Vector PDF).
+  * [`Figure_3.pdf`](Figure_3.pdf): Master combined 2-column plate.
 
 ---
 
@@ -70,12 +70,14 @@ Rather than adhering to a continuous uniform distribution, transcript–protein 
 ```text
 Figure_03/
 │
-├── 📄 Figure_3.pdf                                      # Master Publication Plate (300 DPI Vector PDF)
-├── 📄 Generate_Figure_3_Master_Plate.R                  # Master cowplot assembly script
+├── 📄 Figure_3a.pdf                                     # Standalone BDL DiPa Plate (Vector PDF)
+├── 📄 Figure_3b.pdf                                     # Standalone CCl4 DiPa Plate (Vector PDF)
+├── 📄 Figure_3.pdf                                      # Master Publication Plate (Combined)
+├── 📄 Generate_Figure_3a_and_3b.R                       # Generates Figure_3a and Figure_3b
+├── 📄 Generate_Figure_3_Master_Plate.R                  # Master assembly script
 │
 ├── 📄 Isolated_DiPa_Wolken_BDL.pdf                     # Left Plate: BDL DiPa Cloud + 8 Quadrant Scatters
 ├── 📄 Isolated_DiPa_Wolken_CCL4.pdf                    # Right Plate: CCl4 DiPa Cloud + 8 Quadrant Scatters
-│
 ├── 📄 Generate_A4_MASTER_BDL_Schwerpunkt_normal_data.R # Generates Isolated_DiPa_Wolken_BDL.pdf
 ├── 📄 Generate_A4_MASTER_CCL4_Schwerpunkt_normal_data.R# Generates Isolated_DiPa_Wolken_CCL4.pdf
 │
