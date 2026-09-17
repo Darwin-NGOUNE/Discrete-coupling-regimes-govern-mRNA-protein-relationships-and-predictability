@@ -68,8 +68,8 @@ canvas_1a <- ggdraw() +
 out_pdf_1a_share  <- file.path(grafiken_dir, "Supplementary_Figure_1a.pdf")
 out_pdf_1a_github <- file.path(github_dir,   "Supplementary_Figure_1a.pdf")
 
-ggsave(out_pdf_1a_share,  plot = canvas_1a, width = 14, height = 10, units = "in", dpi = 300)
-ggsave(out_pdf_1a_github, plot = canvas_1a, width = 14, height = 10, units = "in", dpi = 300)
+ggsave(out_pdf_1a_share,  plot = canvas_1a, width = 16, height = 12, units = "in", dpi = 300)
+ggsave(out_pdf_1a_github, plot = canvas_1a, width = 16, height = 12, units = "in", dpi = 300)
 cat("-> Supplementary Figure 1A saved successfully.\n")
 
 
@@ -117,8 +117,8 @@ canvas_1b <- ggdraw() +
 out_pdf_1b_share  <- file.path(grafiken_dir, "Supplementary_Figure_1b.pdf")
 out_pdf_1b_github <- file.path(github_dir,   "Supplementary_Figure_1b.pdf")
 
-ggsave(out_pdf_1b_share,  plot = canvas_1b, width = 16.5, height = 12.5, units = "in", dpi = 300)
-ggsave(out_pdf_1b_github, plot = canvas_1b, width = 16.5, height = 12.5, units = "in", dpi = 300)
+ggsave(out_pdf_1b_share,  plot = canvas_1b, width = 18, height = 14, units = "in", dpi = 300)
+ggsave(out_pdf_1b_github, plot = canvas_1b, width = 18, height = 14, units = "in", dpi = 300)
 cat("-> Supplementary Figure 1B saved successfully.\n")
 
 cat("\n==============================================================================\n")
