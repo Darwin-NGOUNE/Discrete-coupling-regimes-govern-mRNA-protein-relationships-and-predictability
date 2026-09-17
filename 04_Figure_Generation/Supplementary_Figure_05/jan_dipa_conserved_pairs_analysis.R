@@ -49,13 +49,13 @@ gp_34 <- load_gp("Models_rf_lasso_full_testing_new_Batch_prime_3_4_sub.RData")
 gp_56 <- load_gp("Models_rf_lasso_full_testing_new_Batch_prime_5_6_sub.RData")
 gp_0  <- load_gp("Models_rf_lasso_full_testing_new_Batch_prime_0_sub.RData")
 
-dipa_map <- data.table(Protein = core_proteins, DiPa_Group = "Other (N = 533)")
-dipa_map[Protein %in% gp_12, DiPa_Group := "DiPa 1 & 2 (N = 118)"]
-dipa_map[Protein %in% gp_34, DiPa_Group := "DiPa 3 & 4 (N = 67)"]
-dipa_map[Protein %in% gp_56, DiPa_Group := "DiPa 5 & 6 (N = 23)"]
-dipa_map[Protein %in% gp_0,  DiPa_Group := "DiPa 8 (N = 202)"]
+dipa_map <- data.table(Protein = core_proteins, DiPa_Group = "Other (n = 533)")
+dipa_map[Protein %in% gp_12, DiPa_Group := "DiPa 1 & 2 (n = 118)"]
+dipa_map[Protein %in% gp_34, DiPa_Group := "DiPa 3 & 4 (n = 67)"]
+dipa_map[Protein %in% gp_56, DiPa_Group := "DiPa 5 & 6 (n = 23)"]
+dipa_map[Protein %in% gp_0,  DiPa_Group := "DiPa 8 (n = 202)"]
 
-dipa_levels <- c("DiPa 1 & 2 (N = 118)", "DiPa 3 & 4 (N = 67)", "DiPa 5 & 6 (N = 23)", "DiPa 8 (N = 202)", "Other (N = 533)")
+dipa_levels <- c("DiPa 1 & 2 (n = 118)", "DiPa 3 & 4 (n = 67)", "DiPa 5 & 6 (n = 23)", "DiPa 8 (n = 202)", "Other (n = 533)")
 dipa_map$DiPa_Group <- factor(dipa_map$DiPa_Group, levels = dipa_levels)
 
 # Helper for tiers
@@ -236,14 +236,14 @@ run_cohort_analysis <- function(bdl_input, ccl4_input, cohort_label, filename_su
     dev.off()
   }
   png_d1 <- file.path(out_dir, sprintf("Proportion_Conserved_Pairs_per_DiPa_Group_Direction1_BDL_to_CCl4_Pearson_%s.png", filename_suffix))
-  png(png_d1, width = 2300, height = 1560, res = 200)
+  png(png_d1, width = 2500, height = 1560, res = 200)
   print(p1)
   dev.off()
   
   # --- DIRECTION 2: Train CCl4 -> Test BDL ---
   p2 <- build_stacked_plot(dt_master, "rho_BP_Test_D2", "CCL4", "BDL", cohort_label)
   pdf_d2 <- file.path(out_dir, sprintf("Proportion_Conserved_Pairs_per_DiPa_Group_Direction2_CCl4_to_BDL_Pearson_%s.pdf", filename_suffix))
-  cairo_pdf(pdf_d2, width = 11.5, height = 7.8)
+  cairo_pdf(pdf_d2, width = 12.5, height = 7.8)
   print(p2)
   dev.off()
   if (filename_suffix == "Subset") {
@@ -252,7 +252,7 @@ run_cohort_analysis <- function(bdl_input, ccl4_input, cohort_label, filename_su
     dev.off()
   }
   png_d2 <- file.path(out_dir, sprintf("Proportion_Conserved_Pairs_per_DiPa_Group_Direction2_CCl4_to_BDL_Pearson_%s.png", filename_suffix))
-  png(png_d2, width = 2300, height = 1560, res = 200)
+  png(png_d2, width = 2500, height = 1560, res = 200)
   print(p2)
   dev.off()
   

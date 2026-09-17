@@ -58,6 +58,6 @@ master_canvas <- ggdraw() +
   draw_grob(grob_b, x = 0.02, y = 0.005, width = 0.96, height = 0.47)
 
 cat(sprintf("Saving Supplementary Figure 3 PDF to: %s\n", out_pdf))
-ggsave(out_pdf, plot = master_canvas, width = 18, height = 18, units = "in", dpi = 300)
+ggsave(out_pdf, plot = master_canvas, width = 18, height = 22, units = "in", dpi = 300)
 
 cat("\nSUCCESS! Supplementary Figure 3 (2-Tier Vertical Stack) generated!\n")
