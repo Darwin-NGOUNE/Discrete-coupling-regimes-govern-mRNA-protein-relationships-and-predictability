@@ -59,9 +59,9 @@ Protein_Modeling_Consortium_GitHub/
 ├── 📁 02_DiPa_Classification_and_Analysis/        ──► Raw count 2D DiPa quadrant classification (thresh = 0.5)
 │
 ├── 📁 03_Machine_Learning_Procedures/
-│   ├── 📁 Procedure_1_Cross_Cohort/               ──► Cross-cohort blind testing (Train BDL <-> Test CCl4)
-│   ├── 📁 Procedure_3_Merged_Cohort/              ──► Merged cohort cross-validation (N = 54 & N = 24 subset)
-│   ├── 📁 Procedure_5_Intra_Cohort/               ──► Intra-cohort LOOCV (Intra-BDL & Intra-CCl4)
+│   ├── 📁 Procedure_1_Cross_Cohort/               ──► Cross-cohort blind testing (Train BDL <-> Test CCl4) (N = 12 BDL subset cohort, N = 12 CCl4 subset cohort)
+│   ├── 📁 Procedure_3_Merged_Cohort/              ──► Merged cohort cross-validation (N = 24 subset cohort)
+│   ├── 📁 Procedure_5_Intra_Cohort/               ──► Intra-cohort LOOCV (Intra-BDL & Intra-CCl4) (N = 12 BDL subset cohort, N = 12 CCl4 subset cohort)
 │   └── 📁 Shared_Modeling_Functions/              ──► Core modeling engine functions
 │
 └── 📁 04_Figure_Generation/
