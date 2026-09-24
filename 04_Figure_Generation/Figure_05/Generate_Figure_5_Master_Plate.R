@@ -78,6 +78,6 @@ master_canvas <- ggdraw() +
   draw_grob(grob_d, x = 0.02, y = 0.02, width = 0.96, height = 0.30)
 
 cat(sprintf("Saving Master Figure 5 PDF to: %s\n", out_pdf))
-ggsave(out_pdf, plot = master_canvas, width = 18, height = 18, units = "in", dpi = 300)
+ggsave(out_pdf, plot = master_canvas, width = 18, height = 22, units = "in", dpi = 300)
 
 cat("\nSUCCESS! Master Figure 5 PDF generated and saved to Grafiken_Paper_1!\n")

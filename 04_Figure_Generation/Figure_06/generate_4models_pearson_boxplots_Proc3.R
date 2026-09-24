@@ -177,7 +177,7 @@ p <- ggplot(dt_all, aes(x = DiPa_Group, y = Pearson, fill = Model)) +
     fill  = "Model:"
   )
 
-cairo_pdf(output_file, width = 16.5, height = 8.5)
+cairo_pdf(output_file, width = 18, height = 10)
 print(p)
 dev.off()
 

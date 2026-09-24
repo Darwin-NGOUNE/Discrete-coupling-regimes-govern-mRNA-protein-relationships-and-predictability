@@ -179,7 +179,7 @@ run_proc1_4models <- function(direction_title, dir_tag, file_prefix_prime, file_
     )
   
   out_path <- file.path(output_dir, out_filename)
-  cairo_pdf(out_path, width = 16.5, height = 8.5)
+  cairo_pdf(out_path, width = 18, height = 10)
   print(p)
   dev.off()
   return(out_path)
