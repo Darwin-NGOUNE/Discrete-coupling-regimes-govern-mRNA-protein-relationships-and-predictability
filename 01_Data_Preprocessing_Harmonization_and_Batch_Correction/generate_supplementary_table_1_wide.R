@@ -105,7 +105,7 @@ cat("Final Table Dimensions: ", nrow(final_wide_table), "rows x", ncol(final_wid
 
 # 4. Save Excel files safely
 out_file1 <- "C:/Users/ngoune/Documents/Paper I/Supplementary_Table_1_RNA_Protein_Pairs.xlsx"
-out_file2 <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_Consortium_GitHub/01_Data_Harmonization_and_Batch_Correction/Supplementary_Table_1_RNA_Protein_Pairs.xlsx"
+out_file2 <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_Consortium_GitHub/01_Data_Preprocessing_Harmonization_and_Batch_Correction/Supplementary_Table_1_RNA_Protein_Pairs.xlsx"
 
 safe_save <- function(df, path) {
   tryCatch({

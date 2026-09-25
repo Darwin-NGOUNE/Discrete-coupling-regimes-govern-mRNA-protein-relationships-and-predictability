@@ -55,7 +55,7 @@ While the target response variables belong to the specific DiPa quadrants above,
 ```text
 Protein_Modeling_Consortium_GitHub/
 │
-├── 📁 01_Data_Harmonization_and_Batch_Correction/ ──► Cross-cohort mapping & ComBat batch correction
+├── 📁 01_Data_Preprocessing_Harmonization_and_Batch_Correction/ ──► Raw data preprocessing, cross-cohort mapping & ComBat batch correction
 ├── 📁 02_DiPa_Classification_and_Analysis/        ──► Raw count 2D DiPa quadrant classification (thresh = 0.5)
 │
 ├── 📁 03_Machine_Learning_Procedures/
@@ -83,7 +83,7 @@ install.packages(c(
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("sva", "limma", "edgeR"))
+BiocManager::install(c("sva", "limma", "edgeR", "DESeq2", "MSstats"))
 ```
 
 ---
