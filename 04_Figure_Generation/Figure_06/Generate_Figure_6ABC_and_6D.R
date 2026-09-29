@@ -51,25 +51,25 @@ grob_d <- pdf_to_grob(f_panel_d, page_num = 1)
 # ==============================================================================
 cat("\nBuilding Figure 6_ABC (Panels A, B, C)...\n")
 
-# Canvas: Width = 18 inches, Height = 18.5 inches (Generous vertical space for each tier)
+# Canvas: Width = 18 inches, Height = 18.2 inches (Tightly integrated panels, high readability)
 canvas_abc <- ggdraw() +
   # TIER 1: Panel A (Procedure 3 4-Models Pearson Boxplot)
-  draw_label("A", x = 0.02, y = 0.985, size = 26, fontface = "bold") +
-  draw_grob(grob_a, x = 0.02, y = 0.675, width = 0.96, height = 0.305) +
+  draw_label("A", x = 0.015, y = 0.985, size = 28, fontface = "bold") +
+  draw_grob(grob_a, x = 0.015, y = 0.670, width = 0.97, height = 0.320) +
   
   # TIER 2: Panel B (Proc3 1x4 Scatterplots: Conserved Subset)
-  draw_label("B", x = 0.02, y = 0.655, size = 26, fontface = "bold") +
-  draw_grob(grob_b, x = 0.02, y = 0.345, width = 0.96, height = 0.305) +
+  draw_label("B", x = 0.015, y = 0.655, size = 28, fontface = "bold") +
+  draw_grob(grob_b, x = 0.015, y = 0.340, width = 0.97, height = 0.315) +
 
   # TIER 3: Panel C (Proc3 Full 1x4 Scatterplots: All Animals Subset)
-  draw_label("C", x = 0.02, y = 0.325, size = 26, fontface = "bold") +
-  draw_grob(grob_c, x = 0.02, y = 0.015, width = 0.96, height = 0.305)
+  draw_label("C", x = 0.015, y = 0.325, size = 28, fontface = "bold") +
+  draw_grob(grob_c, x = 0.015, y = 0.010, width = 0.97, height = 0.315)
 
 out_abc_1 <- file.path(fig6_dir, "Figure_6_ABC.pdf")
 out_abc_2 <- file.path(grafiken_dir, "Figure_6_ABC.pdf")
 
-ggsave(out_abc_1, plot = canvas_abc, width = 18, height = 22, units = "in", dpi = 300)
-ggsave(out_abc_2, plot = canvas_abc, width = 18, height = 22, units = "in", dpi = 300)
+ggsave(out_abc_1, plot = canvas_abc, width = 18, height = 18.2, units = "in", dpi = 300)
+ggsave(out_abc_2, plot = canvas_abc, width = 18, height = 18.2, units = "in", dpi = 300)
 cat(sprintf("  -> Saved Figure 6_ABC to: %s\n", out_abc_1))
 
 # ==============================================================================
