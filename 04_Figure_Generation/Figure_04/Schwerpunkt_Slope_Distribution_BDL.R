@@ -103,7 +103,7 @@ p_comb <- ggplot(df_comb, aes(x = SP_Slope, fill = DiPaGroups)) +
   geom_vline(xintercept = c(0.5, 1.5), linetype = "dashed", color = "black", linewidth = 1.0) +
   scale_fill_manual(
     values = c("1" = "blue", "2" = "red"),
-    labels = c("1" = "DiPa group 1", "2" = "DiPa group 2")
+    labels = c("1" = "DiPa Group 1", "2" = "DiPa Group 2")
   ) +
   xlim(-1, 3) +
   labs(
