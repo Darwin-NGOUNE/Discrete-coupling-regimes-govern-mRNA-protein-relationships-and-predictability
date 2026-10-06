@@ -22,7 +22,7 @@ T_TICKS = 14
 # 1. LOAD DATA GLOBALLY
 # -------------------------------------------------------------------------
 #print("Loading BDL Data for PCA and Volcano...")
-load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/BDL_BatchCorrected.RData")
+#load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/BDL_BatchCorrected.RData")
 
 print("Loading DiPa Base Data...")
 load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Dipa/Data_count_filtered_asbt_Gene_Protein_full_dipa.RData")
