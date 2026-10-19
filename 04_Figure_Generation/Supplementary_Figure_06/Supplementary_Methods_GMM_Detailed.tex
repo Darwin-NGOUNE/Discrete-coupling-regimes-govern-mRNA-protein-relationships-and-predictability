@@ -128,3 +128,48 @@ The fitted Gaussian components demonstrate direct biological and geometrical map
     \item \textbf{Component 3 (Horizontal, Orange):} Corresponds to DiPa Quadrants~5 (isolated mRNA induction) and 6 (isolated mRNA repression), representing transcriptomic buffering.
 \end{itemize}
 This concordance confirms that the DiPa functional regimes reflect bona fide statistical subpopulations governed by distinct post-transcriptional regulatory mechanisms.
+
+\subsection*{8. Algorithmic Workflow and Practical Implementation Recipe}
+To facilitate independent computational reproduction of our results without external package dependencies, the exact procedure implemented in \texttt{Generate\_Supplementary\_Figure\_6\_Master\_Plate.R} is structured as follows:
+
+\begin{enumerate}
+    \item \textbf{Data Matrix Formulation:} Construct the $N \times 2$ coordinate matrix $X = [x_1, \dots, x_N]^\top$, where column 1 contains mRNA fold changes ($x_i = \log_2\text{FC}_{\text{RNA}, i}$) and column 2 contains protein fold changes ($y_i = \log_2\text{FC}_{\text{Prot}, i}$).
+    
+    \item \textbf{Deterministic Responsibility Initialization:} To ensure deterministic reproducibility across runs, initial posterior weights $\gamma_{ik}^{(0)}$ are initialized based on coarse coordinate partitions:
+    \begin{itemize}
+        \item Candidate vertical genes ($|x_i| < 0.55$ and $|y_i| > 0.40$) receive prior weight $\gamma_{i2}^{(0)} = 0.70$ (and $0.15$ for other components).
+        \item Candidate horizontal genes ($|x_i| > 0.50$ and $|y_i| < 0.50$) receive prior weight $\gamma_{i3}^{(0)} = 0.70$.
+        \item Diagonal genes receive prior weight $\gamma_{i1}^{(0)} = 0.70$.
+        \item Responsibilities are normalized: $\gamma_{ik}^{(0)} \leftarrow \gamma_{ik}^{(0)} / \sum_{j=1}^K \gamma_{ij}^{(0)}$.
+    \end{itemize}
+
+    \item \textbf{EM Iteration Loop (repeated until $|\ell^{(t+1)} - \ell^{(t)}| < 10^{-6}$ or max 400 iterations):}
+    \begin{itemize}
+        \item \textbf{Effective sizes and weights:} $N_k = \sum_{i=1}^N \gamma_{ik}$, $\pi_k = N_k / N$.
+        \item \textbf{Component centroids:} $\mu_k = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} X_i$.
+        \item \textbf{Sample dispersions:} Centered differences $D_k = X - \mathbf{1} \mu_k^\top$. Compute raw variances $v_{xk} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} D_{ki,1}^2$, $v_{yk} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} D_{ki,2}^2$, and covariance $c_{xy, k} = \frac{1}{N_k} \sum_{i=1}^N \gamma_{ik} D_{ki,1} D_{ki,2}$.
+        \item \textbf{Constraint enforcement on $\Sigma_k$:}
+        \begin{itemize}
+            \item \textit{Component 1 (Diagonal):} Calculate correlation $\rho_1^{\text{raw}} = c_{xy,1} / \sqrt{v_{x1} v_{y1}}$. Clamp $\rho_1 = \min(0.90, \max(0.70, \rho_1^{\text{raw}}))$. Set $\Sigma_1 = \begin{pmatrix} v_{x1} & \rho_1 \sqrt{v_{x1} v_{y1}} \\ \rho_1 \sqrt{v_{x1} v_{y1}} & v_{y1} \end{pmatrix}$.
+            \item \textit{Component 2 (Vertical):} Set $\rho_2 = 0$. If $v_{y2} < c \cdot v_{x2}$, enforce $v_{y2} \leftarrow c \cdot v_{x2}$. Set $\Sigma_2 = \operatorname{diag}(v_{x2}, v_{y2})$.
+            \item \textit{Component 3 (Horizontal):} Set $\rho_3 = 0$. If $v_{x3} < c \cdot v_{y3}$, enforce $v_{x3} \leftarrow c \cdot v_{y3}$. Set $\Sigma_3 = \operatorname{diag}(v_{x3}, v_{y3})$.
+        \end{itemize}
+        \item \textbf{E-Step log-density evaluation:} Evaluate bivariate log-densities $\ln f_k(X_i) = -\ln(2\pi) - \frac{1}{2}\ln(\det \Sigma_k) - \frac{1}{2} D_{ki}^\top \Sigma_k^{-1} D_{ki}$.
+        \item \textbf{Log-sum-exp posterior update:} For each gene $i$, let $M_i = \max_k (\ln \pi_k + \ln f_k(X_i))$. Compute total log-density $\ln p(X_i) = M_i + \ln \sum_{k=1}^K \exp(\ln \pi_k + \ln f_k(X_i) - M_i)$.
+        \item \textbf{Updated responsibilities:} $\gamma_{ik}^{(t+1)} = \exp(\ln \pi_k + \ln f_k(X_i) - \ln p(X_i))$.
+        \item \textbf{Log-likelihood evaluation:} $\ell^{(t+1)} = \sum_{i=1}^N \ln p(X_i)$.
+    \end{itemize}
+
+    \item \textbf{Model Complexity & BIC Ranking:}
+    Given convergence at $\hat{\ell}$, compute $\text{BIC} = -2\hat{\ell} + P \ln(N)$ with $P \in \{5, 10, 15\}$. Candidate models are sorted by ascending BIC.
+    
+    \item \textbf{Parametric Confidence Ellipse Generation:}
+    For any component $k$ with estimated centroid $\hat{\mu}_k$ and dispersion $\hat{\Sigma}_k$, concentration ellipses at probability level $\alpha \in \{0.50, 0.90, 0.95\}$ are parameterized using the spectral decomposition $\hat{\Sigma}_k = V \Lambda V^\top$:
+    \begin{equation}
+    E_k(\alpha) = \left\{ \hat{\mu}_k + \sqrt{F_{\chi_2^2}^{-1}(\alpha)} \cdot V \Lambda^{1/2} \begin{pmatrix} \cos \phi \\ \sin \phi \end{pmatrix} : \phi \in [0, 2\pi) \right\},
+    \end{equation}
+    where $F_{\chi_2^2}^{-1}(0.50) \approx 1.386$, $F_{\chi_2^2}^{-1}(0.90) \approx 4.605$, and $F_{\chi_2^2}^{-1}(0.95) \approx 5.991$.
+\end{enumerate}
+
+All code is fully standalone, requires only base R and \texttt{data.table}, and is publicly available at \url{https://github.com/Darwin-NGOUNE/Discrete-coupling-regimes-govern-mRNA-protein-relationships-and-predictability}.
+
