@@ -1,8 +1,9 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=2.2cm]{geometry}
+\usepackage[margin=1.9cm]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{enumitem}
 \usepackage{hyperref}
 
 \title{\textbf{Supplementary Methods: Constrained Bivariate Gaussian Mixture Modeling}}
@@ -11,7 +12,7 @@
 
 \begin{document}
 \maketitle
-\vspace{-1cm}
+\vspace{-1.2cm}
 
 \subsection*{1. Objective and Input Data}
 To determine whether the mRNA--protein response regimes identified by Differential Pattern Analysis (DiPa) reflect distinct biological subpopulations rather than arbitrary slices of a continuous cloud, we fitted constrained bivariate Gaussian Mixture Models (GMM) to the empirical log$_2$ fold changes independently of the $\pm 0.5$ cutoffs. 
@@ -29,7 +30,7 @@ p(X_i \mid \theta) = \sum_{k=1}^K \pi_k \, \mathcal{N}_2\left(X_i \mid \mu_k, \,
 where $\mu_k = (\mu_{xk}, \mu_{yk})^\top$ are component centroids and $\Sigma_k = \begin{pmatrix} \sigma_{xk}^2 & \rho_k \sigma_{xk}\sigma_{yk} \\ \rho_k \sigma_{xk}\sigma_{yk} & \sigma_{yk}^2 \end{pmatrix}$ are covariance matrices.
 
 To prevent unconstrained components from fitting arbitrary noise, three biophysical constraints were enforced:
-\begin{enumerate}
+\begin{enumerate}[noitemsep,topsep=2pt]
     \item \textbf{Component 1 (Diagonal / Co-regulation):} Represents canonical stoichiometric coupling. The correlation is bounded within a biologically realistic coupling window:
     \begin{equation}
     \rho_1 \in [0.70, \, 0.90].
@@ -46,15 +47,15 @@ To prevent unconstrained components from fitting arbitrary noise, three biophysi
 The elongation factor was systematically tested across $c \in \{1.3, 1.5, 2.0, 2.5, 4.0\}$ (aspect ratios $\sqrt{c} \in [1.14, 2.00]$).
 
 \subsection*{3. Expectation-Maximization (EM) Algorithm}
-Parameters were estimated iteratively via the EM algorithm until the log-likelihood converged ($|\ell^{(t+1)} - \ell^{(t)}| < 10^{-6}$):
-\begin{itemize}
+Parameters were estimated iteratively via the Expectation-Maximization (EM) algorithm~\cite{dempster1977maximum, mclachlan2000finite} until the log-likelihood converged ($|\ell^{(t+1)} - \ell^{(t)}| < 10^{-6}$):
+\begin{itemize}[noitemsep,topsep=2pt]
     \item \textbf{Initialization:} Posterior weights $\gamma_{ik}^{(0)} \in [0, 1]$ were initialized deterministically based on coarse regions (vertical candidates: $|x_i| < 0.55, |y_i| > 0.40$; horizontal candidates: $|x_i| > 0.50, |y_i| < 0.50$; diagonal otherwise), normalized so $\sum_k \gamma_{ik}^{(0)} = 1$.
     \item \textbf{M-Step (Maximization):} Given weights $\gamma_{ik}$, component sample sizes $N_k = \sum_i \gamma_{ik}$ and mixing weights $\pi_k = N_k / N$ were computed. Centroids and sample dispersions were updated:
     \begin{equation}
     \mu_k = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik} X_i, \quad v_{xk} = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik}(x_i - \mu_{xk})^2, \quad v_{yk} = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik}(y_i - \mu_{yk})^2.
     \end{equation}
     Constraints were then directly applied:
-    \begin{itemize}
+    \begin{itemize}[noitemsep,topsep=1pt]
         \item For $k=1$: $\rho_1 = \min(0.90, \max(0.70, c_{xy,1}/\sqrt{v_{x1}v_{y1}}))$, and $\Sigma_1$ is assembled.
         \item For $k=2$: $\Sigma_2 = \operatorname{diag}(v_{x2}, \, \max(v_{y2}, \, c \cdot v_{x2}))$.
         \item For $k=3$: $\Sigma_3 = \operatorname{diag}(\max(v_{x3}, \, c \cdot v_{y3}), \, v_{y3})$.
@@ -66,17 +67,17 @@ Parameters were estimated iteratively via the EM algorithm until the log-likelih
 \end{itemize}
 
 \subsection*{4. Model Selection (BIC)}
-Model selection across $K \in \{1, 2, 3\}$ and $c \in \{1.3, 1.5, 2.0, 2.5, 4.0\}$ was evaluated using the Bayesian Information Criterion:
+Model selection across $K \in \{1, 2, 3\}$ and $c \in \{1.3, 1.5, 2.0, 2.5, 4.0\}$ was evaluated using the Bayesian Information Criterion (BIC)~\cite{schwarz1978estimating}:
 \begin{equation}
 \text{BIC} = -2\hat{\ell} + P \ln(N),
 \end{equation}
 where $\hat{\ell}$ is the maximized log-likelihood, $N = 943$ ($\ln(943) \approx 6.849$), and $P$ is the number of free parameters:
-\begin{itemize}
+\begin{itemize}[noitemsep,topsep=2pt]
     \item $K = 1$: 2 means + 2 variances + 1 covariance $\implies P = 5$.
     \item $K = 2$ (constrained): 1 weight ($\pi_1$) + 4 means + 3 dispersion (Comp 1) + 2 variances (Comp 2) $\implies P = 10$.
     \item $K = 3$ (constrained): 2 weights + 6 means + 3 (Comp 1) + 2 (Comp 2) + 2 (Comp 3) $\implies P = 15$.
 \end{itemize}
-BIC was used instead of classical likelihood-ratio tests because testing component complexity ($K$ vs.\ $K+1$) places the null hypothesis ($\pi_{K+1} = 0$) on the boundary of the probability simplex, violating Wilks' theorem regularity conditions.
+A difference $\Delta\text{BIC} < -10$ provides decisive evidence in favor of the lower-BIC model on the Kass--Raftery scale~\cite{kass1995bayes}. BIC was chosen over classical likelihood-ratio tests because testing component complexity ($K$ vs.\ $K+1$) places the null hypothesis ($\pi_{K+1} = 0$) on the boundary of the probability simplex, violating Wilks' regularity conditions~\cite{mclachlan2000finite}.
 
 \subsection*{5. Confidence Ellipses}
 Concentration ellipses for component $k$ at confidence levels $\alpha \in \{0.50, 0.90, 0.95\}$ were plotted using the spectral decomposition $\hat{\Sigma}_k = V \Lambda V^\top$:
@@ -85,6 +86,31 @@ E_k(\alpha) = \hat{\mu}_k + \sqrt{F_{\chi_2^2}^{-1}(\alpha)} \cdot V \Lambda^{1/
 \end{equation}
 with radii $\sqrt{F_{\chi_2^2}^{-1}(0.50)} \approx 1.177$, $\sqrt{F_{\chi_2^2}^{-1}(0.90)} \approx 2.146$, and $\sqrt{F_{\chi_2^2}^{-1}(0.95)} \approx 2.448$.
 
-The complete analysis pipeline is implemented in base R and \texttt{data.table} in \texttt{Generate\_Supplementary\_Figure\_6\_Master\_Plate.R}.
+The complete analysis pipeline is implemented in base R and \texttt{data.table} (see script \path{Generate_Supplementary_Figure_6_Master_Plate.R}).
+
+\small
+\begin{thebibliography}{9}
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
+\bibitem{dempster1977maximum}
+A.~P. Dempster, N.~M. Laird, and D.~B. Rubin.
+Maximum likelihood from incomplete data via the EM algorithm.
+\textit{J. R. Stat. Soc. Series B}, 39(1):1--22, 1977.
+
+\bibitem{mclachlan2000finite}
+G.~J. McLachlan and D.~Peel.
+\textit{Finite Mixture Models}.
+John Wiley \& Sons, New York, 2000.
+
+\bibitem{schwarz1978estimating}
+G.~Schwarz.
+Estimating the dimension of a model.
+\textit{Ann. Stat.}, 6(2):461--464, 1978.
+
+\bibitem{kass1995bayes}
+R.~E. Kass and A.~E. Raftery.
+Bayes factors.
+\textit{J. Am. Stat. Assoc.}, 90(430):773--795, 1995.
+\end{thebibliography}
 
 \end{document}
