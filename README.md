@@ -103,9 +103,6 @@ BiocManager::install(c("sva", "limma", "edgeR", "DESeq2", "MSstats"))
 **Darwin Brunel Ngoune Domo**  
 *Department of Statistics, TU Dortmund University, Dortmund, Germany*  
 
-When using the code or datasets from this repository, please cite:
-> Ngoune, D. et al. *Discrete-coupling-regimes-govern-mRNA-protein-relationships-and-predictability.*.
-
 ---
 
 ## 📄 License

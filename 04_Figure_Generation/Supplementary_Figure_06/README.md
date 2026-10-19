@@ -1,9 +1,6 @@
 # Supplementary Figure 6: Constrained Bivariate Gaussian Mixture Modeling of mRNA–Protein Fold Changes & Model Selection
-## *(Nature Communications Manuscript)*
 
 [![Vector PDF](https://img.shields.io/badge/Format-Vector_PDF_300DPI-red.svg)](Supplementary_Figure_06.pdf)
-[![Nature Communications](https://img.shields.io/badge/Article-Supplementary_Figure_6-teal.svg)](https://www.nature.com/ncomms/)
-[![Supplementary Table 5](https://img.shields.io/badge/Table-Supplementary_Table_5-blue.svg)](Supplementary_Table_5_Mixture_Models.csv)
 
 ---
 
@@ -76,8 +73,6 @@ To answer this conclusively without subjective thresholding:
 
 The numerical estimates and criteria for all 22 tested models are compiled into **Supplementary Table 5**:
 * 📄 **CSV Spreadsheet:** [`Supplementary_Table_5_Mixture_Models.csv`](Supplementary_Table_5_Mixture_Models.csv)
-* 📄 **LaTeX Table Snippet:** [`Supplementary_Table_5_Snippet.tex`](Supplementary_Table_5_Snippet.tex)
-* 📄 **Standalone PDF Table:** [`Supplementary_Table_5_Standalone.pdf`](Supplementary_Table_5_Standalone.pdf)
 
 ### Summary of Key Quantitative Findings:
 | Cohort | Optimal Model | Elongation ($c$) | Parameters ($P$) | Log-Likelihood ($\log L$) | BIC | $\Delta\text{BIC}$ vs $K=1$ | $\pi_1$ (Diag) | $\pi_2$ (Vert) | $\pi_3$ (Horiz) |
@@ -105,5 +100,4 @@ To reproduce Supplementary Figure 6 and Supplementary Table 5 from scratch, exec
 
 ```bash
 Rscript "Generate_Supplementary_Figure_6_Master_Plate.R"
-pdflatex -interaction=nonstopmode "Supplementary_Table_5_Standalone.tex"
 ```
