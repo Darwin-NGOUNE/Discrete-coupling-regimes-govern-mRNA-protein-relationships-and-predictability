@@ -1,0 +1,21 @@
+% ==============================================================================
+% Methods Section (Main Manuscript) - Constrained Gaussian Mixture Modeling
+% Location: 04_Figure_Generation/Supplementary_Figure_06/Methods_GMM_Main_Text.tex
+% ==============================================================================
+
+\subsection*{Bivariate Gaussian mixture modeling and model selection}
+To evaluate whether the observed mRNA--protein response geometries represented genuine biological subpopulations rather than discretization artifacts of the empirical $\pm 0.5\,\log_2\text{FC}$ thresholds, we fitted constrained bivariate Gaussian Mixture Models (GMM) to the joint distributions of paired mRNA and protein fold changes ($X_i = (\log_2\text{FC}_{\text{RNA}, i}, \, \log_2\text{FC}_{\text{Prot}, i})^\top$, $N = 943$ matched pairs) across both BDL and $\text{CCl}_4$ cohorts:
+\begin{equation}
+p(X_i \mid \theta) = \sum_{k=1}^K \pi_k \, \mathcal{N}_2\left(X_i \mid \mu_k, \, \Sigma_k\right),
+\end{equation}
+where $\pi_k \in [0, 1]$ are mixing proportions ($\sum_{k=1}^K \pi_k = 1$), $\mu_k \in \mathbb{R}^2$ are component centroids, and $\Sigma_k$ are $2 \times 2$ covariance matrices. Candidate models with $K \in \{1, 2, 3\}$ components were estimated via an Expectation-Maximization (EM) algorithm. 
+
+To safeguard against overfitting and align component geometries with biophysical hypotheses, structural constraints were enforced during the M-step:
+\begin{enumerate}
+    \item \textbf{Diagonal component ($k=1$):} captures stoichiometric mRNA--protein coupling with correlation constrained to $\rho_1 \in [0.70, 0.90]$.
+    \item \textbf{Vertical component ($k=2$):} captures post-transcriptional, protein-dominant decoupling with zero correlation ($\rho_2 = 0$) and variance constrained to $\sigma_{y2}^2 \ge c \, \sigma_{x2}^2$.
+    \item \textbf{Horizontal component ($k=3$):} captures transcriptomic buffering with zero correlation ($\rho_3 = 0$) and variance constrained to $\sigma_{x3}^2 \ge c \, \sigma_{y3}^2$.
+\end{enumerate}
+Sensitivity to the elongation factor was systematically evaluated across $c \in \{1.3, 1.5, 2.0, 2.5, 4.0\}$ (corresponding to visual axis aspect ratios $\sqrt{c} \in [1.14, 2.00]$).
+
+Model selection was governed by the Bayesian Information Criterion ($\text{BIC} = -2\ln \hat{L} + P \ln N$), where $P$ is the number of freely estimated parameters ($P = 5$ for $K=1$, $P = 10$ for constrained $K=2$, and $P = 15$ for constrained $K=3$). BIC was chosen over classical likelihood-ratio tests because testing component complexity ($K$ vs.\ $K+1$) places the null hypothesis ($\pi_{K+1} = 0$) on the boundary of the parameter space, violating Wilks' regularity conditions. Full mathematical formulations, EM update equations, and parameter derivations are detailed in \textbf{Supplementary Methods}; model selection results are presented in \textbf{Supplementary Figure~6} and \textbf{Supplementary Table~5}.
