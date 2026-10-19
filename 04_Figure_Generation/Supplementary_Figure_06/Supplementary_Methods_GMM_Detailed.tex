@@ -52,13 +52,13 @@ Parameters were estimated iteratively via the Expectation-Maximization (EM) algo
     \item \textbf{Initialization:} Posterior weights $\gamma_{ik}^{(0)} \in [0, 1]$ were initialized deterministically based on coarse regions (vertical candidates: $|x_i| < 0.55, |y_i| > 0.40$; horizontal candidates: $|x_i| > 0.50, |y_i| < 0.50$; diagonal otherwise), normalized so $\sum_k \gamma_{ik}^{(0)} = 1$.
     \item \textbf{M-Step (Maximization):} Given weights $\gamma_{ik}$, component sample sizes $N_k = \sum_i \gamma_{ik}$ and mixing weights $\pi_k = N_k / N$ were computed. Centroids and sample dispersions were updated:
     \begin{equation}
-    \mu_k = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik} X_i, \quad v_{xk} = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik}(x_i - \mu_{xk})^2, \quad v_{yk} = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik}(y_i - \mu_{yk})^2.
+    \mu_k = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik} X_i, \quad v_{xk} = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik}(x_i - \mu_{xk})^2, \quad v_{yk} = \frac{1}{N_k}\sum_{i=1}^N \gamma_{ik}(y_i - \mu_{yk})^2,
     \end{equation}
-    Constraints were then directly applied:
+    and $c_{xy,1} = \frac{1}{N_1}\sum_{i=1}^N \gamma_{i1}(x_i - \mu_{x1})(y_i - \mu_{y1})$. Constraints were then directly applied to define the final dispersion parameters $\hat{\sigma}^2$ and matrices $\Sigma_k$:
     \begin{itemize}[noitemsep,topsep=1pt]
-        \item For $k=1$: $\rho_1 = \min(0.90, \max(0.70, c_{xy,1}/\sqrt{v_{x1}v_{y1}}))$, and $\Sigma_1$ is assembled.
-        \item For $k=2$: $\Sigma_2 = \operatorname{diag}(v_{x2}, \, \max(v_{y2}, \, c \cdot v_{x2}))$.
-        \item For $k=3$: $\Sigma_3 = \operatorname{diag}(\max(v_{x3}, \, c \cdot v_{y3}), \, v_{y3})$.
+        \item For $k=1$: $\hat{\sigma}_{x1}^2 = v_{x1}$, $\hat{\sigma}_{y1}^2 = v_{y1}$, $\hat{\rho}_1 = \min(0.90, \max(0.70, c_{xy,1}/\sqrt{v_{x1}v_{y1}}))$, and $\Sigma_1 = \begin{pmatrix} \hat{\sigma}_{x1}^2 & \hat{\rho}_1 \hat{\sigma}_{x1}\hat{\sigma}_{y1} \\ \hat{\rho}_1 \hat{\sigma}_{x1}\hat{\sigma}_{y1} & \hat{\sigma}_{y1}^2 \end{pmatrix}$.
+        \item For $k=2$: $\hat{\sigma}_{x2}^2 = v_{x2}$, $\hat{\sigma}_{y2}^2 = \max(v_{y2}, \, c \cdot v_{x2})$, and $\Sigma_2 = \operatorname{diag}(\hat{\sigma}_{x2}^2, \, \hat{\sigma}_{y2}^2)$.
+        \item For $k=3$: $\hat{\sigma}_{x3}^2 = \max(v_{x3}, \, c \cdot v_{y3})$, $\hat{\sigma}_{y3}^2 = v_{y3}$, and $\Sigma_3 = \operatorname{diag}(\hat{\sigma}_{x3}^2, \, \hat{\sigma}_{y3}^2)$.
     \end{itemize}
     \item \textbf{E-Step (Expectation):} Using the updated parameters, posterior responsibilities were recalculated:
     \begin{equation}
