@@ -1,10 +1,17 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=1.9cm]{geometry}
+\usepackage[margin=1.65cm]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{hyperref}
+
+\AtBeginDocument{
+  \setlength{\abovedisplayskip}{4pt}
+  \setlength{\belowdisplayskip}{4pt}
+  \setlength{\abovedisplayshortskip}{2pt}
+  \setlength{\belowdisplayshortskip}{2pt}
+}
 
 \title{\textbf{Supplementary Methods: Constrained Bivariate Gaussian Mixture Modeling}}
 \author{Darwin Brunel Ngoune Domo}
@@ -12,7 +19,7 @@
 
 \begin{document}
 \maketitle
-\vspace{-1.2cm}
+\vspace{-1.3cm}
 
 \subsection*{1. Objective and Input Data}
 To determine whether the mRNA--protein response regimes identified by Differential Pattern Analysis (DiPa) reflect distinct biological subpopulations rather than arbitrary slices of a continuous cloud, we fitted constrained bivariate Gaussian Mixture Models (GMM) to the empirical log$_2$ fold changes independently of the $\pm 0.5$ cutoffs. 
@@ -80,17 +87,17 @@ where $\hat{\ell}$ is the maximized log-likelihood, $N = 943$ ($\ln(943) \approx
 A difference $\Delta\text{BIC} < -10$ provides decisive evidence in favor of the lower-BIC model on the Kass--Raftery scale~\cite{kass1995bayes}. BIC was chosen over classical likelihood-ratio tests because testing component complexity ($K$ vs.\ $K+1$) places the null hypothesis ($\pi_{K+1} = 0$) on the boundary of the probability simplex, violating Wilks' regularity conditions~\cite{mclachlan2000finite}.
 
 \subsection*{5. Confidence Ellipses}
-Concentration ellipses for component $k$ at confidence levels $\alpha \in \{0.50, 0.90, 0.95\}$ were plotted using the spectral decomposition $\hat{\Sigma}_k = V \Lambda V^\top$:
+Concentration ellipses for component $k$ at confidence levels $\alpha \in \{0.50, 0.90, 0.95\}$ were generated using the spectral decomposition $\hat{\Sigma}_k = V \Lambda V^\top$:
 \begin{equation}
 E_k(\alpha) = \hat{\mu}_k + \sqrt{F_{\chi_2^2}^{-1}(\alpha)} \cdot V \Lambda^{1/2} \begin{pmatrix} \cos \phi \\ \sin \phi \end{pmatrix}, \quad \phi \in [0, 2\pi),
 \end{equation}
-with radii $\sqrt{F_{\chi_2^2}^{-1}(0.50)} \approx 1.177$, $\sqrt{F_{\chi_2^2}^{-1}(0.90)} \approx 2.146$, and $\sqrt{F_{\chi_2^2}^{-1}(0.95)} \approx 2.448$.
+where $V$ is the orthogonal matrix of eigenvectors governing the spatial orientation (rotation) of the ellipse axes, $\Lambda = \operatorname{diag}(\lambda_1, \lambda_2)$ contains the eigenvalues (variances along principal axes), and $\sqrt{F_{\chi_2^2}^{-1}(\alpha)}$ is the Mahalanobis critical radius derived from the $\chi_2^2$ distribution enclosing probability mass $\alpha$ ($r_{0.50} \approx 1.177$, $r_{0.90} \approx 2.146$, and $r_{0.95} \approx 2.448$).
 
 The complete analysis pipeline is implemented in base R and \texttt{data.table} (see script \path{Generate_Supplementary_Figure_6_Master_Plate.R}).
 
-\small
+\footnotesize
 \begin{thebibliography}{9}
-\setlength{\itemsep}{0pt}
+\setlength{\itemsep}{-1pt}
 \setlength{\parskip}{0pt}
 \bibitem{dempster1977maximum}
 A.~P. Dempster, N.~M. Laird, and D.~B. Rubin.
