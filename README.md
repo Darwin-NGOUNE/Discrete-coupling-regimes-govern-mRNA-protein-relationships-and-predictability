@@ -66,8 +66,17 @@ Protein_Modeling_Consortium_GitHub/
 │
 └── 📁 04_Figure_Generation/
     ├── 📁 Figure_01/ to Figure_06/                ──► Main Figures (Vector PDFs, Master Scripts & READMEs)
-    └── 📁 Supplementary_Figure_01/ to 05/         ──► Supplementary Figures (Vector PDFs, Master Scripts)
+    ├── 📁 Supplementary_Figure_01/ to 05/         ──► Supplementary Figures (Biological validations, Volcano, Kinases, Sensitivity)
+    └── 📁 Supplementary_Figure_06/                ──► Supplementary Figure 6 & Supplementary Table 5: Constrained Gaussian Mixture Models (EM) & BIC Model Selection
 ```
+
+### 📊 Supplementary Figure 6 & Supplementary Table 5
+Located in `04_Figure_Generation/Supplementary_Figure_06/`:
+* **Statistical Objective:** Rigorous data-driven validation of DiPa coupling regimes independent of threshold boundaries, fitting constrained bivariate Gaussian Mixture Models ($K \in \{1, 2, 3\}$, elongation factors $c \in \{1.3, 1.5, 2.0, 2.5, 4.0\}$) via an Expectation-Maximization (EM) algorithm to all $N = 943$ matched pairs.
+* **Panel A (BDL):** Optimal 2-component mixture ($K = 2, c = 1.3$, $\Delta\text{BIC} = -304.8$), resolving canonical diagonal coupling ($90.9\%$) and vertical protein-dominant decoupling ($9.1\%$).
+* **Panel B ($\text{CCl}_4$):** Optimal 3-component mixture ($K = 3, c = 1.3$, $\Delta\text{BIC} = -222.3$), resolving diagonal coupling ($61.6\%$), vertical decoupling ($30.2\%$), and horizontal transcriptomic buffering ($8.2\%$).
+* **Panel C (Model Selection Bar Chart):** Systematic comparison of all 22 candidate models ranked by increasing absolute BIC independently per etiology using dynamic facet reordering (`scale_x_reordered`).
+* **Supplementary Table 5:** Full statistical table available in CSV (`Supplementary_Table_5_Mixture_Models.csv`), Standalone Landscape PDF (`Supplementary_Table_5_Standalone.pdf`), and LaTeX source.
 
 ---
 
