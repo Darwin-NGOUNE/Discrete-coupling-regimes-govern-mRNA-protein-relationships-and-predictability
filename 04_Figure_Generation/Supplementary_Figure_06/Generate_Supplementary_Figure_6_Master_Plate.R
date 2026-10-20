@@ -67,24 +67,31 @@ Combined_CCL4 <- merge(DT_ccl4[, .(GeneProtein, log2G, log2P)], Cloud_CCL4[, .(G
 X_ccl4 <- as.matrix(Combined_CCL4[, .(log2G, log2P)])
 
 # ------------------------------------------------------------------------------
-# 2. HELPER FUNCTIONS
+# 2. HELPER FUNCTIONS (MATHEMATICAL FOUNDATIONS)
 # ------------------------------------------------------------------------------
+
+# Log-density of bivariate normal distribution N_2(mu, Sigma)
+# Implemented using pure Base R matrix algebra (bypassing external dependencies)
+# with analytical 2x2 determinant, matrix inversion, and Mahalanobis distance.
 log_dmvnorm2 <- function(X, mu, Sigma) {
   diff_m <- sweep(X, 2, mu, "-")
   detS   <- Sigma[1, 1] * Sigma[2, 2] - Sigma[1, 2]^2
-  if (detS <= 1e-12) detS <- 1e-12
+  if (detS <= 1e-12) detS <- 1e-12 # Numerical guard against singularity
   invS   <- matrix(c(Sigma[2, 2], -Sigma[1, 2], -Sigma[2, 1], Sigma[1, 1]), nrow = 2) / detS
   quad   <- rowSums((diff_m %*% invS) * diff_m)
   -0.5 * (2 * log(2 * pi) + log(detS) + quad)
 }
 
+# Spectral decomposition confidence ellipses:
+# E_k(alpha) = mu_k + sqrt(chi^2_2(alpha)) * V * Lambda^(1/2) * [cos(phi), sin(phi)]^T
+# Computes exact Mahalanobis contours enclosing alpha in {0.50, 0.90, 0.95} mass.
 get_ellipse_coords <- function(mu, Sigma, levels = c(0.50, 0.90, 0.95), n_points = 200, label_prefix = "") {
   theta_seq   <- seq(0, 2 * pi, length.out = n_points)
   unit_circle <- rbind(cos(theta_seq), sin(theta_seq))
-  eig         <- eigen(Sigma)
+  eig         <- eigen(Sigma) # Spectral decomposition: Sigma = V %*% Lambda %*% V^T
   scale_mat   <- eig$vectors %*% diag(sqrt(pmax(eig$values, 1e-8)), 2)
   res <- lapply(levels, function(lvl) {
-    c_rad  <- sqrt(qchisq(lvl, df = 2))
+    c_rad  <- sqrt(qchisq(lvl, df = 2)) # Radii: r_0.50 ~ 1.177, r_0.90 ~ 2.146, r_0.95 ~ 2.448
     coords <- mu + c_rad * (scale_mat %*% unit_circle)
     data.table(Component = label_prefix, Level = paste0(round(lvl * 100), "%"), x = coords[1, ], y = coords[2, ])
   })
@@ -98,80 +105,121 @@ quadrant_labels <- data.frame(
 )
 
 c_colors <- c(
-  "Diagonal"  = "#1976D2", # Blue
-  "Vertical (protein-dominant)"   = "#7B1FA2", # Purple
-  "Horizontal (protein-buffered)" = "#E65100"  # Orange
+  "Diagonal"                      = "#1976D2", # Blue (Component 1: Stoichiometric coupling)
+  "Vertical (protein-dominant)"   = "#7B1FA2", # Purple (Component 2: Protein-dominant decoupling)
+  "Horizontal (protein-buffered)" = "#E65100"  # Orange (Component 3: Post-transcriptional buffering)
 )
 
 # ------------------------------------------------------------------------------
-# 3. FIT WINNING MODELS (PANEL A & B)
+# 3. FIT WINNING MODELS FOR VISUALIZATION (PANEL A & B)
 # ------------------------------------------------------------------------------
-# BDL Winner: K = 2, c = 1.3
+
+# --- BDL Cohort Winner: K = 2, c = 1.3 ---
+# Biophysical constraints enforced:
+#   - Component 1: rho_1 in [0.70, 0.90]
+#   - Component 2: rho_2 = 0, sigma_y2^2 >= 1.3 * sigma_x2^2
 N_bdl <- nrow(X_bdl)
+
+# Initialization: Deterministic coarse partition
 is_vert_bdl <- abs(X_bdl[, 1]) < 0.55 & abs(X_bdl[, 2]) > 0.40
-gamma1_b <- ifelse(!is_vert_bdl, 0.85, 0.15); gamma2_b <- 1 - gamma1_b
+gamma1_b <- ifelse(!is_vert_bdl, 0.85, 0.15)
+gamma2_b <- 1 - gamma1_b
+
 ll_prev <- -Inf
-for (iter in 1:400) {
+for (iter in 1:400) { # max_iter = 400 safety cap; converges via |Delta ell| < 1e-6
+  # --- M-Step: 
   N1 <- sum(gamma1_b); N2 <- sum(gamma2_b)
   pi_bdl <- c(N1/N_bdl, N2/N_bdl)
   mu1_k <- colSums(X_bdl * gamma1_b) / N1; mu2_k <- colSums(X_bdl * gamma2_b) / N2
   diff1 <- sweep(X_bdl, 2, mu1_k, "-"); diff2 <- sweep(X_bdl, 2, mu2_k, "-")
+  
+  # Component 1 (Diagonal): Update variances and clamp correlation rho_1 in [0.70, 0.90] 
   vx1 <- sum(gamma1_b * diff1[,1]^2)/N1; vy1 <- sum(gamma1_b * diff1[,2]^2)/N1
   cov1 <- sum(gamma1_b * diff1[,1]*diff1[,2])/N1
   rho1 <- min(max(cov1 / (sqrt(vx1)*sqrt(vy1)), 0.70), 0.90)
   Sig1_bdl <- matrix(c(vx1, rho1*sqrt(vx1*vy1), rho1*sqrt(vx1*vy1), vy1), 2)
+  
+  # Component 2 (Vertical): rho_2 = 0, enforce vertical elongation vy2 >= 1.3 * vx2 
   vx2 <- sum(gamma2_b * diff2[,1]^2)/N2; vy2 <- sum(gamma2_b * diff2[,2]^2)/N2
   if (vy2 < 1.3 * vx2) vy2 <- 1.3 * vx2
   Sig2_bdl <- diag(c(vx2, vy2))
+  
+  # --- E-Step: 
   lf1 <- log_dmvnorm2(X_bdl, mu1_k, Sig1_bdl); lf2 <- log_dmvnorm2(X_bdl, mu2_k, Sig2_bdl)
   ln1 <- log(pi_bdl[1]) + lf1; ln2 <- log(pi_bdl[2]) + lf2
-  ml <- pmax(ln1, ln2); lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml))
-  ll <- sum(lden)
+  ml  <- pmax(ln1, ln2) # Log-sum-exp stabilization to avoid underflow
+  lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml))
+  ll   <- sum(lden) # Evaluated total log-likelihood
   gamma1_b <- exp(ln1 - lden); gamma2_b <- exp(ln2 - lden)
+  
+  # Convergence check: |Delta ell| < 1e-6 (McLachlan & Peel, 2000)
   if (abs(ll - ll_prev) < 1e-6) break
   ll_prev <- ll
 }
+
 el_bdl <- rbind(
   get_ellipse_coords(mu1_k, Sig1_bdl, levels = c(0.50, 0.90, 0.95), label_prefix = "Diagonal"),
   get_ellipse_coords(mu2_k, Sig2_bdl, levels = c(0.50, 0.90, 0.95), label_prefix = "Vertical (protein-dominant)")
 )
 
-# CCl4 Winner: K = 3, c = 1.3
+# --- CCl4 Cohort Winner: K = 3, c = 1.3 ---
+# Biophysical constraints enforced:
+#   - Component 1: rho_1 in [0.70, 0.90]
+#   - Component 2: rho_2 = 0, sigma_y2^2 >= 1.3 * sigma_x2^2
+#   - Component 3: rho_3 = 0, sigma_x3^2 >= 1.3 * sigma_y3^2
 N_ccl4 <- nrow(X_ccl4)
+
+# Initialization: Deterministic coarse partition
 is_vert_c  <- abs(X_ccl4[, 1]) < 0.55 & abs(X_ccl4[, 2]) > 0.40
 is_horiz_c <- abs(X_ccl4[, 1]) > 0.50 & abs(X_ccl4[, 2]) < 0.50
 is_diag_c  <- !is_vert_c & !is_horiz_c
 gamma1_c <- ifelse(is_diag_c, 0.70, 0.15)
 gamma2_c <- ifelse(is_vert_c, 0.70, 0.15)
 gamma3_c <- ifelse(is_horiz_c, 0.70, 0.15)
-norm_g <- gamma1_c + gamma2_c + gamma3_c
+norm_g   <- gamma1_c + gamma2_c + gamma3_c
 gamma1_c <- gamma1_c / norm_g; gamma2_c <- gamma2_c / norm_g; gamma3_c <- gamma3_c / norm_g
+
 ll_prev <- -Inf
-for (iter in 1:400) {
+for (iter in 1:400) { # max_iter = 400 safety cap; converges via |Delta ell| < 1e-6
+  # --- M-Step: 
   N1 <- sum(gamma1_c); N2 <- sum(gamma2_c); N3 <- sum(gamma3_c)
   pi_ccl4 <- c(N1/N_ccl4, N2/N_ccl4, N3/N_ccl4)
   mu1_k_c <- colSums(X_ccl4 * gamma1_c) / N1
   mu2_k_c <- colSums(X_ccl4 * gamma2_c) / N2
   mu3_k_c <- colSums(X_ccl4 * gamma3_c) / N3
   diff1 <- sweep(X_ccl4, 2, mu1_k_c, "-"); diff2 <- sweep(X_ccl4, 2, mu2_k_c, "-"); diff3 <- sweep(X_ccl4, 2, mu3_k_c, "-")
+  
+  # Component 1 (Diagonal): rho_1 in [0.70, 0.90] 
   vx1 <- sum(gamma1_c * diff1[,1]^2)/N1; vy1 <- sum(gamma1_c * diff1[,2]^2)/N1
   cov1 <- sum(gamma1_c * diff1[,1]*diff1[,2])/N1
   rho1 <- min(max(cov1 / (sqrt(vx1)*sqrt(vy1)), 0.70), 0.90)
   Sig1_ccl4 <- matrix(c(vx1, rho1*sqrt(vx1*vy1), rho1*sqrt(vx1*vy1), vy1), 2)
+  
+  # Component 2 (Vertical): rho_2 = 0, vy2 >= 1.3 * vx2 
   vx2 <- sum(gamma2_c * diff2[,1]^2)/N2; vy2 <- sum(gamma2_c * diff2[,2]^2)/N2
   if (vy2 < 1.3 * vx2) vy2 <- 1.3 * vx2
   Sig2_ccl4 <- diag(c(vx2, vy2))
+  
+  # Component 3 (Horizontal): rho_3 = 0, vx3 >= 1.3 * vy3 
   vx3 <- sum(gamma3_c * diff3[,1]^2)/N3; vy3 <- sum(gamma3_c * diff3[,2]^2)/N3
   if (vx3 < 1.3 * vy3) vx3 <- 1.3 * vy3
   Sig3_ccl4 <- diag(c(vx3, vy3))
-  lf1 <- log_dmvnorm2(X_ccl4, mu1_k_c, Sig1_ccl4); lf2 <- log_dmvnorm2(X_ccl4, mu2_k_c, Sig2_ccl4); lf3 <- log_dmvnorm2(X_ccl4, mu3_k_c, Sig3_ccl4)
+  
+  # --- E-Step: 
+  lf1 <- log_dmvnorm2(X_ccl4, mu1_k_c, Sig1_ccl4)
+  lf2 <- log_dmvnorm2(X_ccl4, mu2_k_c, Sig2_ccl4)
+  lf3 <- log_dmvnorm2(X_ccl4, mu3_k_c, Sig3_ccl4)
   ln1 <- log(pi_ccl4[1]) + lf1; ln2 <- log(pi_ccl4[2]) + lf2; ln3 <- log(pi_ccl4[3]) + lf3
-  ml <- pmax(ln1, ln2, ln3); lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml) + exp(ln3 - ml))
-  ll <- sum(lden)
+  ml  <- pmax(ln1, ln2, ln3) # Log-sum-exp stabilization
+  lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml) + exp(ln3 - ml))
+  ll   <- sum(lden) # Evaluated total log-likelihood
   gamma1_c <- exp(ln1 - lden); gamma2_c <- exp(ln2 - lden); gamma3_c <- exp(ln3 - lden)
+  
+  # Convergence check: |Delta ell| < 1e-6 (McLachlan & Peel, 2000)
   if (abs(ll - ll_prev) < 1e-6) break
   ll_prev <- ll
 }
+
 el_ccl4 <- rbind(
   get_ellipse_coords(mu1_k_c, Sig1_ccl4, levels = c(0.50, 0.90, 0.95), label_prefix = "Diagonal"),
   get_ellipse_coords(mu2_k_c, Sig2_ccl4, levels = c(0.50, 0.90, 0.95), label_prefix = "Vertical (protein-dominant)"),
@@ -240,48 +288,80 @@ p_b <- ggplot(DT_ccl4_plot, aes(log2G, log2P)) +
 # ------------------------------------------------------------------------------
 # 5. PANEL C: BAR CHART SORTED BY INCREASING BIC (NO TITLE / SUBTITLE)
 # ------------------------------------------------------------------------------
+# Tested elongation factor values: c in {1.3, 1.5, 2.0, 2.5, 4.0}
+# Corresponding to standard deviation ratios sqrt(c) in [1.14, 2.00]
 c_vals <- c(1.3, 1.5, 2.0, 2.5, 4.0)
 
+# Function to fit all 11 model candidates per cohort:
+#   - Model 1: Null single bivariate Gaussian (K = 1, p = 5)
+#   - Models 2-6: Constrained 2-component mixture across 5 elongation factors (K = 2,  p = 10)
+#   - Models 7-11: Constrained 3-component mixture across 5 elongation factors (K = 3, p = 15)
+# Parameter counts p and BIC penalization are defined in Section 4,
 fit_cohort_models <- function(X, cohort_name) {
   N <- nrow(X)
-  mu1 <- colMeans(X); S1 <- cov(X)
-  ll1 <- sum(log_dmvnorm2(X, mu1, S1))
-  bic1 <- -2*ll1 + 5*log(N)
+  
+  # --- K = 1: Unconstrained Single Bivariate Gaussian ---
+  # Parameters: 2 means (mu_x, mu_y) + 2 variances (s_x^2, s_y^2) + 1 covariance (s_xy) => P = 5
+  mu1  <- colMeans(X)
+  S1   <- cov(X)
+  ll1  <- sum(log_dmvnorm2(X, mu1, S1))
+  bic1 <- -2 * ll1 + 5 * log(N) #  with p = 5
   
   res <- list()
-  res[[1]] <- data.table(Cohort = cohort_name, K = 1, c = NA_real_, Ratio = 1.0, P = 5, LogLik = ll1, BIC = bic1, dBIC = 0, pi1 = 1.0, pi2 = 0.0, pi3 = 0.0, Status = "Null Single Gaussian")
+  res[[1]] <- data.table(
+    Cohort = cohort_name, K = 1, c = NA_real_, Ratio = 1.0, P = 5,
+    LogLik = ll1, BIC = bic1, dBIC = 0, pi1 = 1.0, pi2 = 0.0, pi3 = 0.0,
+    Status = "Null Single Gaussian"
+  )
   
-  # K = 2
+  # --- K = 2: Constrained Mixture (Diagonal + Vertical) across elongation factors c ---
+  # Parameters: 1 weight (pi_1) + 4 means (2 centroids) + 3 dispersion (Comp 1) + 2 dispersion (Comp 2) => P = 10
+  # Constraints: rho_1 in [0.70, 0.90];  rho_2 = 0, sigma_y2^2 >= c * sigma_x2^2
   is_vert <- abs(X[, 1]) < 0.55 & abs(X[, 2]) > 0.40
   for (f in c_vals) {
-    gamma1 <- ifelse(!is_vert, 0.85, 0.15); gamma2 <- 1 - gamma1
+    gamma1 <- ifelse(!is_vert, 0.85, 0.15)
+    gamma2 <- 1 - gamma1
     ll_prev <- -Inf
-    for (iter in 1:400) {
+    for (iter in 1:400) { # EM algorithm: converges via |Delta ell| < 1e-6
       N1 <- sum(gamma1); N2 <- sum(gamma2)
       pi_k2 <- c(N1/N, N2/N)
       mu1_k <- colSums(X * gamma1) / N1; mu2_k <- colSums(X * gamma2) / N2
       diff1 <- sweep(X, 2, mu1_k, "-"); diff2 <- sweep(X, 2, mu2_k, "-")
+      
+      # M-Step: with constraints 
       vx1 <- sum(gamma1 * diff1[,1]^2)/N1; vy1 <- sum(gamma1 * diff1[,2]^2)/N1
       cov1 <- sum(gamma1 * diff1[,1]*diff1[,2])/N1
       rho1 <- min(max(cov1 / (sqrt(vx1)*sqrt(vy1)), 0.70), 0.90)
       Sig1 <- matrix(c(vx1, rho1*sqrt(vx1*vy1), rho1*sqrt(vx1*vy1), vy1), 2)
+      
       vx2 <- sum(gamma2 * diff2[,1]^2)/N2; vy2 <- sum(gamma2 * diff2[,2]^2)/N2
       if (vy2 < f * vx2) vy2 <- f * vx2
       Sig2 <- diag(c(vx2, vy2))
+      
+      # E-Step: with log-sum-exp stabilization
       lf1 <- log_dmvnorm2(X, mu1_k, Sig1); lf2 <- log_dmvnorm2(X, mu2_k, Sig2)
       ln1 <- log(pi_k2[1]) + lf1; ln2 <- log(pi_k2[2]) + lf2
-      ml <- pmax(ln1, ln2); lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml))
-      ll <- sum(lden)
+      ml  <- pmax(ln1, ln2)
+      lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml))
+      ll   <- sum(lden)
       gamma1 <- exp(ln1 - lden); gamma2 <- exp(ln2 - lden)
+      
       if (abs(ll - ll_prev) < 1e-6) break
       ll_prev <- ll
     }
-    bic2 <- -2*ll + 10*log(N)
+    bic2 <- -2 * ll + 10 * log(N) #  with p = 10
     st <- if (cohort_name == "BDL" && f == 1.3) "Winning Model (Lowest BIC)" else "Constrained Model"
-    res[[length(res) + 1]] <- data.table(Cohort = cohort_name, K = 2, c = f, Ratio = sqrt(f), P = 10, LogLik = ll, BIC = bic2, dBIC = bic2 - bic1, pi1 = pi_k2[1], pi2 = pi_k2[2], pi3 = 0.0, Status = st)
+    res[[length(res) + 1]] <- data.table(
+      Cohort = cohort_name, K = 2, c = f, Ratio = sqrt(f), P = 10,
+      LogLik = ll, BIC = bic2, dBIC = bic2 - bic1, pi1 = pi_k2[1], pi2 = pi_k2[2], pi3 = 0.0,
+      Status = st
+    )
   }
   
-  # K = 3
+  # --- K = 3: Constrained Mixture (Diagonal + Vertical + Horizontal) across elongation factors c ---
+  # Parameters: 2 weights + 6 means (3 centroids) + 3 (Comp 1) + 2 (Comp 2) + 2 (Comp 3) => p = 15
+  # Constraints:  rho_1 in [0.70, 0.90];  rho_2 = 0, sigma_y2^2 >= c*sigma_x2^2;
+  #              rho_3 = 0, sigma_x3^2 >= c*sigma_y3^2
   is_vert  <- abs(X[, 1]) < 0.55 & abs(X[, 2]) > 0.40
   is_horiz <- abs(X[, 1]) > 0.50 & abs(X[, 2]) < 0.50
   is_diag  <- !is_vert & !is_horiz
@@ -292,32 +372,44 @@ fit_cohort_models <- function(X, cohort_name) {
     norm_g <- gamma1 + gamma2 + gamma3
     gamma1 <- gamma1 / norm_g; gamma2 <- gamma2 / norm_g; gamma3 <- gamma3 / norm_g
     ll_prev <- -Inf
-    for (iter in 1:400) {
+    for (iter in 1:400) { # EM algorithm: converges via |Delta ell| < 1e-6
       N1 <- sum(gamma1); N2 <- sum(gamma2); N3 <- sum(gamma3)
       pi_k3 <- c(N1/N, N2/N, N3/N)
       mu1_k <- colSums(X * gamma1) / N1; mu2_k <- colSums(X * gamma2) / N2; mu3_k <- colSums(X * gamma3) / N3
       diff1 <- sweep(X, 2, mu1_k, "-"); diff2 <- sweep(X, 2, mu2_k, "-"); diff3 <- sweep(X, 2, mu3_k, "-")
+      
+      # M-Step:  with constraints 
       vx1 <- sum(gamma1 * diff1[,1]^2)/N1; vy1 <- sum(gamma1 * diff1[,2]^2)/N1
       cov1 <- sum(gamma1 * diff1[,1]*diff1[,2])/N1
       rho1 <- min(max(cov1 / (sqrt(vx1)*sqrt(vy1)), 0.70), 0.90)
       Sig1 <- matrix(c(vx1, rho1*sqrt(vx1*vy1), rho1*sqrt(vx1*vy1), vy1), 2)
+      
       vx2 <- sum(gamma2 * diff2[,1]^2)/N2; vy2 <- sum(gamma2 * diff2[,2]^2)/N2
       if (vy2 < f * vx2) vy2 <- f * vx2
       Sig2 <- diag(c(vx2, vy2))
+      
       vx3 <- sum(gamma3 * diff3[,1]^2)/N3; vy3 <- sum(gamma3 * diff3[,2]^2)/N3
       if (vx3 < f * vy3) vx3 <- f * vy3
       Sig3 <- diag(c(vx3, vy3))
+      
+      # E-Step:  with log-sum-exp stabilization
       lf1 <- log_dmvnorm2(X, mu1_k, Sig1); lf2 <- log_dmvnorm2(X, mu2_k, Sig2); lf3 <- log_dmvnorm2(X, mu3_k, Sig3)
       ln1 <- log(pi_k3[1]) + lf1; ln2 <- log(pi_k3[2]) + lf2; ln3 <- log(pi_k3[3]) + lf3
-      ml <- pmax(ln1, ln2, ln3); lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml) + exp(ln3 - ml))
-      ll <- sum(lden)
+      ml  <- pmax(ln1, ln2, ln3)
+      lden <- ml + log(exp(ln1 - ml) + exp(ln2 - ml) + exp(ln3 - ml))
+      ll   <- sum(lden)
       gamma1 <- exp(ln1 - lden); gamma2 <- exp(ln2 - lden); gamma3 <- exp(ln3 - lden)
+      
       if (abs(ll - ll_prev) < 1e-6) break
       ll_prev <- ll
     }
-    bic3 <- -2*ll + 15*log(N)
+    bic3 <- -2 * ll + 15 * log(N) #  with p = 15
     st <- if (cohort_name == "CCl4" && f == 1.3) "Winning Model (Lowest BIC)" else "Constrained Model"
-    res[[length(res) + 1]] <- data.table(Cohort = cohort_name, K = 3, c = f, Ratio = sqrt(f), P = 15, LogLik = ll, BIC = bic3, dBIC = bic3 - bic1, pi1 = pi_k3[1], pi2 = pi_k3[2], pi3 = pi_k3[3], Status = st)
+    res[[length(res) + 1]] <- data.table(
+      Cohort = cohort_name, K = 3, c = f, Ratio = sqrt(f), P = 15,
+      LogLik = ll, BIC = bic3, dBIC = bic3 - bic1, pi1 = pi_k3[1], pi2 = pi_k3[2], pi3 = pi_k3[3],
+      Status = st
+    )
   }
   rbindlist(res)
 }
@@ -421,7 +513,17 @@ file.copy(out_fig_png, "C:/Users/ngoune/.gemini/antigravity/brain/880061ef-cc44-
 # ------------------------------------------------------------------------------
 export_tab <- copy(full_tab[, .(Cohort, K, c, Ratio, P, LogLik, BIC, dBIC, pi1, pi2, pi3, Status)])
 csv_path <- file.path(out_fig_dir, "Supplementary_Table_5_Mixture_Models.csv")
-fwrite(export_tab, csv_path)
-fwrite(export_tab, file.path(share_graf_dir, "Supplementary_Table_5_Mixture_Models.csv"))
+
+safe_fwrite <- function(dt, path) {
+  tryCatch({
+    fwrite(dt, path)
+    cat(sprintf("[SUCCESS] Exported table to %s\n", path))
+  }, error = function(e) {
+    cat(sprintf("[NOTE] Could not overwrite %s (file is open in another program such as Excel). Preserved existing file.\n", basename(path)))
+  })
+}
+
+safe_fwrite(export_tab, csv_path)
+safe_fwrite(export_tab, file.path(share_graf_dir, "Supplementary_Table_5_Mixture_Models.csv"))
 
 cat("=== Streamlined Supplementary Figure 6 completed! ===\n")
