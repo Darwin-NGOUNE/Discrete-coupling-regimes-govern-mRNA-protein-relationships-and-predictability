@@ -184,18 +184,18 @@ el_ccl4 <- rbind(
 DT_bdl_plot <- as.data.table(X_bdl); names(DT_bdl_plot) <- c("log2G", "log2P")
 DT_ccl4_plot <- as.data.table(X_ccl4); names(DT_ccl4_plot) <- c("log2G", "log2P")
 
-theme_panel_clean <- theme_bw(base_size = 11) +
+theme_panel_clean <- theme_bw(base_size = 12) +
   theme(
-    plot.title    = element_text(size = 13, face = "bold", hjust = 0.5, margin = margin(b = 6)),
+    plot.title    = element_text(size = 16, face = "bold", hjust = 0.5, margin = margin(b = 6)),
     plot.subtitle = element_blank(),
-    axis.title    = element_text(size = 13, face = "bold", color = "black"),
-    axis.text     = element_text(size = 13, color = "black"),
-    panel.border  = element_rect(color = "black", fill = NA, linewidth = 0.8),
+    axis.title    = element_text(size = 14, face = "bold", color = "black"),
+    axis.text     = element_text(size = 13, face = "bold", color = "black"),
+    panel.border  = element_rect(color = "black", fill = NA, linewidth = 1.0),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     legend.position = "bottom",
     legend.direction = "horizontal",
-    legend.text   = element_text(size = 12, face = "bold"),
+    legend.text   = element_text(size = 13, face = "bold"),
     legend.title  = element_blank(),
     legend.margin = margin(t = 2),
     plot.margin   = margin(t = 12, r = 12, b = 8, l = 12)
@@ -203,13 +203,13 @@ theme_panel_clean <- theme_bw(base_size = 11) +
 
 p_a <- ggplot(DT_bdl_plot, aes(log2G, log2P)) +
   geom_point(color = "#607D8B", alpha = 0.40, size = 1.3) +
-  geom_path(data = el_bdl, aes(x, y, group = interaction(Component, Level), color = Component), linewidth = 1.0) +
+  geom_path(data = el_bdl, aes(x, y, group = interaction(Component, Level), color = Component), linewidth = 1.2) +
   scale_color_manual(values = c_colors) +
-  geom_hline(yintercept = c(-0.5, 0.5), color = "grey40", linewidth = 0.4, linetype = "dashed") +
-  geom_vline(xintercept = c(-0.5, 0.5), color = "grey40", linewidth = 0.4, linetype = "dashed") +
-  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
-  geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
-  geom_label(data = quadrant_labels, aes(x, y, label = label), inherit.aes = FALSE, color = "grey35", fill = "white", linewidth = 0, fontface = "bold", size = 3.2) +
+  geom_hline(yintercept = c(-0.5, 0.5), color = "grey35", linewidth = 0.5, linetype = "dashed") +
+  geom_vline(xintercept = c(-0.5, 0.5), color = "grey35", linewidth = 0.5, linetype = "dashed") +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.7) +
+  geom_vline(xintercept = 0, color = "black", linewidth = 0.7) +
+  geom_label(data = quadrant_labels, aes(x, y, label = label), inherit.aes = FALSE, color = "grey30", fill = "white", linewidth = 0.3, fontface = "bold", size = 4.2) +
   coord_fixed(xlim = c(-5.5, 5.5), ylim = c(-5.5, 5.5)) +
   labs(
     title = "BDL (K = 2)",
@@ -221,13 +221,13 @@ p_a <- ggplot(DT_bdl_plot, aes(log2G, log2P)) +
 
 p_b <- ggplot(DT_ccl4_plot, aes(log2G, log2P)) +
   geom_point(color = "#607D8B", alpha = 0.40, size = 1.3) +
-  geom_path(data = el_ccl4, aes(x, y, group = interaction(Component, Level), color = Component), linewidth = 1.0) +
+  geom_path(data = el_ccl4, aes(x, y, group = interaction(Component, Level), color = Component), linewidth = 1.2) +
   scale_color_manual(values = c_colors) +
-  geom_hline(yintercept = c(-0.5, 0.5), color = "grey40", linewidth = 0.4, linetype = "dashed") +
-  geom_vline(xintercept = c(-0.5, 0.5), color = "grey40", linewidth = 0.4, linetype = "dashed") +
-  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
-  geom_vline(xintercept = 0, color = "black", linewidth = 0.5) +
-  geom_label(data = quadrant_labels, aes(x, y, label = label), inherit.aes = FALSE, color = "grey35", fill = "white", linewidth = 0, fontface = "bold", size = 3.2) +
+  geom_hline(yintercept = c(-0.5, 0.5), color = "grey35", linewidth = 0.5, linetype = "dashed") +
+  geom_vline(xintercept = c(-0.5, 0.5), color = "grey35", linewidth = 0.5, linetype = "dashed") +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.7) +
+  geom_vline(xintercept = 0, color = "black", linewidth = 0.7) +
+  geom_label(data = quadrant_labels, aes(x, y, label = label), inherit.aes = FALSE, color = "grey30", fill = "white", linewidth = 0.3, fontface = "bold", size = 4.2) +
   coord_fixed(xlim = c(-5.5, 5.5), ylim = c(-5.5, 5.5)) +
   labs(
     title = expression(bold(~CCl[4]~ "(K = 3)")),
@@ -329,7 +329,7 @@ full_tab <- rbind(tab_bdl, tab_ccl4)
 # Sort by increasing BIC within each cohort
 setorder(full_tab, Cohort, BIC)
 full_tab[, Rank := 1:.N, by = Cohort]
-full_tab[, ModelClean := ifelse(K == 1, "K=1 (Single)", paste0("K=", K, "\n(c=", c, ")"))]
+full_tab[, ModelClean := ifelse(K == 1, "K=1\nSingle", paste0("K=", K, "\nc=", c))]
 full_tab[, ModelType := factor(paste0("K = ", K), levels = c("K = 1", "K = 2", "K = 3"))]
 full_tab[, ModelInFacet := factor(paste0(Cohort, "___", ModelClean), levels = paste0(Cohort, "___", ModelClean))]
 full_tab[, FacetCohort := factor(ifelse(Cohort == "BDL", "bold(BDL)", "bold(CCl[4])"),
@@ -341,12 +341,12 @@ scale_x_reordered <- function(...) {
 
 # Panel C Plot - Clean: NO TITLE, NO SUBTITLE, ONLY AXES AND LEGEND
 p_c <- ggplot(full_tab, aes(x = ModelInFacet, y = BIC, fill = ModelType)) +
-  geom_col(width = 0.68, color = "black", linewidth = 0.4) +
-  geom_text(aes(label = sprintf("%.1f", BIC)), vjust = -0.4, size = 2.65, fontface = "bold") +
-  # Red asterisk placed safely above the winning bar (Rank == 1) with 35 pt clearance, no overlap!
-  geom_point(data = full_tab[Rank == 1], aes(x = ModelInFacet, y = BIC + 38), 
-             shape = 8, size = 3.6, color = "#D32F2F", stroke = 1.3) +
-  coord_cartesian(ylim = c(3320, 3790)) +
+  geom_col(width = 0.68, color = "black", linewidth = 0.8) +
+  geom_text(aes(label = sprintf("%.0f", BIC)), vjust = -0.4, size = 4.2, fontface = "bold") +
+  # Red asterisk placed safely above the winning bar (Rank == 1) with comfortable clearance, hidden from fill legend
+  geom_point(data = full_tab[Rank == 1], aes(x = ModelInFacet, y = BIC + 48), 
+             shape = 8, size = 4.5, color = "#D32F2F", stroke = 1.8, show.legend = FALSE) +
+  coord_cartesian(ylim = c(3320, 3840)) +
   facet_wrap(~ FacetCohort, scales = "free_x", ncol = 2, labeller = label_parsed) +
   scale_x_reordered() +
   scale_fill_manual(values = c("K = 1" = "#90A4AE", "K = 2" = "#7E57C2", "K = 3" = "#26A69A")) +
@@ -355,18 +355,19 @@ p_c <- ggplot(full_tab, aes(x = ModelInFacet, y = BIC, fill = ModelType)) +
     y = "BIC",
     fill = "Component structure:"
   ) +
-  theme_bw(base_size = 11) +
+  theme_bw(base_size = 12) +
   theme(
     plot.title    = element_blank(),
     plot.subtitle = element_blank(),
-    axis.text.x   = element_text(size = 12, face = "bold", color = "black"),
-    axis.text.y   = element_text(size = 12, color = "black"),
-    axis.title    = element_text(size = 13, face = "bold"),
-    strip.background = element_rect(fill = "#ECEFF1", color = "black", linewidth = 0.6),
-    strip.text    = element_text(size = 11.5, face = "bold"),
+    axis.text.x   = element_text(size = 12, face = "bold", color = "black", lineheight = 0.9),
+    axis.text.y   = element_text(size = 13, face = "bold", color = "black"),
+    axis.title    = element_text(size = 14, face = "bold", color = "black"),
+    strip.background = element_rect(fill = "#ECEFF1", color = "black", linewidth = 1.0),
+    strip.text    = element_text(size = 14, face = "bold"),
+    panel.border  = element_rect(color = "black", fill = NA, linewidth = 1.0),
     legend.position = "bottom",
-    legend.title  = element_text(size = 12, face = "bold"),
-    legend.text   = element_text(size = 10, face = "bold"),
+    legend.title  = element_text(size = 13, face = "bold"),
+    legend.text   = element_text(size = 12, face = "bold"),
     panel.grid.major.x = element_blank(),
     plot.margin   = margin(t = 6, r = 12, b = 8, l = 12)
   )
@@ -381,7 +382,7 @@ top_row <- plot_grid(
   ncol = 2,
   rel_widths = c(1, 1),
   labels = c("A", "B"),
-  label_size = 22,
+  label_size = 24,
   label_fontface = "bold"
 )
 
@@ -389,7 +390,7 @@ bottom_row <- plot_grid(
   p_c,
   ncol = 1,
   labels = c("C"),
-  label_size = 22,
+  label_size = 24,
   label_fontface = "bold"
 )
 
@@ -401,14 +402,19 @@ master_plate <- plot_grid(
 )
 
 out_fig_pdf <- file.path(out_fig_dir, "Supplementary_Figure_6.pdf")
-#out_fig_png <- file.path(out_fig_dir, "Supplementary_Figure_06.png")
+out_fig_png <- file.path(out_fig_dir, "Supplementary_Figure_06.png")
 ggsave(out_fig_pdf, master_plate, width = 18, height = 16, device = cairo_pdf)
 ggsave(out_fig_png, master_plate, width = 14.5, height = 14.5, dpi = 300)
+ggsave(file.path(out_fig_dir, "Supplementary_Figure_6.png"), master_plate, width = 14.5, height = 14.5, dpi = 300)
 cat(sprintf("[SUCCESS] Saved %s and %s\n", out_fig_pdf, out_fig_png))
 
 # Mirror copy to Grafiken_Paper_1
 file.copy(out_fig_pdf, file.path(share_graf_dir, basename(out_fig_pdf)), overwrite = TRUE)
 file.copy(out_fig_png, file.path(share_graf_dir, basename(out_fig_png)), overwrite = TRUE)
+file.copy(file.path(out_fig_dir, "Supplementary_Figure_6.png"), file.path(share_graf_dir, "Supplementary_Figure_6.png"), overwrite = TRUE)
+
+# Copy to artifact directory for preview
+file.copy(out_fig_png, "C:/Users/ngoune/.gemini/antigravity/brain/880061ef-cc44-4c0a-a528-730c28eaaa33/Supplementary_Figure_06.png", overwrite = TRUE)
 
 # ------------------------------------------------------------------------------
 # 7. EXPORT SUPPLEMENTARY TABLE 5
