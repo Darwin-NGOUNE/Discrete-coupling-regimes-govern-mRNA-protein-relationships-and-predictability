@@ -45,7 +45,7 @@ DT_CCL4_BatchCorrected <- ccl4_DT[DiseaseGroup %in% c("Control", "Disease")]
 
 print("Loading DiPa Base Data for CCl4...")
 env_dipa <- new.env()
-load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Dipa/Data_CCL4_filtered_Gene_Protein_full_final_with_dipa.RData", envir = env_dipa)
+load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Dipa/Data_ccl4_count_filtered_Gene_Protein_full_final_with_dipa.RData", envir = env_dipa)
 # Dynamically extract the single data.frame/data.table loaded
 dipa_var <- ls(env_dipa)[sapply(ls(env_dipa), function(x) inherits(env_dipa[[x]], "data.frame"))][1]
 DT_dipa_valid <- copy(env_dipa[[dipa_var]])

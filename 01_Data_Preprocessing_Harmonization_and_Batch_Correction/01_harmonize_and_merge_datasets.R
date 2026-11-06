@@ -6,19 +6,21 @@ library(dplyr)
 
 # Load the two datasets: one for CCl4 condition and one for the new dataset
 load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Data/Data_CCl4_Gene_Protein_full_final_with_KMclustering.RData")
-load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data_asbt_Gene_Protein_full.RData")
-load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data_asbt_Gene_Protein_full_LCPM.RData")
-load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/DT/New_Data/Data_count_asbt_Gene_Protein_full_with_DiPa.RData")
-#load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data_asbt_Gene_Protein_full_with_DiPa.RData")
+#load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Data/Data_CCl4_Gene_Protein_full_final_with_DiPa.RData")
+
+#load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data/Data_asbt_Gene_Protein_full.RData")
+#load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data/Data_asbt_Gene_Protein_full_LCPM.RData")
+
+#load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/DT/New_Data/Data_count_asbt_Gene_Protein_full_with_DiPa.RData")
 load("C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data_LCPM_asbt_Gene_Protein_full_with_DiPa.RData")
 
 ################################################################################
 # Echanger clusterdipa
 
-DT_LCPM$ClusterDiPa <- DT_count$ClusterDiPa
-DT_LCPM$ClusterDiPa_heal <- DT_count$ClusterDiPa_heal
-DT_LCPM$ClusterDiPa_heal2 <- DT_count$ClusterDiPa_heal2
-save(DT_LCPM, file = "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data_LCPM_asbt_Gene_Protein_full_with_DiPa.RData")
+#DT_LCPM$ClusterDiPa <- DT_count$ClusterDiPa
+#DT_LCPM$ClusterDiPa_heal <- DT_count$ClusterDiPa_heal
+#DT_LCPM$ClusterDiPa_heal2 <- DT_count$ClusterDiPa_heal2
+#save(DT_LCPM, file = "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/New_Data/Data_LCPM_asbt_Gene_Protein_full_with_DiPa.RData")
 
 
 ################################################################################
@@ -31,6 +33,8 @@ colSums(is.na(DT_LCPM))
 # Count how many unique ProteinIDs in DTccl4 are also found in DT
 #sum(unique(DTccl4$ProteinID) %in% DT$ProteinID)  # Expected: 950
 sum(unique(DTccl4$ProteinID) %in% DT_LCPM$ProteinID)
+
+
 
 # Retrieve gene names from Ensembl using biomaRt
 library(biomaRt)
@@ -47,6 +51,9 @@ gene_info <- getBM(attributes = c("ensembl_gene_id", "external_gene_name"),
 #DT$GeneName <- gene_info$external_gene_name[match(DT$GeneSyn, gene_info$ensembl_gene_id)]
 
 DT_LCPM$GeneName <- gene_info$external_gene_name[match(DT_LCPM$GeneSyn, gene_info$ensembl_gene_id)]
+
+####
+####
 
 # Count how many GeneSyn values in DTccl4 match GeneName values in DT
 sum(unique(DTccl4$GeneSyn) %in% DT_LCPM$GeneName)  # Expected: 943
@@ -155,6 +162,8 @@ library(dplyr)
 # Deuxième jeu : combiner DTccl4_filtered et DT_LCPM_filtered
 DTccl4_DT_LCPM <- bind_rows(DTccl4_filtered_final, DT_LCPM_filtered_final)
 
+
+
 #save(DTccl4_DT, file = "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Cross_Data_Analysis/DTccl4_DT_Gene_Protein_full.RData")
 save(DTccl4_DT_LCPM, file = "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Cross_Data_Analysis/DTccl4_DT_LCPM_Gene_Protein_full.RData")
 
@@ -163,12 +172,27 @@ length(unique(DTccl4_DT_LCPM$GeneProtein))
 colSums(is.na(DTccl4_DT_LCPM))
 length(unique(DTccl4_DT_LCPM$MiceInfo))
 
-
 ###
 #setequal(DT_filtered_final$GeneProteinPair, DTccl4_filtered_final$GeneProteinPair)
 
 # Valeurs présentes dans df1 mais pas dans df2
 setdiff(DT_LCPM_filtered_final$GeneProteinPair, DTccl4_filtered_final$GeneProteinPair)
+
+
+######### Not important ###########
+
+
+library(org.Mm.eg.db)
+
+# Après la ligne mapIds() :
+DT_LCPM$GeneName <- mapIds(org.Mm.eg.db,
+                           keys = DT_LCPM$GeneSyn,
+                           column = "SYMBOL",
+                           keytype = "ENSEMBL",
+                           multiVals = "first")
+
+# Pour retrouver exactement les 943 historiques de biomaRt :
+DT_LCPM$GeneName[DT_LCPM$GeneSyn == "ENSMUSG00000049152"] <- NA
 
 
 

@@ -8,14 +8,25 @@
 
 ## 1. Overview & Pipeline Scope
 
-This stage establishes the foundational, end-to-end multi-omics data processing pipeline for the **Consortium Liver Fibrosis Study**. It covers the entire trajectory from raw transcriptomic (RNA-Seq counts) and quantitative proteomic (LC-MS/MS) measurements down to the **two master datasets** used across all downstream modeling procedures (Procedures 1, 3, 5, and Figures 1--6):
+This stage establishes the foundational, end-to-end multi-omics data processing pipeline for the **Consortium Liver Fibrosis Study**. It covers the entire trajectory from raw transcriptomic (RNA-Seq counts) and quantitative proteomic (LC-MS/MS) measurements down to the **two master datasets** used across all downstream modeling procedures (Procedures 1, 3, 5, and Figures 1–6):
 
-1. **Master Dataset 1 (Uncorrected / Raw Merged):** `DTccl4_DT_LCPM_Gene_Protein_full.RData`
-2. **Master Dataset 2 (ComBat Batch-Corrected Merged):** `DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData`
+1. **Master Dataset 1 (Uncorrected / Raw Merged):** `processed_data/DTccl4_DT_LCPM_Gene_Protein_full.RData`
+2. **Master Dataset 2 (ComBat Batch-Corrected Merged):** `processed_data/DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData`
 
 ---
 
-## 2. Directory Architecture & Key Files
+## 2. Guide to Data Formats: Raw Counts vs. Normalized Log-CPM
+
+To ensure complete clarity for peer reviewers, the repository maintains two parallel data representations:
+
+| Data Scale | Variable Representation | Primary Purpose | Repository Directory |
+| :--- | :--- | :--- | :--- |
+| **Representation A: Raw Count Scale (`count`)** | • RNA: Integer counts (`GeneCount`)<br/>• Protein: Linear intensity ($2^{\text{ProteinIntensity}}$) | **DiPa Quadrant Classification (Stage 02)**:<br/>Unbiased treatment-to-control fold changes ($\text{Ratio} = \text{Mean}_{\text{treat}} / \text{Mean}_{\text{ctrl}}$) require linear scale to prevent log-averaging compression. | `raw_data/Data_count_*`<br/>`raw_data/Data_ccl4_count_*` |
+| **Representation B: Normalized Log Scale (`LCPM`)** | • RNA: edgeR TMM $\log_2\text{CPM}$ (`prior.count = 3`)<br/>• Protein: MSstats $\log_2$ intensity | **Machine Learning (Stage 03) & Figures (Stage 04)**:<br/>Linear regression, Lasso, Random Forests, and ComBat batch adjustment require continuous, variance-stabilized features. | `processed_data/DT*_LCPM_*`<br/>`Master Datasets 1 & 2` |
+
+---
+
+## 3. Directory Architecture & File Inventory
 
 ```text
 01_Data_Preprocessing_Harmonization_and_Batch_Correction/
@@ -31,20 +42,28 @@ This stage establishes the foundational, end-to-end multi-omics data processing 
 │   └── 📄 CCl4_gene_protein_build_joint_data.R# UniProt mapping & complete-case filtering for CCl4 joint dataset
 │
 ├── 📁 raw_data/                                # Cohort joint datasets prior to cross-cohort harmonization
-│   ├── Data_LCPM_asbt_Gene_Protein_full_with_DiPa.RData          (BDL cohort, N = 18 mice)
-│   └── Data_CCl4_Gene_Protein_full_final_with_KMclustering.RData (CCl4 cohort, N = 36 mice)
+│   │── 🔹 Normalized Log-CPM Workspaces (for ML Harmonization):
+│   │   ├── Data_LCPM_asbt_Gene_Protein_full_with_DiPa.RData          (BDL cohort, N = 18 mice, log-CPM)
+│   │   └── Data_CCl4_Gene_Protein_full_final_with_KMclustering.RData (CCl4 cohort, N = 36 mice, log-CPM)
+│   │── 🔹 Raw Count Workspaces (for DiPa Quadrant Fold-Changes):
+│   │   ├── Data_count_asbt_Gene_Protein_full.RData                   (BDL raw counts, pre-harmonization)
+│   │   ├── Data_count_asbt_Gene_Protein_full_with_DiPa.RData         (BDL raw counts with DiPa clusters)
+│   │   ├── Data_count_filtered_asbt_Gene_Protein_full.RData          (BDL raw counts, 943 conserved pairs)
+│   │   ├── Data_count_filtered_asbt_Gene_Protein_full_dipa.RData     (BDL raw counts, 943 pairs + DiPa)
+│   │   ├── Data_CCL4_filtered_Gene_Protein_full_final_with_dipa.RData(CCl4 raw counts, 943 pairs + canonical DiPa)
+│   │   └── Data_ccl4_count_filtered_Gene_Protein_full_final_with_dipa.RData (CCl4 DiPa fold-change summary, 943 pairs)
 │
 ├── 📄 01_harmonize_and_merge_datasets.R        # Cross-cohort Ensembl/UniProt harmonization (943 core pairs)
 ├── 📄 02_combat_batch_correction.R             # Empirical Bayes ComBat correction preserving ~ DiseaseGroup
 ├── 📄 generate_supplementary_table_1_wide.R    # Journal-compliant wide Excel matrix generation
 │
-├── 📁 processed_data/                         # Final master datasets
-│   ├── DT_LCPM_filtered_final_Gene_Protein_full.RData        (BDL 943 features, raw)
-│   ├── DTccl4_filtered_final_Gene_Protein_full.RData        (CCl4 943 features, raw)
-│   ├── DTccl4_DT_LCPM_Gene_Protein_full.RData               (MASTER 1: Merged Raw)
-│   ├── DT_LCPM_filtered_final_Gene_Protein_full_Batch.RData (BDL 943 features, ComBat)
-│   ├── DTccl4_filtered_final_Gene_Protein_full_Batch.RData  (CCl4 943 features, ComBat)
-│   └── DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData         (MASTER 2: Merged ComBat Corrected)
+├── 📁 processed_data/                         # Final master datasets used in ML & Figures
+│   ├── DT_LCPM_filtered_final_Gene_Protein_full.RData        (BDL 943 pairs, raw log-CPM, 18 mice)
+│   ├── DTccl4_filtered_final_Gene_Protein_full.RData        (CCl4 943 pairs, raw log-CPM, 36 mice)
+│   ├── DTccl4_DT_LCPM_Gene_Protein_full.RData               (MASTER 1: Merged Raw, 54 mice, 50,922 rows)
+│   ├── DT_LCPM_filtered_final_Gene_Protein_full_Batch.RData (BDL 943 pairs, ComBat corrected, 18 mice)
+│   ├── DTccl4_filtered_final_Gene_Protein_full_Batch.RData  (CCl4 943 pairs, ComBat corrected, 36 mice)
+│   └── DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData         (MASTER 2: Merged ComBat Corrected, 54 mice)
 │
 ├── 📊 Supplementary_Table_1_RNA_Protein_Pairs.xlsx           # OFFICIAL PUBLICATION SUPPLEMENTARY TABLE:
 │                                                            # Wide matrix (54 mice x 3,775 columns, 0 NAs)
@@ -55,31 +74,31 @@ This stage establishes the foundational, end-to-end multi-omics data processing 
 
 ---
 
-## 3. Detailed Workflow Steps
+## 4. Detailed Workflow Steps
 
 ### Phase 0: Individual Cohort Preprocessing
 
 #### A. BDL Cohort Preprocessing (`preprocessing_BDL/`)
 * **RNA-Seq Normalization (`ASBT_liver_rna_BDL.R`):**  
-  Applies `DESeq2` filtering (`rowSums(counts) > 10`) followed by `edgeR` Trimmed Mean of M-values (**TMM**) normalization and $\log_2$-Counts Per Million ($\log\text{CPM}$, `prior.count = 3`) to yield normalized transcript abundances across the 18 experimental mice (Sham $n=6$, BDL $n=6$, BDL + ASBTi $n=6$).
+  Applies `DESeq2` pre-filtering (`rowSums(counts) > 10`) followed by `edgeR` Trimmed Mean of M-values (**TMM**) normalization and $\log_2$-Counts Per Million ($\log_2\text{CPM}$, `prior.count = 3`) across all 18 experimental mice (Sham $n=6$, BDL untreated $n=6$, BDL + ASBT inhibitor $n=6$).
 * **Proteomics Processing (`ASBT_liver_proteins_BDL.R`):**  
-  Extracts curated protein spectral intensities, applies $\log_2$-transformation, parses UniProt accessions, and harmonizes sample identifiers to match the RNA dataset.
+  Extracts curated protein spectral intensities from SWATH-MS, applies $\log_2$-transformation, parses UniProt accessions, and harmonizes sample identifiers to match the RNA-Seq dataset.
 * **Joint Dataset Construction (`ASBT_liver_build_joint_data_BDL.R`):**  
   Integrates parallel RNA and protein expression matrices via `mapUniProt` (mapping UniProtKB accessions to Ensembl gene identifiers) into `Data_LCPM_asbt_Gene_Protein_full_with_DiPa.RData`.
 
 #### B. $\text{CCl}_4$ Cohort Preprocessing (`preprocessing_CCl4/`)
 * **RNA-Seq Normalization (`CCl4_gene_counts_normalized.R`):**  
-  Performs `edgeR` TMM normalization and $\log\text{CPM}$ transformation on the raw gene count matrix across 36 mice spanning mineral oil controls and $\text{CCl}_4$ treatments across 0, 2, 6, and 12 months.
+  Performs `edgeR` TMM normalization and $\log_2\text{CPM}$ transformation on the raw gene count matrix across 36 mice spanning mineral oil controls and $\text{CCl}_4$ treatments across 0, 2, 6, and 12 months.
 * **Proteomics Processing (`CCl4_protein_data.R`):**  
   Processes Skyline export data through `MSstats` (`dataProcess` with median equalization) to compute sample-level protein log-intensities.
 * **Joint Dataset Construction (`CCl4_gene_protein_build_joint_data.R`):**  
-  Aligns transcriptomic and proteomic profiles across the time-course and retains gene--protein pairs with complete observation profiles across treatment conditions, outputting `Data_CCl4_Gene_Protein_full_final_with_KMclustering.RData`.
+  Aligns transcriptomic and proteomic profiles across the time-course and retains gene–protein pairs with complete observation profiles, outputting `Data_CCl4_Gene_Protein_full_final_with_KMclustering.RData`.
 
 ---
 
 ### Phase 1: Cross-Cohort Harmonization & Mapping
 * **Script:** `01_harmonize_and_merge_datasets.R`
-* **Operation:** Matches Ensembl gene IDs to external gene names and UniProt accessions across BDL ($N = 18$) and $\text{CCl}_4$ ($N = 36$), isolating the **943 conserved mRNA--protein pairs** present in both cohorts.
+* **Operation:** Matches Ensembl gene IDs to external gene names and UniProt accessions across BDL ($N = 18$) and $\text{CCl}_4$ ($N = 36$), isolating the **943 conserved mRNA–protein pairs** present in both cohorts.
 * **Output:** `processed_data/DTccl4_DT_LCPM_Gene_Protein_full.RData` (Master Dataset 1: Merged Raw).
 
 ---
@@ -105,7 +124,7 @@ This stage establishes the foundational, end-to-end multi-omics data processing 
 
 ---
 
-## 4. Summary of Master Datasets
+## 5. Summary Table of Master Datasets
 
 | Dataset File | Description | Cohort | Dimensions |
 | :--- | :--- | :--- | :--- |
@@ -116,4 +135,4 @@ This stage establishes the foundational, end-to-end multi-omics data processing 
 | `processed_data/DTccl4_filtered_final_Gene_Protein_full_Batch.RData` | ComBat Corrected | $\text{CCl}_4$ ($n=36$) | 943 pairs $\times$ 36 mice |
 | `processed_data/DTccl4_DT_LCPM_BatchCorrected_3_Groups.RData` | **Master 2 (Merged ComBat)** | Both ($N=54$) | 50,922 observations |
 | `Supplementary_Table_1_RNA_Protein_Pairs.xlsx` | Journal Wide Matrix | Both ($N=54$) | 54 rows $\times$ 3,775 cols (0 NAs) |
-| `DTccl4_DT_LCPM_Raw_BatchCorrected.xlsx` | Long Data Table | Both ($N=54$) | 50,922 rows $\times$ 21 cols |
+| `DTccl4_DT_LCPM_Raw_BatchCorrected.xlsx` | Long Data Table | Both ($N=54$) | 50,922 rows $\times$ 21 cols |
