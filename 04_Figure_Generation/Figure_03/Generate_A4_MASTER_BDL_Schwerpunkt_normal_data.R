@@ -45,6 +45,9 @@ Full_DT[Dataset == "BDL Dataset" & as.character(Treatment) == "control", Disease
 Full_DT[Dataset == "BDL Dataset" & as.character(Treatment) == "BDL",     DiseaseGroup := "Disease"]
 bdl_DT <- Full_DT[Dataset == "BDL Dataset" & !is.na(GeneCount) & !is.na(Protein_Raw) & !is.na(DiseaseGroup)]
 
+# The main structure used for PCA and Volcano
+DT_BDL_BatchCorrected <- bdl_DT[DiseaseGroup %in% c("Control", "Disease")]
+
 # -------------------------------------------------------------------------
 # 2. STEP 1: PCA PLOTS
 # -------------------------------------------------------------------------
