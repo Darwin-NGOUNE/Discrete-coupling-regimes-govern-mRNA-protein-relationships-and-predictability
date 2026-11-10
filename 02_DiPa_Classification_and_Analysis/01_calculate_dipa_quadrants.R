@@ -190,12 +190,10 @@ DT_dipa_ccl4[, `:=`(
 # Assign CCl4 DiPa groups based on 12-Month duration
 DT_dipa_ccl4[, DiPaGroups := dipagrouping(meanRatioG_12, meanRatioP_12, thresh_x, thresh_y)]
 
-# Also load DTccl4_count_filtered and update its ClusterDiPa column
+# Directly build DTccl4_count_filtered from the 943-pair cohort (all 36 replicate mice, 33,948 rows)
 ccl4_filt_file <- "C:/Users/ngoune/Documents/Projet I/Protein_Modeling_share/Data/Data_CCL4_filtered_Gene_Protein_full_final_with_DiPa.RData"
-e_ccl4_filt <- new.env(); load(ccl4_filt_file, envir = e_ccl4_filt)
-DTccl4_count_filtered <- as.data.table(e_ccl4_filt$DTccl4_count_filtered)
-
-DTccl4_count_filtered[, ClusterDiPa := DT_dipa_ccl4$DiPaGroups[match(DTccl4_count_filtered$GeneProtein, DT_dipa_ccl4$GeneProtein)]]
+DTccl4_count_filtered <- copy(DTccl4_full_943)
+DTccl4_count_filtered[, ClusterDiPa := DT_dipa_ccl4$DiPaGroups[match(GeneProtein, DT_dipa_ccl4$GeneProtein)]]
 
 message("CCl4 Cluster Distribution (across 943 pairs):")
 print(DT_dipa_ccl4[, .(N_Pairs = .N), by = DiPaGroups][order(DiPaGroups)])
