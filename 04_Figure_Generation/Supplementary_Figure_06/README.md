@@ -31,13 +31,13 @@ To answer this conclusively without subjective thresholding:
 ---
 
 ### 🔹 Panel B: $\text{CCl}_4$ Winning Constrained Mixture Model ($K = 3$)
-* **Data:** 943 matched mRNA–protein pairs under toxic liver fibrosis ($N = 31$, Month 12 $\text{CCl}_4$ vs. Month 0 Oil).
+* **Data:** 943 matched mRNA–protein pairs under toxic liver fibrosis ($N = 943$ pairs, Month 12 $\text{CCl}_4$ vs. Month 12 Oil time-matched control).
 * **Winner Configuration:** $K = 3$ components, minimum elongation factor $c = 1.3$ (aspect ratio $\sqrt{c} = 1.14$).
-* **Information Criteria:** $\text{BIC} = 3490.6$ ($\Delta\text{BIC} = -222.3$ compared to $K = 1$).
+* **Information Criteria:** $\text{BIC} = 3487.6$ ($\Delta\text{BIC} = -141.7$ compared to the single bivariate Gaussian null model $K = 1$ with $\text{BIC} = 3629.3$).
 * **Mixing Proportions ($\pi_k$):**
-  * **Component 1 (Diagonal, Blue):** $\boldsymbol{\pi_1 = 61.6\%}$. Canonical synchronous coupling drops markedly relative to BDL (from $90.9\%$ down to $61.6\%$).
-  * **Component 2 (Vertical, Purple):** $\boldsymbol{\pi_2 = 30.2\%}$. A dramatic threefold surge in protein-dominant deregulation, capturing acute toxic proteostatic stress.
-  * **Component 3 (Horizontal, Orange):** $\boldsymbol{\pi_3 = 8.2\%}$ ($\sigma_{x3}^2 \ge c \cdot \sigma_{y3}^2$). Resolves post-transcriptional buffering (large mRNA changes where protein levels remain strictly stabilized).
+  * **Component 1 (Diagonal, Blue):** $\boldsymbol{\pi_1 = 63.6\%}$. Canonical synchronous coupling drops markedly relative to BDL (from $90.9\%$ down to $63.6\%$).
+  * **Component 2 (Vertical, Purple):** $\boldsymbol{\pi_2 = 28.0\%}$. A dramatic threefold surge in protein-dominant deregulation, capturing toxic proteostatic stress.
+  * **Component 3 (Horizontal, Orange):** $\boldsymbol{\pi_3 = 8.5\%}$ ($\sigma_{x3}^2 \ge c \cdot \sigma_{y3}^2$). Resolves post-transcriptional buffering (large mRNA changes where protein levels remain strictly stabilized).
 * **Contours:** Fitted bivariate density ellipses at the 50%, 90%, and 95% confidence intervals.
 
 ---

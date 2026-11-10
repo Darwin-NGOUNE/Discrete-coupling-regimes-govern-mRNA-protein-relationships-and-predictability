@@ -26,45 +26,24 @@ if (!dir.exists(out_fig_dir)) dir.create(out_fig_dir, recursive = TRUE)
 if (!dir.exists(share_graf_dir)) dir.create(share_graf_dir, recursive = TRUE)
 
 # ------------------------------------------------------------------------------
-# 1. LOAD EXPRESSION DATA
+# 1. LOAD EXPRESSION DATA (DIPA LOG2 RATIOS)
 # ------------------------------------------------------------------------------
-load(file.path(data_dir, "Cross_Data_Analysis/DTccl4_DT_LCPM_Gene_Protein_full.RData"))
-Full_DT <- copy(DTccl4_DT_LCPM); setDT(Full_DT)
-Full_DT[, Protein_Raw := ProteinIntensity]
-Full_DT[, Dataset := ifelse(is.na(TreatmentTime), "BDL Dataset", "CCl4 Dataset")]
-
-# BDL
+# BDL Cohort (Myllys et al., 2021: BDL vs. Sham/Control)
 env_dipa_bdl <- new.env()
 load(file.path(data_dir, "New_Data/Dipa/Data_count_filtered_asbt_Gene_Protein_full_dipa.RData"), envir = env_dipa_bdl)
 DT_bdl <- as.data.table(env_dipa_bdl$DT_dipa_count_bdl)
 DT_bdl[, log2G := log2(meanRatioG)]; DT_bdl[, log2P := log2(meanRatioP)]
 DT_bdl <- DT_bdl[is.finite(log2G) & is.finite(log2P) & !is.na(DiPaGroups)]
+X_bdl  <- as.matrix(DT_bdl[, .(log2G, log2P)])
 
-Full_DT[, DiseaseGroup := NA_character_]
-Full_DT[Dataset == "BDL Dataset" & as.character(Treatment) == "control", DiseaseGroup := "Control"]
-Full_DT[Dataset == "BDL Dataset" & as.character(Treatment) == "BDL",     DiseaseGroup := "Disease"]
-bdl_DT <- Full_DT[Dataset == "BDL Dataset" & !is.na(GeneCount) & !is.na(Protein_Raw) & !is.na(DiseaseGroup)]
-Cloud_BDL <- bdl_DT[, .(N = .N, SD_RNA = sd(GeneCount), SD_Prot = sd(Protein_Raw), Pearson_R = suppressWarnings(cor(GeneCount, Protein_Raw))), by = GeneProtein]
-Cloud_BDL <- Cloud_BDL[N >= 10 & !is.na(Pearson_R) & SD_RNA > 0 & SD_Prot > 0]
-Combined_BDL <- merge(DT_bdl[, .(GeneProtein, log2G, log2P)], Cloud_BDL[, .(GeneProtein)], by = "GeneProtein")
-X_bdl <- as.matrix(Combined_BDL[, .(log2G, log2P)])
-
-# CCl4
+# CCl4 Cohort (Chronic 12-Month Liver Fibrosis vs. Time-Matched Month 12 Oil)
 env_dipa_ccl4 <- new.env()
-load(file.path(data_dir, "New_Data/Dipa/Data_CCL4_filtered_Gene_Protein_full_final_with_dipa.RData"), envir = env_dipa_ccl4)
+load(file.path(data_dir, "New_Data/Dipa/Data_ccl4_count_filtered_Gene_Protein_full_final_with_dipa.RData"), envir = env_dipa_ccl4)
 dipa_var <- ls(env_dipa_ccl4)[sapply(ls(env_dipa_ccl4), function(x) inherits(env_dipa_ccl4[[x]], "data.frame"))][1]
 DT_ccl4 <- copy(env_dipa_ccl4[[dipa_var]]); setDT(DT_ccl4)
 DT_ccl4[, log2G := log2(meanRatioG_12)]; DT_ccl4[, log2P := log2(meanRatioP_12)]
 DT_ccl4 <- DT_ccl4[is.finite(log2G) & is.finite(log2P) & !is.na(DiPaGroups)]
-
-Full_DT[, DiseaseGroup := NA_character_]
-Full_DT[Dataset == "CCl4 Dataset" & as.numeric(as.character(TreatmentTime)) == 0, DiseaseGroup := "Control"]
-Full_DT[Dataset == "CCl4 Dataset" & as.numeric(as.character(TreatmentTime)) == 12 & as.character(Treatment) == "ccl4", DiseaseGroup := "Disease"]
-ccl4_DT <- Full_DT[Dataset == "CCl4 Dataset" & !is.na(GeneCount) & !is.na(Protein_Raw) & !is.na(DiseaseGroup)]
-Cloud_CCL4 <- ccl4_DT[, .(N = .N, SD_RNA = sd(GeneCount), SD_Prot = sd(Protein_Raw), Pearson_R = suppressWarnings(cor(GeneCount, Protein_Raw))), by = GeneProtein]
-Cloud_CCL4 <- Cloud_CCL4[N >= 10 & !is.na(Pearson_R) & SD_RNA > 0 & SD_Prot > 0]
-Combined_CCL4 <- merge(DT_ccl4[, .(GeneProtein, log2G, log2P)], Cloud_CCL4[, .(GeneProtein)], by = "GeneProtein", all.x = TRUE)
-X_ccl4 <- as.matrix(Combined_CCL4[, .(log2G, log2P)])
+X_ccl4 <- as.matrix(DT_ccl4[, .(log2G, log2P)])
 
 # ------------------------------------------------------------------------------
 # 2. HELPER FUNCTIONS (MATHEMATICAL FOUNDATIONS)
@@ -279,8 +258,8 @@ p_b <- ggplot(DT_ccl4_plot, aes(log2G, log2P)) +
   coord_fixed(xlim = c(-5.5, 5.5), ylim = c(-5.5, 5.5)) +
   labs(
     title = expression(bold(~CCl[4]~ "(K = 3)")),
-    x = expression(bold("RNA: "~CCl[4]~"(Month 12) vs. oil (Month 0)"~~log[2]~"(fold change)")),
-    y = expression(bold("Protein: "~CCl[4]~"(Month 12) vs. oil (Month 0)"~~log[2]~"(fold change)"))
+    x = expression(bold("RNA: "~CCl[4]~"(Month 12) vs. oil (Month 12)"~~log[2]~"(fold change)")),
+    y = expression(bold("Protein: "~CCl[4]~"(Month 12) vs. oil (Month 12)"~~log[2]~"(fold change)"))
   ) +
   theme_panel_clean +
   guides(color = guide_legend(nrow = 2, byrow = TRUE))
